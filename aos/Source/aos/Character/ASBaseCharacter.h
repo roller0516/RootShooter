@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "ASBaseCharacter.generated.h"
 
-UCLASS()
+class IIBehaviorCommand;
+
+UCLASS(Abstract)
 class AOS_API AASBaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -16,14 +18,9 @@ public:
 	AASBaseCharacter();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	//virtual void SetBehaviorCommand(IIBehaviorCommand command);
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };
