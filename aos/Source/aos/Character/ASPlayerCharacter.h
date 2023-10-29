@@ -26,6 +26,7 @@ protected:
 
 	// todo:: roller 일단 기능 구현을 먼저 해보자.
 	void FireWeapon();
+	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY()
@@ -54,13 +55,20 @@ private :
 
 	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IASkill2;
-
+	
 	//--------------------------------------------------------particle
+	//TODO::data
 	UPROPERTY(EditAnywhere,Category = Particle)
 	class UParticleSystem* MuzzleFlash;
-
 	
+	UPROPERTY(EditAnywhere,Category = Particle)
+	class UParticleSystem* ImpactParticle;
+
+	UPROPERTY(EditAnywhere,Category = Particle)
+	class UParticleSystem* ShotLineParticle;
 	//--------------------------------------------------------Montage
+
+	//TODO:: data 
 	UPROPERTY(EditAnywhere,Category = Motage)
 	class UAnimMontage* HipFireMontage;
 };
