@@ -23,7 +23,9 @@ protected:
 	
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
-	
+
+	// todo:: roller 일단 기능 구현을 먼저 해보자.
+	void FireWeapon();
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY()
@@ -32,24 +34,33 @@ private :
 	class USpringArmComponent* CameraBoom;
 
 	//---------------------------------------------------------Input
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputMappingContext* defaultMappingContext;
 	 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IAMove;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IALook;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IAJump;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IAAttack;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IASkill1;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = Input)
 	class UInputAction* IASkill2;
+
+	//--------------------------------------------------------particle
+	UPROPERTY(EditAnywhere,Category = Particle)
+	class UParticleSystem* MuzzleFlash;
+
+	
+	//--------------------------------------------------------Montage
+	UPROPERTY(EditAnywhere,Category = Motage)
+	class UAnimMontage* HipFireMontage;
 };

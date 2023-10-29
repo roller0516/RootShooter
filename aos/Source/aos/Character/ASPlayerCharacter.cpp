@@ -6,8 +6,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AASPlayerCharacter::AASPlayerCharacter()
@@ -63,6 +65,9 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		
 		//Look
 		EnhancedInputComponent->BindAction(IALook,ETriggerEvent::Triggered,this,&AASPlayerCharacter::CharacterLook);
+
+		//Fire
+		EnhancedInputComponent->BindAction(IAAttack,ETriggerEvent::Triggered,this,&AASPlayerCharacter::FireWeapon);
 	}
 }
 
@@ -93,5 +98,26 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AASPlayerCharacter::FireWeapon()
+{
+	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket_r");
+	if(BarrelSocket)
+	{
+		const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
+		if(MuzzleFlash)
+		{
+			//파티클 생성
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),MuzzleFlash,muzzleTr);
+		}
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && HipFireMontage)
+	{
+		AnimInstance->Montage_Play(HipFireMontage);
+		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
 }
