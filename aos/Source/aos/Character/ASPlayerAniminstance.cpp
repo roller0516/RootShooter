@@ -32,12 +32,8 @@ void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 		
 		if(Speed > 0)
 			LastMovementOffsetYaw = MovementOffsetYaw;
-		
-		//if(GEngine)
-		//{
-		//	GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,
-		//		FString::Printf(TEXT("Aim : %f"),MovementOffsetYaw));
-		//}
+
+		bAiming = PlayerCharacter->GetAiming();
 	}
 }
 

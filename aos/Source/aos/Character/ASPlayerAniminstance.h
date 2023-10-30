@@ -18,7 +18,6 @@ public:
 	void UpdateAnimationProperties(float deltaTime);
 	
 	virtual void NativeInitializeAnimation() override;
-
 private:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Movement,meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class AASPlayerCharacter> PlayerCharacter;
@@ -37,4 +36,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category=Movement,meta=(AllowPrivateAccess = "true"))
 	float LastMovementOffsetYaw;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category=Aiming,meta=(AllowPrivateAccess = "true"))
+	bool bAiming;
 };

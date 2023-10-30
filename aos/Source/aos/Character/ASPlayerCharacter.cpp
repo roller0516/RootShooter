@@ -10,10 +10,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
-AASPlayerCharacter::AASPlayerCharacter()
+AASPlayerCharacter::AASPlayerCharacter():
+	bIsAiming(false),
+	CameraDefaultFOV(60.f),
+	CameraZoomedFOV(40.f),
+	ZoomSpeed(5.f),
+	CurrentCameraFOV(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -22,7 +28,7 @@ AASPlayerCharacter::AASPlayerCharacter()
 	CameraBoom->TargetArmLength = 250.f;
 	CameraBoom->bUsePawnControlRotation = true; // 컨트롤러를 기준으로 회전
 	CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
-
+	
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
 	Camera->SetupAttachment(CameraBoom);
 	Camera->bUsePawnControlRotation = false; // 스프링 암 기준으로 회전 x
@@ -48,12 +54,16 @@ void AASPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(defaultMappingContext, 0);
 		}
 	}
+
+	Camera->FieldOfView = CameraDefaultFOV;
+	CurrentCameraFOV = CameraDefaultFOV;
 }
 
 // Called every frame
 void AASPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	CameraInterpZoom(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -76,6 +86,10 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Test Skill
 		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::CreateBarrier);
+
+		//Aiming
+		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
+		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Completed,this,&AASPlayerCharacter::AimingButtonReleased);
 	}
 }
 
@@ -135,13 +149,13 @@ void AASPlayerCharacter::FireWeapon()
 				}
 			}
 		}
-		
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance && HipFireMontage)
-		{
-			AnimInstance->Montage_Play(HipFireMontage);
-			AnimInstance->Montage_JumpToSection(FName("StartFire"));
-		}
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HipFireMontage)
+	{
+		AnimInstance->Montage_Play(HipFireMontage);
+		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
 }
 
@@ -151,6 +165,30 @@ void AASPlayerCharacter::CreateBarrier()
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(barrierActor, GetActorTransform(), spawnParams);
+}
+
+void AASPlayerCharacter::AimingButtonPressed()
+{
+	bIsAiming = true;
+}
+
+void AASPlayerCharacter::AimingButtonReleased()
+{
+	bIsAiming = false;
+}
+
+void AASPlayerCharacter::CameraInterpZoom(float deltaTime)
+{
+	if(bIsAiming)
+	{
+		CurrentCameraFOV = FMath::FInterpTo(CurrentCameraFOV,CameraZoomedFOV,deltaTime,ZoomSpeed);
+		Camera->SetFieldOfView(CurrentCameraFOV);
+	}
+	else
+	{	
+		CurrentCameraFOV =  FMath::FInterpTo(CurrentCameraFOV,CameraDefaultFOV,deltaTime,ZoomSpeed);
+		Camera->SetFieldOfView(CurrentCameraFOV);
+	}
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
