@@ -73,6 +73,9 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Fire
 		EnhancedInputComponent->BindAction(IAAttack, ETriggerEvent::Triggered, this, &AASPlayerCharacter::FireWeapon);
+
+		//Test Skill
+		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::CreateBarrier);
 	}
 }
 
@@ -140,6 +143,14 @@ void AASPlayerCharacter::FireWeapon()
 			AnimInstance->Montage_JumpToSection(FName("StartFire"));
 		}
 	}
+}
+
+void AASPlayerCharacter::CreateBarrier()
+{
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(barrierActor, GetActorTransform(), spawnParams);
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)

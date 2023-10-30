@@ -26,6 +26,12 @@ protected:
 
 	// todo:: roller 일단 기능 구현을 먼저 해보자.
 	void FireWeapon();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> barrierActor;
+
+	void CreateBarrier();
+
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 private :
 	//---------------------------------------------------------Camera
