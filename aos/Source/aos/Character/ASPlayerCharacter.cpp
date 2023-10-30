@@ -14,12 +14,18 @@
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
-AASPlayerCharacter::AASPlayerCharacter():
+AASPlayerCharacter::AASPlayerCharacter() :
 	bIsAiming(false),
 	CameraDefaultFOV(60.f),
 	CameraZoomedFOV(40.f),
+	CurrentCameraFOV(0.f),
 	ZoomSpeed(5.f),
-	CurrentCameraFOV(0.f)
+	BaseTurnRate(45.f),
+	BaseLookUpRate(45.f),
+	HipTurnRate(90.f),
+	HipLookUpRate(90.f),
+	AimingTurnRate(20.f),
+	AimingLookUpRate(20.0f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -64,6 +70,8 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	CameraInterpZoom(DeltaTime);
+	SetLookRates();
+	CalcCrossHairSpread(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -114,12 +122,12 @@ void AASPlayerCharacter::CharacterMove(const FInputActionValue& value)
 
 void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 {
-	FVector2D LookAxisVector = value.Get<FVector2D>();
+	FVector2D LookAxisVector = value.Get<FVector2D>() ;
 
 	if (Controller != nullptr)
 	{
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		AddControllerYawInput(LookAxisVector.X * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+		AddControllerPitchInput(LookAxisVector.Y * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
@@ -189,6 +197,32 @@ void AASPlayerCharacter::CameraInterpZoom(float deltaTime)
 		CurrentCameraFOV =  FMath::FInterpTo(CurrentCameraFOV,CameraDefaultFOV,deltaTime,ZoomSpeed);
 		Camera->SetFieldOfView(CurrentCameraFOV);
 	}
+}
+
+void AASPlayerCharacter::SetLookRates()
+{
+	if(bIsAiming)
+	{
+		BaseTurnRate = AimingTurnRate;
+		BaseLookUpRate = AimingLookUpRate;
+	}
+	else
+	{
+		BaseTurnRate = HipTurnRate;
+		BaseLookUpRate = HipLookUpRate;
+	}
+}
+
+void AASPlayerCharacter::CalcCrossHairSpread(float deltaTime)
+{
+	//속도에 따라 크로스헤드 벌어지는 정도
+	//ex) 현재 속도 0 ~ 600 : 0 ~ 1
+	FVector2D walkSpeed = FVector2D(0.f,600.f);
+	FVector2D velocityMultiply = FVector2D{0.0f,1.0f};
+	FVector velocity = GetVelocity();
+	velocity.Z = 0;
+	CrossHairVelocityFactor = FMath::GetMappedRangeValueClamped(walkSpeed,velocityMultiply,velocity.Size());
+	CrossHairSpreadMultiplier = 0.5f + CrossHairVelocityFactor;
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)

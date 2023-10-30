@@ -18,8 +18,6 @@ public:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	FORCEINLINE bool GetAiming() const {return bIsAiming;}
 protected:
 	virtual void BeginPlay() override;
 	
@@ -33,6 +31,9 @@ protected:
 	void AimingButtonPressed();
 	void AimingButtonReleased();
 	void CameraInterpZoom(float deltaTime);
+	void SetLookRates();
+	//---------------------------------------------------------CrossHair
+	void CalcCrossHairSpread(float deltaTime);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 	
@@ -90,7 +91,7 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = Aiming)
 	float CameraDefaultFOV;
-
+	
 	UPROPERTY(EditAnywhere, Category = Aiming)
 	float CameraZoomedFOV;
 
@@ -98,8 +99,45 @@ private :
 	float ZoomSpeed;
 
 	float CurrentCameraFOV;
+	
+	UPROPERTY(EditAnywhere,Category = Aiming)
+	float BaseTurnRate;
+
+	UPROPERTY(EditAnywhere,Category = Aiming)
+	float BaseLookUpRate;
+	//TODO::마우스 감도를 조절 할 수있는 UI만들면 그쪽으로 빼자.
+	UPROPERTY(EditAnywhere,Category=Aiming)
+	float HipTurnRate;
+	
+	UPROPERTY(EditAnywhere,Category=Aiming)
+	float HipLookUpRate;
+	
+	UPROPERTY(EditAnywhere,Category=Aiming)
+	float AimingTurnRate;
+	
+	UPROPERTY(EditAnywhere,Category=Aiming)
+	float AimingLookUpRate;
+
+	//-------------------------------------------------------CrossHair
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
+	float CrossHairSpreadMultiplier;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
+	float CrossHairVelocityFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
+	float CrossHairInAirFactor;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
+	float CrossHairAimFactor;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
+	float CrossHairShootingFactor;
 protected:
-	//-------------------------------------------------------Barrier
+	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> barrierActor;
+public:
+	FORCEINLINE float GetCrossHairSpreadMultiplier() const {return CrossHairSpreadMultiplier;}
+	FORCEINLINE bool GetAiming() const {return bIsAiming;}
 };
