@@ -25,6 +25,8 @@ protected:
 	void CharacterLook(const FInputActionValue& Value);
 	//---------------------------------------------------------Attack
 	void FireWeapon();
+	void StartCrossHairBulletFire();
+	void FinishCrossHairBulletFire();
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
 	//---------------------------------------------------------Aiming
@@ -36,6 +38,8 @@ protected:
 	void CalcCrossHairSpread(float deltaTime);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+	//---------------------------------------------------------Movement
+	void CalcAimingSpeed();
 	
 private :
 	//---------------------------------------------------------Camera
@@ -133,6 +137,16 @@ private :
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
 	float CrossHairShootingFactor;
+	//-------------------------------------------------------ShootingTime
+	UPROPERTY(EditAnywhere,Category = ShootTimer)
+	float ShootTimeDuration;
+
+	bool bFiringBullet;
+
+	FTimerHandle CrossHairShootTimer;
+	
+	//-------------------------------------------------------Move
+	float defaultMovementSpeed;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

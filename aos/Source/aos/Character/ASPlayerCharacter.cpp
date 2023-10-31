@@ -25,7 +25,10 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	HipTurnRate(90.f),
 	HipLookUpRate(90.f),
 	AimingTurnRate(20.f),
-	AimingLookUpRate(20.0f)
+	AimingLookUpRate(20.0f),
+	CrossHairSpreadMultiplier(1.25f),
+	ShootTimeDuration(0.05f),
+	bFiringBullet(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -45,6 +48,9 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
+	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	
 }
 
 // Called when the game starts or when spawned
@@ -72,6 +78,7 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 	CameraInterpZoom(DeltaTime);
 	SetLookRates();
 	CalcCrossHairSpread(DeltaTime);
+	CalcAimingSpeed();
 }
 
 // Called to bind functionality to input
@@ -131,9 +138,19 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 	}
 }
 
+void AASPlayerCharacter::CalcAimingSpeed()
+{
+	if(bIsAiming)
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	else
+		GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
+}
+
 void AASPlayerCharacter::FireWeapon()
 {
-	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket_r");
+	if(bFiringBullet) return;
+	
+	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket");
 	if (BarrelSocket)
 	{
 		const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
@@ -165,6 +182,25 @@ void AASPlayerCharacter::FireWeapon()
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
+
+	StartCrossHairBulletFire();
+}
+
+void AASPlayerCharacter::StartCrossHairBulletFire()
+{
+	bFiringBullet = true;
+	
+	GetWorldTimerManager().SetTimer(CrossHairShootTimer,this,
+		&AASPlayerCharacter::FinishCrossHairBulletFire,ShootTimeDuration);
+
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1,3.f,FColor::Red,"Fire");
+}
+
+void AASPlayerCharacter::FinishCrossHairBulletFire()
+{
+	bFiringBullet = false;
+	GetWorldTimerManager().ClearTimer(CrossHairShootTimer);
 }
 
 void AASPlayerCharacter::CreateBarrier()
@@ -221,8 +257,27 @@ void AASPlayerCharacter::CalcCrossHairSpread(float deltaTime)
 	FVector2D velocityMultiply = FVector2D{0.0f,1.0f};
 	FVector velocity = GetVelocity();
 	velocity.Z = 0;
+	
+	if(bFiringBullet)
+	{
+		CrossHairShootingFactor = FMath::FInterpTo(
+			CrossHairShootingFactor,
+			0.3f,
+			deltaTime,
+			60.f);	
+	}
+	else
+	{
+		CrossHairShootingFactor = FMath::FInterpTo(
+			CrossHairShootingFactor,
+			0.f,
+			deltaTime,
+			60.f);
+	}
+
+	
 	CrossHairVelocityFactor = FMath::GetMappedRangeValueClamped(walkSpeed,velocityMultiply,velocity.Size());
-	CrossHairSpreadMultiplier = 0.5f + CrossHairVelocityFactor;
+	CrossHairSpreadMultiplier = 0.5f + CrossHairVelocityFactor + CrossHairShootingFactor - CrossHairAimFactor;
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
@@ -281,3 +336,4 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 
 	return false;
 }
+
