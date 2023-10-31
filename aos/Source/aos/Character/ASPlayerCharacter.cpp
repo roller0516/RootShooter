@@ -28,7 +28,8 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	AimingLookUpRate(20.0f),
 	CrossHairSpreadMultiplier(1.25f),
 	ShootTimeDuration(0.05f),
-	bFiringBullet(false)
+	bFiringBullet(false),
+	AttackDelayTime(0.1)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -50,7 +51,15 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	GetCharacterMovement()->AirControl = 0.2f;
 
 	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	
+
+	//------------------------------------------------------------------------------Cross Spread Init
+	//생성자에서 초기화 하려니까 너무 길어져서.. 이쪽으로 옮김 
+	SpreadMin = 0;
+	SpreadHipMax = 0.3f;
+	SpreadAimingMax = 0.3f;
+	SpreadCurrent = 0.f;
+	SpreadDecreaseSpeed = 0.25f;
+	SpreadIncreaseSpeed = 0.01f;
 }
 
 // Called when the game starts or when spawned
@@ -140,10 +149,10 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 
 void AASPlayerCharacter::CalcAimingSpeed()
 {
-	if(bIsAiming)
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	else
-		GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
+	//if(bIsAiming)
+	//	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	//else
+	//	GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
 }
 
 void AASPlayerCharacter::FireWeapon()
@@ -211,6 +220,11 @@ void AASPlayerCharacter::CreateBarrier()
 	GetWorld()->SpawnActor<AActor>(barrierActor, GetActorTransform(), spawnParams);
 }
 
+void AASPlayerCharacter::BuildTypeSkillTrace()
+{
+	
+}
+
 void AASPlayerCharacter::AimingButtonPressed()
 {
 	bIsAiming = true;
@@ -260,24 +274,44 @@ void AASPlayerCharacter::CalcCrossHairSpread(float deltaTime)
 	
 	if(bFiringBullet)
 	{
-		CrossHairShootingFactor = FMath::FInterpTo(
-			CrossHairShootingFactor,
-			0.3f,
-			deltaTime,
-			60.f);	
+		IncreaseSpread(SpreadIncreaseSpeed);
+	}
+	
+	if(SpreadMin <= SpreadCurrent)
+	{
+		DecreaseSpread(deltaTime * SpreadDecreaseSpeed);
+	}
+
+	CrossHairShootingFactor = SpreadCurrent;
+
+	CrossHairVelocityFactor = FMath::GetMappedRangeValueClamped(walkSpeed,velocityMultiply,velocity.Size());
+	CrossHairSpreadMultiplier = 0.5f + CrossHairVelocityFactor + CrossHairShootingFactor - CrossHairAimFactor;
+}
+
+void AASPlayerCharacter::IncreaseSpread(float increaseAmount)
+{
+	float max  = 0;
+	bIsAiming ? max = SpreadAimingMax : max = SpreadHipMax;
+	if(SpreadCurrent >= max)
+	{
+		SpreadCurrent = max;
 	}
 	else
 	{
-		CrossHairShootingFactor = FMath::FInterpTo(
-			CrossHairShootingFactor,
-			0.f,
-			deltaTime,
-			60.f);
+		SpreadCurrent += increaseAmount;
 	}
+}
 
-	
-	CrossHairVelocityFactor = FMath::GetMappedRangeValueClamped(walkSpeed,velocityMultiply,velocity.Size());
-	CrossHairSpreadMultiplier = 0.5f + CrossHairVelocityFactor + CrossHairShootingFactor - CrossHairAimFactor;
+void AASPlayerCharacter::DecreaseSpread(float decreaseAmount)
+{
+	if(SpreadCurrent <= SpreadMin)
+	{
+		SpreadCurrent = SpreadMin;
+	}
+	else
+	{
+		SpreadCurrent -= decreaseAmount;
+	}
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)

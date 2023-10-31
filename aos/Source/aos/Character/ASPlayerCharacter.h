@@ -29,6 +29,8 @@ protected:
 	void FinishCrossHairBulletFire();
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
+	void BuildTypeSkillTrace(); // 설치형 스킬 Trace
+	
 	//---------------------------------------------------------Aiming
 	void AimingButtonPressed();
 	void AimingButtonReleased();
@@ -36,6 +38,8 @@ protected:
 	void SetLookRates();
 	//---------------------------------------------------------CrossHair
 	void CalcCrossHairSpread(float deltaTime);
+	void IncreaseSpread(float increaseAmount);
+	void DecreaseSpread(float decreaseAmount);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 	//---------------------------------------------------------Movement
@@ -137,6 +141,24 @@ private :
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
 	float CrossHairShootingFactor;
+
+	UPROPERTY(EditAnywhere,Category = CrossHairs)
+	float SpreadMin;
+
+	UPROPERTY(EditAnywhere,Category = CrossHairs)
+	float SpreadHipMax;
+	
+	UPROPERTY(EditAnywhere,Category = CrossHairs)
+	float SpreadAimingMax;
+	
+	UPROPERTY(EditAnywhere,Category = CrossHairs)
+	float SpreadCurrent;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	float SpreadDecreaseSpeed;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	float SpreadIncreaseSpeed;
 	//-------------------------------------------------------ShootingTime
 	UPROPERTY(EditAnywhere,Category = ShootTimer)
 	float ShootTimeDuration;
@@ -147,6 +169,16 @@ private :
 	
 	//-------------------------------------------------------Move
 	float defaultMovementSpeed;
+
+	//-------------------------------------------------------AttackSpeed
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float AttackDelayTime;
+
+	//-------------------------------------------------------BuildTypeSkill
+	UPROPERTY(EditAnywhere, Category = Skill)
+	float TraceDistance;
+
+	
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
