@@ -6,9 +6,12 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Item/ASWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -80,6 +83,8 @@ void AASPlayerCharacter::BeginPlay()
 		}
 	}
 
+	EquipWeapon(SpawnDefaultWeapon());
+	
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
 }
@@ -120,6 +125,9 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		//Aiming
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Completed,this,&AASPlayerCharacter::AimingButtonReleased);
+
+		//Reloading
+		EnhancedInputComponent->BindAction(IAReloading,ETriggerEvent::Triggered,this,&AASPlayerCharacter::Reloading);
 	}
 }
 
@@ -174,8 +182,73 @@ void AASPlayerCharacter::CalcAimingSpeed()
 	//	GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
 }
 
-void AASPlayerCharacter::EquipWeapon()
+void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
 {
+	if(WeaponToEquip)
+	{
+		//WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(
+		//	ECollisionResponse::ECR_Ignore);
+		//WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(
+		//	ECollisionResponse::ECR_Ignore);
+		
+		
+		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName("RightHandSocket");
+		if(HandSocket)
+		{
+			HandSocket->AttachActor(Cast<AActor>(WeaponToEquip),GetMesh());
+		}
+
+		EquippedWeapon = WeaponToEquip;
+	}
+}
+
+void AASPlayerCharacter::DropWeapon()
+{
+	if(EquippedWeapon)
+	{
+		FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld,true);
+		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
+	}
+}
+
+AASWeapon* AASPlayerCharacter::SpawnDefaultWeapon()
+{
+	if(DefaultWeapon)
+	{
+		AASWeapon* spawnWeapon = GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
+
+		return spawnWeapon;
+	}
+	return nullptr;
+}
+
+void AASPlayerCharacter::Reloading()
+{
+	UAnimMontage* reloading = Montages[MontageType::Reloading];
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && reloading)
+	{
+		AnimInstance->Montage_Play(reloading);
+		AnimInstance->Montage_JumpToSection(FName("StartReloading"));
+	}
+}
+
+void AASPlayerCharacter::GrapClip()
+{
+	if(EquippedWeapon == nullptr) return;
+
+	int32 ClipBoneIndex{ EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName())};
+	ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+	HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules,FName("Hand_L"));
+	HandSceneComponent->SetWorldTransform(ClipTransform);
+
+	EquippedWeapon->SetMovingClip(true);
+}
+
+void AASPlayerCharacter::ReplaceClip()
+{
+	EquippedWeapon->SetMovingClip(false);
 }
 
 void AASPlayerCharacter::FireWeapon()
@@ -209,9 +282,9 @@ void AASPlayerCharacter::FireWeapon()
 	}
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HipFireMontage)
+	if (AnimInstance && Montages[MontageType::Attack])
 	{
-		AnimInstance->Montage_Play(HipFireMontage);
+		AnimInstance->Montage_Play(Montages[MontageType::Attack]);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
 
@@ -240,6 +313,12 @@ void AASPlayerCharacter::CreateBarrier()
 	FActorSpawnParameters spawnParams;
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FTransform ft;
+
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
+	}
+	
 	ft.SetLocation(GroundPlacementPoint);
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
 }

@@ -13,5 +13,15 @@ UCLASS()
 class AOS_API AASWeapon : public AASItemBase
 {
 	GENERATED_BODY()
-	
+public:
+	AASWeapon();
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Wepon Properties", meta=(AllowPrivateAccess = "true"))
+	FName ClipBoneName;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Wepon Properties",meta = (AllowPrivateAccess = "true"))
+	bool bMovingClip;
+public:
+	FORCEINLINE FName GetClipBoneName() const {return ClipBoneName;}
+	FORCEINLINE void SetMovingClip(bool Move) {bMovingClip = Move;}
 };

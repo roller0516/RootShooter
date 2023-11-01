@@ -3,3 +3,7 @@
 
 #include "Item/ASWeapon.h"
 
+AASWeapon::AASWeapon()
+{
+	ClipBoneName = TEXT("smg_clip");
+}

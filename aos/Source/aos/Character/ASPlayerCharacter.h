@@ -8,6 +8,13 @@
 #include "ASBaseCharacter.h"
 #include "ASPlayerCharacter.generated.h"
 
+UENUM()
+enum class MontageType :uint8
+{
+	Reloading,
+	Attack,
+};
+
 UCLASS()
 class AOS_API AASPlayerCharacter : public AASBaseCharacter
 {
@@ -48,7 +55,17 @@ protected:
 	//---------------------------------------------------------Movement
 	void CalcAimingSpeed();
 	//---------------------------------------------------------EquipWeapon
-	void EquipWeapon();
+	void EquipWeapon(class AASWeapon* WeaponToEquip);
+	void DropWeapon(); // Detach
+	AASWeapon* SpawnDefaultWeapon();
+	//---------------------------------------------------------Reloading
+	void Reloading();
+	
+	UFUNCTION(BlueprintCallable)
+	void GrapClip();
+	
+	UFUNCTION(BlueprintCallable)
+	void ReplaceClip();
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere)
@@ -80,6 +97,9 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IAAiming;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IAReloading;
 	
 	//--------------------------------------------------------particle
 	//TODO::data
@@ -94,9 +114,11 @@ private :
 	//--------------------------------------------------------Montage
 
 	//TODO:: data 
-	UPROPERTY(EditAnywhere, Category = Motage)
-	class UAnimMontage* HipFireMontage;
-	
+	//UPROPERTY(EditAnywhere, Category = Montage)
+	//class UAnimMontage* HipFireMontage;
+
+	UPROPERTY(EditAnywhere, Category = Montage)
+	TMap<MontageType,UAnimMontage*> Montages;
 	//-------------------------------------------------------Aiming
 	UPROPERTY(VisibleAnywhere,Category = Aiming)
 	bool bIsAiming;
@@ -185,6 +207,18 @@ private :
 	bool bUseSkill;
 
 	FVector GroundPlacementPoint;
+	//-------------------------------------------------------Weapon
+	UPROPERTY(VisibleAnywhere,Category = Weapon)
+	class AASWeapon* EquippedWeapon;
+
+	UPROPERTY(EditAnywhere,Category = Weapon)
+	TSubclassOf<class AASWeapon> DefaultWeapon;
+
+	//-------------------------------------------------------Clip
+	FTransform ClipTransform;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,meta=(AllowPrivateAccess = "true"))
+	USceneComponent* HandSceneComponent;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

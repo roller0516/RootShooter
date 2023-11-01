@@ -21,6 +21,13 @@ private:
 	UPROPERTY(EditAnywhere,Category = Item)
 	class UBoxComponent* CollisionBox;
 
+	UPROPERTY(EditAnywhere,Category = Item)
+	class USphereComponent* AreaSphere;
+	
 	UPROPERTY(EditAnywhere, Category = Item)
 	class USkeletalMeshComponent* ItemMesh;
+public:
+	FORCEINLINE class USphereComponent* GetAreaSphere() const {return AreaSphere;}
+	FORCEINLINE class UBoxComponent* GetCollisionBox() const {return CollisionBox;}
+	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const {return ItemMesh;}
 };
