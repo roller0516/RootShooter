@@ -60,6 +60,10 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	SpreadCurrent = 0.f;
 	SpreadDecreaseSpeed = 0.25f;
 	SpreadIncreaseSpeed = 0.01f;
+
+	//------------------------------------------------------------------------------Skill
+	bUseSkill = false;
+	TraceDistance = 300;
 }
 
 // Called when the game starts or when spawned
@@ -88,6 +92,8 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 	SetLookRates();
 	CalcCrossHairSpread(DeltaTime);
 	CalcAimingSpeed();
+	//SKill
+	BuildTypeSkillTrace();
 }
 
 // Called to bind functionality to input
@@ -106,10 +112,10 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(IALook, ETriggerEvent::Triggered, this, &AASPlayerCharacter::CharacterLook);
 
 		//Fire
-		EnhancedInputComponent->BindAction(IAAttack, ETriggerEvent::Triggered, this, &AASPlayerCharacter::FireWeapon);
+		EnhancedInputComponent->BindAction(IAAttack, ETriggerEvent::Triggered, this, &AASPlayerCharacter::MouseLeftClick);
 
 		//Test Skill
-		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::CreateBarrier);
+		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
 
 		//Aiming
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
@@ -147,12 +153,29 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 	}
 }
 
+void AASPlayerCharacter::MouseLeftClick()
+{
+	if(bUseSkill)
+	{
+		CreateBarrier();
+		bUseSkill = false;
+	}
+	else
+	{
+		FireWeapon();
+	}
+}
+
 void AASPlayerCharacter::CalcAimingSpeed()
 {
 	//if(bIsAiming)
 	//	GetCharacterMovement()->MaxWalkSpeed = 300.f;
 	//else
 	//	GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
+}
+
+void AASPlayerCharacter::EquipWeapon()
+{
 }
 
 void AASPlayerCharacter::FireWeapon()
@@ -216,13 +239,47 @@ void AASPlayerCharacter::CreateBarrier()
 {
 	FActorSpawnParameters spawnParams;
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	FTransform ft;
+	ft.SetLocation(GroundPlacementPoint);
+	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
+}
 
-	GetWorld()->SpawnActor<AActor>(barrierActor, GetActorTransform(), spawnParams);
+void AASPlayerCharacter::UseSkill()
+{
+	bUseSkill = true;
 }
 
 void AASPlayerCharacter::BuildTypeSkillTrace()
 {
+	if(!bUseSkill) return;
 	
+	FVector ground = (FVector::UpVector * -100.f); //지면까지의 거리
+	
+	FVector Start = GetActorLocation() + (GetActorForwardVector() * TraceDistance) + ground;
+	FVector End = Start + FVector::UpVector * 1000;
+	FVector HalfSize =  FVector(5,5,5);
+	
+	TArray<AActor*> IgnoreActors;
+	FHitResult Hit;
+	
+	UKismetSystemLibrary::BoxTraceSingle(
+		GetWorld(),
+		Start,
+		End,
+		HalfSize,
+		FRotator::ZeroRotator,
+		TraceTypeQuery1,
+		false,
+		IgnoreActors,
+		EDrawDebugTrace::ForOneFrame,
+		Hit,true
+		);
+
+
+	if(Hit.bBlockingHit)
+	{
+		GroundPlacementPoint = Hit.ImpactPoint;
+	}
 }
 
 void AASPlayerCharacter::AimingButtonPressed()

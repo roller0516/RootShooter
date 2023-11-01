@@ -23,12 +23,15 @@ protected:
 	
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
+
+	void MouseLeftClick();
 	//---------------------------------------------------------Attack
 	void FireWeapon();
 	void StartCrossHairBulletFire();
 	void FinishCrossHairBulletFire();
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
+	void UseSkill();
 	void BuildTypeSkillTrace(); // 설치형 스킬 Trace
 	
 	//---------------------------------------------------------Aiming
@@ -44,7 +47,8 @@ protected:
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
 	//---------------------------------------------------------Movement
 	void CalcAimingSpeed();
-	
+	//---------------------------------------------------------EquipWeapon
+	void EquipWeapon();
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere)
@@ -178,7 +182,9 @@ private :
 	UPROPERTY(EditAnywhere, Category = Skill)
 	float TraceDistance;
 
-	
+	bool bUseSkill;
+
+	FVector GroundPlacementPoint;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
