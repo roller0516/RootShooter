@@ -46,12 +46,14 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	Camera->SetupAttachment(CameraBoom);
 	Camera->bUsePawnControlRotation = false; // 스프링 암 기준으로 회전 x
 
-	bUseControllerRotationYaw = true;
+	//
 
 	GetCharacterMovement()->bOrientRotationToMovement = false; //입력한 방향으로 로테이션
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
+	bUseControllerRotationYaw = true;
 
 	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
@@ -67,6 +69,9 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	//------------------------------------------------------------------------------Skill
 	bUseSkill = false;
 	TraceDistance = 300;
+
+	//-----------------------------------------------------------------------------Hand 
+	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Component"));
 }
 
 // Called when the game starts or when spawned
@@ -236,6 +241,7 @@ void AASPlayerCharacter::Reloading()
 void AASPlayerCharacter::GrapClip()
 {
 	if(EquippedWeapon == nullptr) return;
+	if (HandSceneComponent == nullptr) return;
 
 	int32 ClipBoneIndex{ EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName())};
 	ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);

@@ -219,6 +219,9 @@ private :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,meta=(AllowPrivateAccess = "true"))
 	USceneComponent* HandSceneComponent;
+
+
+
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

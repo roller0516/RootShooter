@@ -14,10 +14,14 @@ class AOS_API UASPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
+	UASPlayerAnimInstance();
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties(float deltaTime);
 	
 	virtual void NativeInitializeAnimation() override;
+protected:
+	void TurnInPlace();
 private:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Movement,meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class AASPlayerCharacter> PlayerCharacter;
@@ -39,4 +43,16 @@ private:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category=Aiming,meta=(AllowPrivateAccess = "true"))
 	bool bAiming;
+	//-------------------------------------------------------TrunYaw
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	float RootYawOffset;
+
+	float CharacterYaw;
+
+	float CharacterYawLastFrame;
+
+	float RotationCurve;
+
+	float RotationCurveLastFrame;
 };
