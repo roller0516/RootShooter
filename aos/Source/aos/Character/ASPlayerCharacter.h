@@ -15,6 +15,15 @@ enum class MontageType :uint8
 	Attack,
 };
 
+UENUM()
+enum class ECombatState : uint8
+{
+	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
+	ECS_Reloading UMETA(DisplayName = "Reloading"),
+	ECS_UsedSkill UMETA(DisplayName = "UsedSkill"),
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class AOS_API AASPlayerCharacter : public AASBaseCharacter
 {
@@ -204,8 +213,6 @@ private :
 	UPROPERTY(EditAnywhere, Category = Skill)
 	float TraceDistance;
 
-	bool bUseSkill;
-
 	FVector GroundPlacementPoint;
 	//-------------------------------------------------------Weapon
 	UPROPERTY(VisibleAnywhere,Category = Weapon)
@@ -220,7 +227,8 @@ private :
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,meta=(AllowPrivateAccess = "true"))
 	USceneComponent* HandSceneComponent;
 
-
+	
+	ECombatState CombatState;
 
 protected:
 	//-------------------------------------------------------Skill
@@ -229,4 +237,5 @@ protected:
 public:
 	FORCEINLINE float GetCrossHairSpreadMultiplier() const {return CrossHairSpreadMultiplier;}
 	FORCEINLINE bool GetAiming() const {return bIsAiming;}
+	FORCEINLINE ECombatState GetCombatState() { return CombatState; }
 };

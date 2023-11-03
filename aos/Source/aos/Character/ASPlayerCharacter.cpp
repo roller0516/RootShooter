@@ -57,6 +57,8 @@ AASPlayerCharacter::AASPlayerCharacter() :
 
 	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
+	CombatState = ECombatState::ECS_Unoccupied;
+
 	//------------------------------------------------------------------------------Cross Spread Init
 	//생성자에서 초기화 하려니까 너무 길어져서.. 이쪽으로 옮김 
 	SpreadMin = 0;
@@ -67,11 +69,11 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	SpreadIncreaseSpeed = 0.01f;
 
 	//------------------------------------------------------------------------------Skill
-	bUseSkill = false;
 	TraceDistance = 300;
 
 	//-----------------------------------------------------------------------------Hand 
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Component"));
+
 }
 
 // Called when the game starts or when spawned
@@ -168,10 +170,12 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 
 void AASPlayerCharacter::MouseLeftClick()
 {
-	if(bUseSkill)
+	if (CombatState == ECombatState::ECS_Reloading) return;
+
+	if(CombatState == ECombatState::ECS_UsedSkill)
 	{
 		CreateBarrier();
-		bUseSkill = false;
+		CombatState = ECombatState::ECS_Unoccupied;
 	}
 	else
 	{
@@ -235,6 +239,7 @@ void AASPlayerCharacter::Reloading()
 	{
 		AnimInstance->Montage_Play(reloading);
 		AnimInstance->Montage_JumpToSection(FName("StartReloading"));
+		CombatState = ECombatState::ECS_Reloading;
 	}
 }
 
@@ -255,6 +260,7 @@ void AASPlayerCharacter::GrapClip()
 void AASPlayerCharacter::ReplaceClip()
 {
 	EquippedWeapon->SetMovingClip(false);
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void AASPlayerCharacter::FireWeapon()
@@ -331,12 +337,12 @@ void AASPlayerCharacter::CreateBarrier()
 
 void AASPlayerCharacter::UseSkill()
 {
-	bUseSkill = true;
+	CombatState = ECombatState::ECS_UsedSkill;
 }
 
 void AASPlayerCharacter::BuildTypeSkillTrace()
 {
-	if(!bUseSkill) return;
+	if(CombatState != ECombatState::ECS_UsedSkill) return;
 	
 	FVector ground = (FVector::UpVector * -100.f); //지면까지의 거리
 	

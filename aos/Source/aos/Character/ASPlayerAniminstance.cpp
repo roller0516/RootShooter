@@ -12,10 +12,14 @@ UASPlayerAnimInstance::UASPlayerAnimInstance()
 	bIsInAir = false;
 	MovementOffsetYaw = 0.f;
 	bAiming = false;
-	CharacterYaw = 0.f;
-	CharacterYawLastFrame = 0.f;
+	TIPCharacterYaw = 0.f;
+	TIPCharacterYawLastFrame = 0.f;
 	LastMovementOffsetYaw = 0.0f;
 	RootYawOffset = 0.f;
+	AimingPitch = 0.f;
+	OffsetState = EOffsetState::EOS_Hip;
+	CharacterRotation = FRotator::ZeroRotator;
+	CharacterRotationLastFrame = FRotator::ZeroRotator;
 }
 
 void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
@@ -46,8 +50,40 @@ void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 			LastMovementOffsetYaw = MovementOffsetYaw;
 
 		bAiming = PlayerCharacter->GetAiming();
+
+		SetOffsetState();
 	}
 	TurnInPlace();
+	Lean(deltaTime);
+}
+
+void UASPlayerAnimInstance::SetOffsetState()
+{
+	if (bReloading)
+		OffsetState = EOffsetState::EOS_Reloading;
+	else if (bIsInAir)
+		OffsetState = EOffsetState::EOS_InAir;
+	else if (bAiming)
+		OffsetState = EOffsetState::EOS_Aiming;
+	else
+		OffsetState = EOffsetState::EOS_Hip;
+}
+
+void UASPlayerAnimInstance::Lean(float DeltaTime)
+{
+	if (PlayerCharacter == nullptr)return;
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = PlayerCharacter->GetActorRotation();
+
+	FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+
+	const float Target = (Delta.Yaw) / DeltaTime;
+	const float Interp = FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.0f);
+
+	YawDelta = FMath::Clamp(Interp, -90.f, 90.f);
+
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("YawDelta : %f"), YawDelta));
+	if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("CharacterYaw : %f"), Delta.Yaw));
 }
 
 void UASPlayerAnimInstance::NativeInitializeAnimation()
@@ -58,21 +94,24 @@ void UASPlayerAnimInstance::NativeInitializeAnimation()
 void UASPlayerAnimInstance::TurnInPlace()
 {
 	if (PlayerCharacter == nullptr) return;
-	if (Speed > 0) 
+
+	AimingPitch = PlayerCharacter->GetBaseAimRotation().Pitch;
+	bReloading = PlayerCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+	if (Speed > 0 || bIsInAir) 
 	{
 		RootYawOffset = 0;
-		CharacterYaw = PlayerCharacter->GetActorRotation().Yaw;
-		CharacterYawLastFrame = CharacterYaw;
+		TIPCharacterYaw = PlayerCharacter->GetActorRotation().Yaw;
+		TIPCharacterYawLastFrame = TIPCharacterYaw;
 		RotationCurveLastFrame = 0.f;
 		RotationCurve = 0.f;
 	}
 	else 
 	{
-		CharacterYawLastFrame = CharacterYaw;
-		CharacterYaw = PlayerCharacter->GetActorRotation().Yaw;
-		const float YawDelta{ CharacterYaw - CharacterYawLastFrame };
+		TIPCharacterYawLastFrame = TIPCharacterYaw;
+		TIPCharacterYaw = PlayerCharacter->GetActorRotation().Yaw;
+		const float TIPYawDelta = TIPCharacterYaw - TIPCharacterYawLastFrame;
 
-		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
+		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
 
 		const float Turning =  GetCurveValue(TEXT("Turning"));
 

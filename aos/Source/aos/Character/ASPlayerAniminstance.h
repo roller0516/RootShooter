@@ -9,6 +9,16 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EOffsetState : uint8
+{
+	EOS_Aiming UMETA(DisplayName = "Aiming"),
+	EOS_Hip UMETA(DisplayName = "Hip"),
+	EOS_Reloading UMETA (DisplayName = "Reloading"),
+	EOS_InAir UMETA (DisplayName = "InAir"),
+	EOS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class AOS_API UASPlayerAnimInstance : public UAnimInstance
 {
@@ -22,6 +32,8 @@ public:
 	virtual void NativeInitializeAnimation() override;
 protected:
 	void TurnInPlace();
+	void SetOffsetState();
+	void Lean(float DeltaTime);
 private:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Movement,meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class AASPlayerCharacter> PlayerCharacter;
@@ -48,11 +60,27 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
 	float RootYawOffset;
 
-	float CharacterYaw;
+	float TIPCharacterYaw;
 
-	float CharacterYawLastFrame;
+	float TIPCharacterYawLastFrame;
+		
+	FRotator CharacterRotation;
+
+	FRotator CharacterRotationLastFrame;
 
 	float RotationCurve;
 
 	float RotationCurveLastFrame;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,meta = (AllowPrivateAccess = "true"))
+	float YawDelta;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	float AimingPitch;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	bool bReloading;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	EOffsetState OffsetState;
 };
