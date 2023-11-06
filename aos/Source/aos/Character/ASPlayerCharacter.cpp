@@ -2,6 +2,7 @@
 
 
 #include "ASPlayerCharacter.h"
+#include "ASBulletHitIInterface.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -15,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
+
 
 // Sets default values
 AASPlayerCharacter::AASPlayerCharacter() :
@@ -274,10 +276,30 @@ void AASPlayerCharacter::FireWeapon()
 
 		if (MuzzleFlash)
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
-		FVector BeamEnd;
-		bool bIsBeam = GetBeamEndLocation(muzzleTr.GetLocation(),BeamEnd);
+
+		FHitResult BeamHitResult;
+		bool bIsBeam = GetBeamEndLocation(muzzleTr.GetLocation(), BeamHitResult);
 		if(bIsBeam)
 		{
+			// Does hit Actor implement BulletHitInterface?
+			if (BeamHitResult.GetActor()) {
+
+				IASBulletHitIInterface* BulletHitInterface = Cast<IASBulletHitIInterface>(BeamHitResult.GetActor());
+
+				if (BulletHitInterface) {
+					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
+				}
+
+			} else {
+				// Spawn default particle
+				if (ImpactParticle) {
+					UGameplayStatics::SpawnEmitterAtLocation(
+						GetWorld(),
+						ImpactParticle,
+						BeamHitResult.Location);
+				}
+			}
+
 			if (ShotLineParticle)
 			{
 				UParticleSystemComponent* beam = UGameplayStatics::SpawnEmitterAtLocation(
@@ -287,7 +309,7 @@ void AASPlayerCharacter::FireWeapon()
 					
 				if (beam)
 				{
-					beam->SetVectorParameter(FName("Target"), BeamEnd);
+					beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
 				}
 			}
 		}
@@ -462,8 +484,9 @@ void AASPlayerCharacter::DecreaseSpread(float decreaseAmount)
 	}
 }
 
-bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
+bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)
 {
+	FVector OutBeamLocation;
 	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport)
 	{
@@ -499,19 +522,20 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 			OutBeamLocation = ScreenTraceHit.Location;
 			// 라인 트레이스이기 때문에 물체의 부피가 없어 뚫리는 현상을 없애기 위함.
 		}
-		FHitResult WeaponTraceHit;
+
 		const FVector WeaponTraceStart{MuzzleSocketLocation};
 		const FVector WeaponTraceEnd{OutBeamLocation};
 				
 		GetWorld()->LineTraceSingleByChannel(
-			WeaponTraceHit,
+			OutHitResult,
 			WeaponTraceStart,
 			WeaponTraceEnd,
 			ECollisionChannel::ECC_Visibility);
 				
-		if(WeaponTraceHit.bBlockingHit)
+		if(!OutHitResult.bBlockingHit)
 		{
-			OutBeamLocation = WeaponTraceHit.Location;
+			OutHitResult.Location = OutBeamLocation;
+			return false;
 		}
 		return true;
 	}

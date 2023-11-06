@@ -60,7 +60,7 @@ protected:
 	void IncreaseSpread(float increaseAmount);
 	void DecreaseSpread(float decreaseAmount);
 	//---------------------------------------------------------Beam
-	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
 	//---------------------------------------------------------Movement
 	void CalcAimingSpeed();
 	//---------------------------------------------------------EquipWeapon
