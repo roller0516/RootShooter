@@ -229,7 +229,6 @@ private :
 
 	
 	ECombatState CombatState;
-
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

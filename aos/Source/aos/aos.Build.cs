@@ -10,6 +10,9 @@ public class aos : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" });
 
-		PrivateIncludePaths.Add("aos");
+        PrivateDependencyModuleNames.AddRange(new string[] { "Niagara" });
+
+        PrivateIncludePaths.Add("aos");
+
 	}
 }

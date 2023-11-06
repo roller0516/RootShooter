@@ -269,16 +269,17 @@ void AASPlayerCharacter::FireWeapon()
 {
 	if(bFiringBullet) return;
 	
-	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket");
-	if (BarrelSocket)
+	//const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->ItemMesh->GetSocketByName("BarrelSocket");
+	if (EquippedWeapon)
 	{
-		const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
+		//const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
+		
+		//if (MuzzleFlash)
+		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
 
-		if (MuzzleFlash)
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
 
 		FHitResult BeamHitResult;
-		bool bIsBeam = GetBeamEndLocation(muzzleTr.GetLocation(), BeamHitResult);
+		bool bIsBeam = GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
 		if(bIsBeam)
 		{
 			// Does hit Actor implement BulletHitInterface?
@@ -286,7 +287,8 @@ void AASPlayerCharacter::FireWeapon()
 
 				IASBulletHitIInterface* BulletHitInterface = Cast<IASBulletHitIInterface>(BeamHitResult.GetActor());
 
-				if (BulletHitInterface) {
+				if (BulletHitInterface) 
+				{
 					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
 				}
 
@@ -300,18 +302,18 @@ void AASPlayerCharacter::FireWeapon()
 				}
 			}
 
-			if (ShotLineParticle)
-			{
-				UParticleSystemComponent* beam = UGameplayStatics::SpawnEmitterAtLocation(
-					GetWorld(),
-					ShotLineParticle,
-					muzzleTr);
-					
-				if (beam)
-				{
-					beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
-				}
-			}
+			//if (ShotLineParticle)
+			//{
+			//	UParticleSystemComponent* beam = UGameplayStatics::SpawnEmitterAtLocation(
+			//		GetWorld(),
+			//		ShotLineParticle,
+			//		muzzleTr);
+			//		
+			//	if (beam)
+			//	{
+			//		beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
+			//	}
+			//}
 		}
 	}
 
@@ -506,8 +508,8 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 	if (bScreenToWorld)
 	{
 		FHitResult ScreenTraceHit;
-		const FVector Start{ CrossHairWorldPosition };
-		const FVector End{ CrossHairWorldPosition + CrossHairWorldDirection * 50000.f};
+		const FVector Start = CrossHairWorldPosition;
+		const FVector End = CrossHairWorldPosition + CrossHairWorldDirection * 50000.f;
 
 		OutBeamLocation = End;
 
@@ -523,15 +525,17 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 			// 라인 트레이스이기 때문에 물체의 부피가 없어 뚫리는 현상을 없애기 위함.
 		}
 
-		const FVector WeaponTraceStart{MuzzleSocketLocation};
-		const FVector WeaponTraceEnd{OutBeamLocation};
+		const FVector WeaponTraceStart = MuzzleSocketLocation;
+		const FVector WeaponTraceEnd = OutBeamLocation;
 				
 		GetWorld()->LineTraceSingleByChannel(
 			OutHitResult,
 			WeaponTraceStart,
 			WeaponTraceEnd,
 			ECollisionChannel::ECC_Visibility);
-				
+		
+		//DrawDebugLine(GetWorld(),WeaponTraceStart,WeaponTraceEnd,FColor::Green,false,1,0,10.f);
+
 		if(!OutHitResult.bBlockingHit)
 		{
 			OutHitResult.Location = OutBeamLocation;

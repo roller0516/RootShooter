@@ -23,7 +23,7 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = Item)
 	class USphereComponent* AreaSphere;
-	
+protected:
 	UPROPERTY(EditAnywhere, Category = Item)
 	class USkeletalMeshComponent* ItemMesh;
 public:
