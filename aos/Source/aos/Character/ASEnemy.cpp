@@ -48,5 +48,9 @@ void AASEnemy::BulletHit_Implementation(FHitResult HitResult) {
 
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, HitResult.Location, FRotator(0.f), true);
 	}
+
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Blue,FString::Printf(TEXT("hit")));
+	}
 }
 
