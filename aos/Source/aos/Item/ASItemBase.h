@@ -24,7 +24,7 @@ private:
 	UPROPERTY(EditAnywhere,Category = Item)
 	class USphereComponent* AreaSphere;
 protected:
-	UPROPERTY(EditAnywhere, Category = Item)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = Item)
 	class USkeletalMeshComponent* ItemMesh;
 public:
 	FORCEINLINE class USphereComponent* GetAreaSphere() const {return AreaSphere;}

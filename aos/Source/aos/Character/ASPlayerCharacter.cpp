@@ -277,6 +277,7 @@ void AASPlayerCharacter::FireWeapon()
 		//if (MuzzleFlash)
 		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
 
+		
 
 		FHitResult BeamHitResult;
 		bool bIsBeam = GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
@@ -302,6 +303,7 @@ void AASPlayerCharacter::FireWeapon()
 				}
 			}
 
+			EquippedWeapon->ShowShotParticles(BeamHitResult);
 			//if (ShotLineParticle)
 			//{
 			//	UParticleSystemComponent* beam = UGameplayStatics::SpawnEmitterAtLocation(
@@ -539,7 +541,7 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 		if(!OutHitResult.bBlockingHit)
 		{
 			OutHitResult.Location = OutBeamLocation;
-			return false;
+			return true;
 		}
 		return true;
 	}

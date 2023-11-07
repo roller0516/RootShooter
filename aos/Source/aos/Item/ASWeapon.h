@@ -34,8 +34,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	TObjectPtr<class UNiagaraSystem> TracerEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	TObjectPtr<class UStaticMesh> ShellMesh;
 public:
-	void ShowShotParticles();
+	void ShowShotParticles(FHitResult pHitResult);
 	FTransform GetBarrelSocketTransForm() const;
 
 	FORCEINLINE FName GetClipBoneName() const {return ClipBoneName;}
