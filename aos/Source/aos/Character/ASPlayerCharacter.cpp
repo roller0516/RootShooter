@@ -285,7 +285,10 @@ void AASPlayerCharacter::FireWeapon()
 		{
 			// Does hit Actor implement BulletHitInterface?
 			if (BeamHitResult.GetActor()) {
-
+				
+				//if (GEngine)
+				//	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, BeamHitResult.GetActor()->GetName());
+				DrawDebugPoint(GetWorld(), BeamHitResult.ImpactPoint, 3, FColor::Red, false, 10, 0);
 				IASBulletHitIInterface* BulletHitInterface = Cast<IASBulletHitIInterface>(BeamHitResult.GetActor());
 
 				if (BulletHitInterface) 
@@ -293,7 +296,9 @@ void AASPlayerCharacter::FireWeapon()
 					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
 				}
 
-			} else {
+			} 
+			else 
+			{
 				// Spawn default particle
 				if (ImpactParticle) {
 					UGameplayStatics::SpawnEmitterAtLocation(
@@ -301,7 +306,10 @@ void AASPlayerCharacter::FireWeapon()
 						ImpactParticle,
 						BeamHitResult.Location);
 				}
+				DrawDebugPoint(GetWorld(), BeamHitResult.ImpactPoint, 3, FColor::Red, false, 10, 0);
 			}
+
+			
 
 			EquippedWeapon->ShowShotParticles(BeamHitResult);
 			//if (ShotLineParticle)
@@ -337,7 +345,7 @@ void AASPlayerCharacter::StartCrossHairBulletFire()
 		&AASPlayerCharacter::FinishCrossHairBulletFire,ShootTimeDuration);
 
 	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1,3.f,FColor::Red,"Fire");
+		GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
 }
 
 void AASPlayerCharacter::FinishCrossHairBulletFire()
@@ -506,7 +514,7 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
 			UGameplayStatics::GetPlayerController(this, 0),
 			CrossHairLocation, CrossHairWorldPosition,CrossHairWorldDirection);
-
+	
 	if (bScreenToWorld)
 	{
 		FHitResult ScreenTraceHit;
@@ -520,6 +528,8 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 			Start,
 			End,
 			ECollisionChannel::ECC_Visibility);
+
+		//DrawDebugLine(GetWorld(),Start,End,FColor::Cyan,false,-1,0,1.f);
 
 		if (ScreenTraceHit.bBlockingHit)
 		{
@@ -536,16 +546,21 @@ bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation,
 			WeaponTraceEnd,
 			ECollisionChannel::ECC_Visibility);
 		
-		//DrawDebugLine(GetWorld(),WeaponTraceStart,WeaponTraceEnd,FColor::Green,false,1,0,10.f);
+		//DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, -1, 0, 1.f);
 
 		if(!OutHitResult.bBlockingHit)
 		{
 			OutHitResult.Location = OutBeamLocation;
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : TRUE");
 			return true;
 		}
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : TRUE");
 		return true;
 	}
-
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : FALSE");
 	return false;
 }
 
