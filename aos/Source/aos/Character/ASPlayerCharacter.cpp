@@ -69,13 +69,13 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	SpreadCurrent = 0.f;
 	SpreadDecreaseSpeed = 0.25f;
 	SpreadIncreaseSpeed = 0.01f;
-
+	
 	//------------------------------------------------------------------------------Skill
 	TraceDistance = 300;
 
 	//-----------------------------------------------------------------------------Hand 
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Component"));
-
+	
 }
 
 // Called when the game starts or when spawned
