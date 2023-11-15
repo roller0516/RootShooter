@@ -5,8 +5,12 @@
 #include "GameplayTagContainer.h"
 #include "Engine/GameInstance.h"
 #include "../CommonUser/ASCommonSubSystem.h"
+#include "ASGameUIManagerSubSystem.h"
+#include "ASCommonLocalPlayer.h"
+#include "Engine/LocalPlayer.h"
 
-DEFINE_LOG_CATEGORY(LogCommonGame);
+
+//DEFINE_LOG_CATEGORY(LogCommonGame);
 
 UASCommonGameInstance::UASCommonGameInstance(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)
@@ -24,7 +28,17 @@ void UASCommonGameInstance::HandleSystemMessage(FGameplayTag MessageType, FText 
 
 int32 UASCommonGameInstance::AddLocalPlayer(ULocalPlayer* NewPlayer, FPlatformUserId UserId)
 {
-	return Super::AddLocalPlayer(NewPlayer, UserId);
+	int32 returnValue = Super::AddLocalPlayer(NewPlayer,UserId);
+	if(returnValue != INDEX_NONE) // -1
+	{
+		if(!PrimaryPlayer.IsValid())
+		{
+			PrimaryPlayer = NewPlayer;
+		}
+		UASGameUIManagerSubSystem* uisubsystem = GetSubsystem<UASGameUIManagerSubSystem>();
+		GetSubsystem<UASGameUIManagerSubSystem>()->NotifyAddPlayer(Cast<UASCommonLocalPlayer>(NewPlayer));
+	}
+	return returnValue;
 }
 
 bool UASCommonGameInstance::RemoveLocalPlayer(ULocalPlayer* ExistingPlayer)
@@ -32,9 +46,10 @@ bool UASCommonGameInstance::RemoveLocalPlayer(ULocalPlayer* ExistingPlayer)
 	if(PrimaryPlayer == ExistingPlayer)
 	{
 		PrimaryPlayer.Reset();
-		UE_LOG(LogCommonGame,Log,TEXT("RemoveLocalPlayer : Unsetting Primary Player from %s"),*ExistingPlayer->GetName());
+		UE_LOG(LogTemp,Log,TEXT("RemoveLocalPlayer : Unsetting Primary Player from %s"),*ExistingPlayer->GetName());
 	}
-	//GetSubsystem<ugameuimana>
+
+	GetSubsystem<UASGameUIManagerSubSystem>()->NotifyRemovePlayer(Cast<UASCommonLocalPlayer>(ExistingPlayer));
 
 	return Super::RemoveLocalPlayer(ExistingPlayer);
 }
