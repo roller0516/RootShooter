@@ -7,7 +7,7 @@
 #include "Engine/GameInstance.h"
 #include "ASCommonGameInstance.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogCommonGame, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(LogCommonGame, Log, All);
 /**
  * 
  */
