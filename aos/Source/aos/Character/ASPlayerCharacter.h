@@ -77,7 +77,7 @@ protected:
 	void ReplaceClip();
 private :
 	//---------------------------------------------------------Camera
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* CameraBoom;
