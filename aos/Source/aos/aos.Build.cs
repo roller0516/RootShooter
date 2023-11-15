@@ -8,9 +8,9 @@ public class aos : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" , "GameplayTags", "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" , "GameplayTags", "UMG" , "Slate" , "SlateCore" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Niagara" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Niagara", "DeveloperSettings", "RenderCore" , "CommonInput" , "ModularGameplay" ,"GameFeatures" });
 
         PrivateIncludePaths.Add("aos");
 		

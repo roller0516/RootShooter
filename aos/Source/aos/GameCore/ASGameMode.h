@@ -14,11 +14,31 @@
 	- 게임 일시정지 가능 여부, 게임 일시정지 처리 방식
 	- 레벨간의 전환, 게임의 시네마틱 모드 시작 여부 포함 
  */
+enum class LevelState : uint8
+{
+	Title,
+	Game,
+	Dungeon
+};
+
+
+class UASUserFacingExperienceDefinition;
+
 UCLASS()
 class AOS_API AASGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	AASGameMode();
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void InitGameState() override;
+
+	FORCEINLINE void SetCurrentLevelState(LevelState levelState) {currentLevelState = levelState;}
+
+private:
+	UPROPERTY(EditAnywhere)
+	TArray<UASUserFacingExperienceDefinition*> MapData;
+
+	//UPROPERTY(VisibleAnywhere)
+	LevelState currentLevelState = LevelState::Title;
 };

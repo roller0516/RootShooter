@@ -75,7 +75,6 @@ AASPlayerCharacter::AASPlayerCharacter() :
 
 	//-----------------------------------------------------------------------------Hand 
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Component"));
-	
 }
 
 // Called when the game starts or when spawned
@@ -94,6 +93,8 @@ void AASPlayerCharacter::BeginPlay()
 
 	EquipWeapon(SpawnDefaultWeapon());
 	
+
+
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
 }
