@@ -18,7 +18,11 @@ class AOS_API AASGameState : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
-	AASGameState();
+	AASGameState(const FObjectInitializer& ObjectInitializer);
+
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	TObjectPtr<UASExperienceStateComponent> ExperienceState;
 };
