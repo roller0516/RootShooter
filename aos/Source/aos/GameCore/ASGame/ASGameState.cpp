@@ -2,9 +2,9 @@
 
 
 #include "GameCore/ASGame/ASGameState.h"
-#include "ASGameFrameWorkComponent.h"
+#include "ASExperienceStateComponent.h"
 
 AASGameState::AASGameState()
 {
-	FrameWorkComponent = CreateDefaultSubobject<UASGameFrameWorkComponent>(TEXT("FrameWorkComponent"));
+	ExperienceState = CreateDefaultSubobject<UASExperienceStateComponent>(TEXT("ExperienceStateComponent"));
 }

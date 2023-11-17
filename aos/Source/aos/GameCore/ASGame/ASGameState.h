@@ -10,7 +10,7 @@
  * 
  */
 
-class UASGameFrameWorkComponent;
+class UASExperienceStateComponent;
 
 UCLASS()
 class AOS_API AASGameState : public AGameStateBase
@@ -20,5 +20,5 @@ class AOS_API AASGameState : public AGameStateBase
 public:
 	AASGameState();
 
-	TObjectPtr<UASGameFrameWorkComponent> FrameWorkComponent;
+	TObjectPtr<UASExperienceStateComponent> ExperienceState;
 };

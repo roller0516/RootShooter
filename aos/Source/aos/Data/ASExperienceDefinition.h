@@ -11,6 +11,7 @@
  */
 
 class UGameFeatureAction; 
+class UExperienceActionSet;
 //class FString;
 UCLASS()
 class AOS_API UASExperienceDefinition : public UPrimaryDataAsset
@@ -25,6 +26,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category="Actions")
 	TArray<TObjectPtr<UGameFeatureAction>> Actions;
 
-	//UPROPERTY(EditDefaultsOnly, Category=Gameplay)
-	//TArray<TObjectPtr<ULyraExperienceActionSet>> ActionSets;
+	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
+	TArray<TObjectPtr<UExperienceActionSet>> ActionSets;
 };

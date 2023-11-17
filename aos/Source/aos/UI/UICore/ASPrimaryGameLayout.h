@@ -7,8 +7,12 @@
 #include "Engine/StreamableManager.h"
 #include "GameplayTagContainer.h"
 #include "Engine/AssetManager.h"
+#include "Templates/Function.h"
+#include "Templates/SharedPointer.h"
+#include "Templates/UnrealTypeTraits.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/Widgets/CommonActivatableWidgetContainer.h"
-
+#include "CommonActivatableWidget.h"
+#include "GameCore/ASBluePrintUtil.h"
 #include "ASPrimaryGameLayout.generated.h"
 
 /**
@@ -23,7 +27,6 @@ enum class EAsyncWidgetLayerState : uint8
 
 class APlayerController;
 class UClass;
-class UCommonActivatableWidget;
 class ULocalPlayer;
 class UObject;
 

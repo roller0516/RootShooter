@@ -12,8 +12,16 @@
 #include "CommonLoadingScreenSettings.h"
 #include "Blueprint/UserWidget.h"
 #include "ShaderPipelineCache.h"
+#include "UObject/ScriptInterface.h"
+#include "UObject/WeakInterfacePtr.h"
+#include "Kismet/GameplayStatics.h"
+#include "Stats/Stats2.h"
+#include "UObject/ObjectMacros.h"
 
 //#include "FLoadingScreenInputPreProcessor.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogLoadScreenManager, Log, All);
+DEFINE_LOG_CATEGORY(LogLoadScreenManager);
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ASLoadingScreenManager) // 헤더 인라인 컴파일 시간 단축
 
@@ -70,8 +78,8 @@ void UASLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collection)
 	FCoreUObjectDelegates::PreLoadMapWithContext.AddUObject(this,&ThisClass::HandlePreLoadMap);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this,&ThisClass::HandlePostLoadMap);
 
-	const UGameInstance* LocalGameInstance = GetGameInstance();
-	check(LocalGameInstance);
+	const UGameInstance* GameInstance = GetGameInstance();
+	check(GameInstance);
 }
 
 void UASLoadingScreenManager::Deinitialize()
@@ -81,9 +89,9 @@ void UASLoadingScreenManager::Deinitialize()
 
 bool UASLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const
 {
-	//const UGameInstance* GameInstance = CastChecked<UGameInstance>(Outer);
-	//const bool bIsServerWorld = GameInstance->IsDedicatedServerInstance();
-	return true;
+	const UGameInstance* GameInstance = CastChecked<UGameInstance>(Outer);
+	const bool bIsServerWorld = GameInstance->IsDedicatedServerInstance();
+	return !bIsServerWorld;
 }
 
 void UASLoadingScreenManager::HandlePreLoadMap(const FWorldContext& WorldContext, const FString& MapName)
@@ -108,7 +116,17 @@ void UASLoadingScreenManager::HandlePostLoadMap(UWorld* LoadedWorld)
 
 void UASLoadingScreenManager::Tick(float DeltaTime)
 {
-	
+	UpdateLoadingScreen();
+}
+
+ETickableTickType UASLoadingScreenManager::GetTickableTickType() const
+{
+	return ETickableTickType::Conditional;
+}
+
+bool UASLoadingScreenManager::IsTickable() const
+{
+	return !HasAnyFlags(RF_ClassDefaultObject);
 }
 
 TStatId UASLoadingScreenManager::GetStatId() const
@@ -116,12 +134,26 @@ TStatId UASLoadingScreenManager::GetStatId() const
 	RETURN_QUICK_DECLARE_CYCLE_STAT(UASLoadingScreenManager, STATGROUP_Tickables);
 }
 
+UWorld* UASLoadingScreenManager::GetTickableGameObjectWorld() const
+{
+	return GetGameInstance()->GetWorld();
+}
+
+void UASLoadingScreenManager::RegisterLoadingProcessInterFace(TScriptInterface<IILoadingProcessInterFace> loadingProcess)
+{
+	ExternalLoadingProcess.Add(loadingProcess.GetObject());
+}
+
+void UASLoadingScreenManager::UnRegisterLoadingProcessInterFace(TScriptInterface<IILoadingProcessInterFace> loadingProcess)
+{
+	ExternalLoadingProcess.Remove(loadingProcess.GetObject());
+}
+
 bool UASLoadingScreenManager::CheckForAnyNeedToShowLoadingScreen()
 {
 	DebugLogMsg = FString("Showing || Hiding LoadingScreen is Unknown!");
 	
 	const UGameInstance* GameInstance = GetGameInstance();
-	
 	const FWorldContext* Context = GameInstance->GetWorldContext();
 	if(Context == nullptr)
 	{
@@ -153,9 +185,16 @@ bool UASLoadingScreenManager::CheckForAnyNeedToShowLoadingScreen()
 		return true;
 	}
 	
-	if(Context->TravelURL.IsEmpty())
+	if(!Context->TravelURL.IsEmpty())
 	{
 		DebugLogMsg = FString("Context TravleURL is Empty");
+		return true;
+	}
+
+	if (Context->PendingNetGame != nullptr)
+	{
+		// Connecting to another server
+		DebugLogMsg = FString(TEXT("We are connecting to another server (PendingNetGame != nullptr)"));
 		return true;
 	}
 	
@@ -173,6 +212,14 @@ bool UASLoadingScreenManager::CheckForAnyNeedToShowLoadingScreen()
 	for(UActorComponent* actorComponent : GameState->GetComponents())
 	{
 		if(IILoadingProcessInterFace::ShouldShowLoadingScreen(actorComponent,DebugLogMsg))
+		{
+			return true;
+		}
+	}
+
+	for(const TWeakInterfacePtr<IILoadingProcessInterFace>& process : ExternalLoadingProcess)
+	{
+		if(IILoadingProcessInterFace::ShouldShowLoadingScreen(process.GetObject(),DebugLogMsg))
 		{
 			return true;
 		}
@@ -239,8 +286,8 @@ void UASLoadingScreenManager::StartBlockingInput()
 
 void UASLoadingScreenManager::ChangePerformanceSettings(bool bEnabingLoadingScreen)
 {
-	UGameInstance* gameInstance = GetGameInstance();
-	UGameViewportClient* viewportClient = gameInstance->GetGameViewportClient();
+	UGameInstance* GameInstance = GetGameInstance();
+	UGameViewportClient* viewportClient = GameInstance->GetGameViewportClient();
 
 	FShaderPipelineCache::SetBatchMode(bEnabingLoadingScreen ? FShaderPipelineCache::BatchMode::Fast : FShaderPipelineCache::BatchMode::Background);
 
@@ -278,6 +325,25 @@ void UASLoadingScreenManager::HideLoadingScreen()
 
 	bCurrentlyShowingLoadingScreen = false;
 }
+//현재 어떤 걸 로드 중인지 확인하는 로직	
+void UASLoadingScreenManager::UpdateLoadingScreen()
+{
+	
+	if(ShouldShowLoadingScreen())
+	{
+		//const UASCommonSubSystem
+		//지정된 시간 내에 지정된 체크포인트에 도달하지 못하면 행 탐지기가 작동하여 진행이 중단된 위치를 더 잘 확인할 수 있습니다.
+		//FThreadHeartBeat::Get().MonitorCheckpointStart(GetFName(), Settings->LoadingScreenHeartbeatHangDuration);
+		ShowLoadingScreen(); 
+	}
+	else
+	{
+		HideLoadingScreen();
+		//FThreadHeartBeat::Get().MonitorCheckpointEnd(GetFName());
+	}
+
+	UE_LOG(LogLoadScreenManager,Log,TEXT("Loading screen showing: %d. Reson:%s"),bCurrentlyShowingLoadingScreen ? 1:0,*DebugLogMsg);
+}
 
 void UASLoadingScreenManager::StopBlockingInput()
 {
@@ -303,7 +369,7 @@ void UASLoadingScreenManager::ShowLoadingScreen()
 
 	UE_LOG(LogLoadScreenManager, Log, TEXT("%s"), *DebugLogMsg);
 
-	UGameInstance* gameInstance = GetGameInstance();
+	UGameInstance* GameInstance = GetGameInstance();
 
 	StartBlockingInput();
 
@@ -312,13 +378,15 @@ void UASLoadingScreenManager::ShowLoadingScreen()
 	TSubclassOf<UUserWidget> LoadingScreenWidgetClass = Settings->LoadingScreenWidget.TryLoadClass<UUserWidget>();
 	//showLoading Screen
 
-	if(UUserWidget* userWidget = UUserWidget::CreateWidgetInstance(*gameInstance, LoadingScreenWidgetClass,FName(TEXT(""))))
+	if(UUserWidget* userWidget = UUserWidget::CreateWidgetInstance(*GameInstance, LoadingScreenWidgetClass,FName(TEXT(""))))
 	{
 		LoadingScreenWidget = userWidget->TakeWidget();
 	}
 
-	UGameViewportClient* GameViewportClient = gameInstance->GetGameViewportClient();
-	GameViewportClient->AddViewportWidgetContent(LoadingScreenWidget.ToSharedRef(), Settings->zOrder);
+	UGameViewportClient* GameViewportClient = GameInstance->GetGameViewportClient();
+
+	if(LoadingScreenWidget)
+		GameViewportClient->AddViewportWidgetContent(LoadingScreenWidget.ToSharedRef(), Settings->zOrder);
 
 	ChangePerformanceSettings(true);
 }

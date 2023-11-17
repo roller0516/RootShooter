@@ -10,7 +10,7 @@ public class aos : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" , "GameplayTags", "UMG" , "Slate" , "SlateCore" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Niagara", "DeveloperSettings", "RenderCore" , "CommonInput" , "ModularGameplay" ,"GameFeatures" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Niagara", "DeveloperSettings", "RenderCore" , "CommonInput" , "ModularGameplay" ,"GameFeatures", "ControlFlows" });
 
         PrivateIncludePaths.Add("aos");
 		

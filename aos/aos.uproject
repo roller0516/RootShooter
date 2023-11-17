@@ -11,7 +11,9 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"CommonUI"
+				"CommonUI",
+				"ModularGameplay",
+				"GameFeatures"
 			]
 		}
 	],
@@ -33,6 +35,14 @@
 		},
 		{
 			"Name": "ModularGameplay",
+			"Enabled": true
+		},
+		{
+			"Name": "ASGameFeature",
+			"Enabled": true
+		},
+		{
+			"Name": "ControlFlows",
 			"Enabled": true
 		}
 	]

@@ -5,22 +5,25 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Tickable.h"
+#include "UObject/WeakInterfacePtr.h"
 #include "ASLoadingScreenManager.generated.h"
 
 /**
  * 
  */
  
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLoadingScreenVisibilityChanged, bool);
+
+
+
 struct FWorldContext;
 class FString;
 class FSubsystemCollectionBase;
 class UObject;
 class FLoadingScreenInputPreProcessor;
+class IILoadingProcessInterFace;
+class UGameInstance;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnLoadingScreenVisibilityChanged, bool);
-
-DECLARE_LOG_CATEGORY_EXTERN(LogLoadScreenManager, Log, All);
-DEFINE_LOG_CATEGORY(LogLoadScreenManager);
 UCLASS()
 class AOS_API UASLoadingScreenManager : public UGameInstanceSubsystem , public FTickableGameObject
 {
@@ -35,7 +38,14 @@ public:
 	void HandlePostLoadMap(UWorld* LoadedWorld);
 
 	virtual void Tick(float DeltaTime) override;
+	virtual ETickableTickType GetTickableTickType() const override;
+	virtual bool IsTickable() const override;
 	virtual TStatId GetStatId() const override;
+	virtual UWorld* GetTickableGameObjectWorld() const override;
+	//IILoading Process Interface를 외부로부터 등록
+	void RegisterLoadingProcessInterFace(TScriptInterface<IILoadingProcessInterFace> loadingProcess);
+	void UnRegisterLoadingProcessInterFace(TScriptInterface<IILoadingProcessInterFace> loadingProcess);
+
 private:
 	//Pre Load Map || Post Load Map 로드시 체크
 	bool bCurrentlyInLoadMap = false;
@@ -53,6 +63,8 @@ private:
 	TSharedPtr<SWidget> LoadingScreenWidget;
 
 	FOnLoadingScreenVisibilityChanged OnLoadingScreenVisibilityChanged;
+	
+	TArray<TWeakInterfacePtr<IILoadingProcessInterFace>> ExternalLoadingProcess;
 private:
 	//Load Debug 용
 	bool CheckForAnyNeedToShowLoadingScreen();
@@ -70,4 +82,6 @@ private:
 	void HideLoadingScreen();
 
 	void ChangePerformanceSettings(bool bEnabingLoadingScreen);
+
+	void UpdateLoadingScreen();
 };
