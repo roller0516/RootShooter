@@ -9,6 +9,8 @@ class AOS_API UCommonLoadingScreenSettings : public UDeveloperSettingsBackedByCV
 {
 	GENERATED_BODY()
 public:
+	UCommonLoadingScreenSettings();
+
 	UPROPERTY(Config,EditAnywhere,Category = Display,meta = (MetaClass = "/Script/UMG.UserWidget"))
 	FSoftClassPath LoadingScreenWidget;
 

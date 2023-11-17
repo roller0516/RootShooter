@@ -84,7 +84,12 @@ void UASLoadingScreenManager::Initialize(FSubsystemCollectionBase& Collection)
 
 void UASLoadingScreenManager::Deinitialize()
 {
+	StopBlockingInput();
 
+	RemoveWidgetFromViewport();
+
+	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 }
 
 bool UASLoadingScreenManager::ShouldCreateSubsystem(UObject* Outer) const

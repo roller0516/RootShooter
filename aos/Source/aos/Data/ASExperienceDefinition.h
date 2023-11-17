@@ -13,7 +13,7 @@
 class UGameFeatureAction; 
 class UExperienceActionSet;
 //class FString;
-UCLASS()
+UCLASS(BlueprintType,Const)
 class AOS_API UASExperienceDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
@@ -28,4 +28,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
 	TArray<TObjectPtr<UExperienceActionSet>> ActionSets;
+
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId("ASExperienceDefinition",GetFName());
+	}
 };

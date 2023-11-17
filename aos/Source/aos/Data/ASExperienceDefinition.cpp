@@ -5,4 +5,5 @@
 
 UASExperienceDefinition::UASExperienceDefinition()
 {
+	//AssetType = TEXT("ASExperienceDefinition");
 }
