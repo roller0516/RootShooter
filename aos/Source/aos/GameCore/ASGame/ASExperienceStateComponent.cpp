@@ -3,11 +3,14 @@
 
 #include "GameCore/ASGame/ASExperienceStateComponent.h"
 #include "Data/ASExperienceDefinition.h"
-#include "Engine/AssetManager.h"
 #include "Data/ExperienceActionSet.h"
 #include "../../../Experimental/GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystemSettings.h"
 #include "Engine/StreamableManager.h"
 #include "../../../Experimental/GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystem.h"
+#include "ASAssetManager.h"
+#include "Engine/AssetManager.h"
+#include "aos.h"
+#include "../../../Experimental/GameFeatures/Source/GameFeatures/Public/GameFeatureAction.h"
 
 // Sets default values for this component's properties
 UASExperienceStateComponent::UASExperienceStateComponent(const FObjectInitializer& ObjectInitializer)
@@ -39,6 +42,35 @@ void UASExperienceStateComponent::CallOrRegister_OnExperienceLoaded(FOnExperienc
 	}
 }
 
+void UASExperienceStateComponent::ServerSetCurrentExperience(FPrimaryAssetId primaryID, const FString& ExperienceIDSource)
+{
+	UASAssetManager& Assetmanager = UASAssetManager::Get();
+
+	FSoftObjectPath AssetPath = Assetmanager.GetPrimaryAssetPath(primaryID);
+	//TArray<FPrimaryAssetId> OutAssets;
+	//Assetmanager.GetPrimaryAssetIdList(TEXT("ASExperienceDefinition"), OutAssets);
+
+	//int32 AccessIdx = 3;
+	//FSoftObjectPtr AssetPtr(Assetmanager.GetPrimaryAssetPath(OutAssets[AccessIdx]));
+	//// 3. 에셋의 경로를 통해 에셋에 대한 FSoftObjectPtr을 얻어온다.
+	//
+	//if (AssetPtr.IsPending())
+	//{
+	//	AssetPtr.LoadSynchronous();
+	//	// 4. 에셋을 로딩해온다.
+	//}
+
+	TSubclassOf<UASExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
+	check(AssetClass);
+	const TObjectPtr<UASExperienceDefinition> Experience = AssetClass.GetDefaultObject();
+	check(Experience!=nullptr);
+	check(currentExperience == nullptr);
+
+	currentExperience = Experience;
+
+	StartLoad();
+}
+
 void UASExperienceStateComponent::StartLoad()
 {
 	check(currentExperience != nullptr);
@@ -46,7 +78,7 @@ void UASExperienceStateComponent::StartLoad()
 
 	currentFeartureState = EFeatureLoadState::Loading;
 
-	UAssetManager& AssetManager = UAssetManager::Get();
+	UASAssetManager& AssetManager = UASAssetManager::Get();
 
 	TSet<FPrimaryAssetId> BundleAssetList;
 	TSet<FSoftObjectPath> RawAssetList;
@@ -130,14 +162,14 @@ void UASExperienceStateComponent::OnLoadComplete()
 			}
 		};
 
-	//CollectGameFeaturePluginURLs(currentExperience, currentExperience->GameFeaturesToEnable);
-	//for (const TObjectPtr<UExperienceActionSet>& ActionSet : currentExperience->ActionSets)
-	//{
-	//	if (ActionSet != nullptr)
-	//	{
-	//		CollectGameFeaturePluginURLs(ActionSet, ActionSet->GameFeaturesToEnable);
-	//	}
-	//}
+	CollectGameFeaturePluginURLs(currentExperience, currentExperience->GameFeaturesToEnble);
+	for (const TObjectPtr<UExperienceActionSet>& ActionSet : currentExperience->ActionSets)
+	{
+		if (ActionSet != nullptr)
+		{
+			CollectGameFeaturePluginURLs(ActionSet, ActionSet->GameFeaturesToEnable);
+		}
+	}
 
 	// Load and activate the features	
 	NumGameFeaturePluginsLoading = GameFeaturePluginURLs.Num();
@@ -168,10 +200,19 @@ void UASExperienceStateComponent::GameFeaturePluginLoadComplete(const UE::GameFe
 void UASExperienceStateComponent::FullLoadComplete()
 {
 	check(currentFeartureState != EFeatureLoadState::Loaded);
-	//if(currentFeartureState != EFeatureLoadState::LoadingChaosTestingDelay)
-	//{
-	//	const float delaySecs = 
-	//}
+	if (currentFeartureState != EFeatureLoadState::LoadingChaosTestingDelay)
+	{
+		const float DelaySecs = 1.0f;
+		if (DelaySecs > 0.0f)
+		{
+			FTimerHandle DummyHandle;
+
+			currentFeartureState = EFeatureLoadState::LoadingChaosTestingDelay;
+			GetWorld()->GetTimerManager().SetTimer(DummyHandle, this, &ThisClass::FullLoadComplete, DelaySecs, /*bLooping=*/ false);
+
+			return;
+		}
+	}
 	currentFeartureState = EFeatureLoadState::ExecutingActions;
 	FGameFeatureActivatingContext context;
 
@@ -182,25 +223,47 @@ void UASExperienceStateComponent::FullLoadComplete()
 		context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
 	}
 
-	auto ActivateListOfActions =[&context](const TArray<UGameFeatureAction*>& ActionList)
-	{
-		for(UGameFeatureAction* action : ActionList)
-		{
-			if(action != nullptr)
-			{
-				action->OnGameFeatureRegistering();
-				action->OnGameFeatureLoading();
-				action->OnGameFeatureActivating(context);
-			}
-		}
-	};
+	//auto ActivateListOfActions = [&context](const TArray<UGameFeatureAction*>& ActionList)
+	//	{
+	//		for (UGameFeatureAction* Action : ActionList)
+	//		{
+	//			if (Action != nullptr)
+	//			{
+	//				//@TODO: The fact that these don't take a world are potentially problematic in client-server PIE
+	//				// The current behavior matches systems like gameplay tags where loading and registering apply to the entire process,
+	//				// but actually applying the results to actors is restricted to a specific world
+	//				Action->OnGameFeatureRegistering();
+	//				Action->OnGameFeatureLoading();
+	//				Action->OnGameFeatureActivating(context);
+	//			}
+	//		}
+	//	};
 
-	ActivateListOfActions(currentExperience->Actions);
+
+	for(UGameFeatureAction* Action : currentExperience->Actions)
+	{
+		if(Action != nullptr)
+		{
+			Action->OnGameFeatureRegistering();
+			Action->OnGameFeatureLoading();
+			Action->OnGameFeatureActivating(context);
+		}
+	}
+
+	//ActivateListOfActions();
 	for(const TObjectPtr<UExperienceActionSet>& actinoSet : currentExperience->ActionSets)
 	{
 		if(actinoSet != nullptr)
 		{
-			ActivateListOfActions(actinoSet->Actions);
+			for (UGameFeatureAction* Action : actinoSet->Actions)
+			{
+				if (Action != nullptr)
+				{
+					Action->OnGameFeatureRegistering();
+					Action->OnGameFeatureLoading();
+					Action->OnGameFeatureActivating(context);
+				}
+			}
 		}
 	}
 

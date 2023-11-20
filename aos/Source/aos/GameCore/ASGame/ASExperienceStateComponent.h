@@ -43,6 +43,7 @@ public:
 
 	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
 
+	void ServerSetCurrentExperience(FPrimaryAssetId primaryID,const FString& ExperienceIDSource);
 private:
 	void StartLoad();
 	void OnLoadComplete();

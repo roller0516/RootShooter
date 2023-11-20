@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/UnrealString.h"
+#include "Logging/LogMacros.h"
 
 //호출된 함수의 이름과 라인 매크로를 String 화
 
-
+AOS_API DECLARE_LOG_CATEGORY_EXTERN(LogASExperience, Log, All);
+AOS_API DECLARE_LOG_CATEGORY_EXTERN(LogASExperienceComponent, Log, All);
 
 #define LOG_CALLINFO (FString(__FUNCTION__) + TEXT("(" + FString::FromInt(__LINE__) + TEXT(")")))
 

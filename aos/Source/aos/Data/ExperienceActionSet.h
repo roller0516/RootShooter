@@ -20,4 +20,7 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	TArray<TObjectPtr<UGameFeatureAction>> Actions;
+
+	UPROPERTY(EditAnywhere, Category="Feature Dependencies")
+	TArray<FString> GameFeaturesToEnable;
 };

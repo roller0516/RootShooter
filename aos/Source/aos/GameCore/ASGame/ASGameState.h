@@ -24,5 +24,6 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	UPROPERTY()
 	TObjectPtr<UASExperienceStateComponent> ExperienceState;
 };

@@ -34,6 +34,10 @@ public:
 
 	static FName SuspendInputForPlayer(ULocalPlayer* LocalPlayer, FName SuspendReason);
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions")
+	static void ResumeInputForPlayer(APlayerController* PlayerController, FName SuspendToken);
+
+	static void ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName SuspendToken);
 
 private:
 	static int32 InputSuspensions;

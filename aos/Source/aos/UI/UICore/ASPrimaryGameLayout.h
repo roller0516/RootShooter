@@ -6,13 +6,13 @@
 #include "CommonUserWidget.h"
 #include "Engine/StreamableManager.h"
 #include "GameplayTagContainer.h"
-#include "Engine/AssetManager.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Templates/UnrealTypeTraits.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/Widgets/CommonActivatableWidgetContainer.h"
 #include "CommonActivatableWidget.h"
 #include "GameCore/ASBluePrintUtil.h"
+#include "GameCore/ASGame/ASAssetManager.h"
 #include "ASPrimaryGameLayout.generated.h"
 
 /**
@@ -55,12 +55,12 @@ public:
 
 		static FName NAME_PushingWidgetToLayer("PushingWidgetToLayer");
 		const FName SuspendInputToken = bSuspendInputUntilComplete ? UASBluePrintUtil::SuspendInputForPlayer(GetOwningPlayer(), NAME_PushingWidgetToLayer) : NAME_None;
-
-		FStreamableManager& StreamableManager = UAssetManager::Get().GetStreamableManager();
+		UASAssetManager& AssetManager = UASAssetManager::Get();
+		FStreamableManager& StreamableManager = AssetManager.GetStreamableManager();
 		TSharedPtr<FStreamableHandle> StreamingHandle = StreamableManager.RequestAsyncLoad(ActivatableWidgetClass.ToSoftObjectPath(), FStreamableDelegate::CreateWeakLambda(this,
 			[this, LayerName, ActivatableWidgetClass, StateFunc, SuspendInputToken]()
 			{
-				//UASBluePrintUtil::ResumeInputForPlayer(GetOwningPlayer(), SuspendInputToken);
+				UASBluePrintUtil::ResumeInputForPlayer(GetOwningPlayer(), SuspendInputToken);
 
 				ActivatableWidgetT* Widget = PushWidgetToLayerStack<ActivatableWidgetT>(LayerName, ActivatableWidgetClass.Get(), [StateFunc](ActivatableWidgetT& WidgetToInit) {
 					StateFunc(EAsyncWidgetLayerState::Initialize, &WidgetToInit);
@@ -71,14 +71,16 @@ public:
 		);
 
 		// Setup a cancel delegate so that we can resume input if this handler is canceled.
-		StreamingHandle->BindCancelDelegate(FStreamableDelegate::CreateWeakLambda(this,
-			[this, StateFunc, SuspendInputToken]()
-			{
-				//UASBluePrintUtil::ResumeInputForPlayer(GetOwningPlayer(), SuspendInputToken);
-				StateFunc(EAsyncWidgetLayerState::Canceled, nullptr);
-			})
-		);
-
+		if(StreamingHandle.IsValid())
+		{
+			StreamingHandle->BindCancelDelegate(FStreamableDelegate::CreateWeakLambda(this,
+				[this, StateFunc, SuspendInputToken]()
+				{
+					UASBluePrintUtil::ResumeInputForPlayer(GetOwningPlayer(), SuspendInputToken);
+					StateFunc(EAsyncWidgetLayerState::Canceled, nullptr);
+				})
+			);
+		}
 		return StreamingHandle;
 	}
 

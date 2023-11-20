@@ -347,7 +347,7 @@ void UASLoadingScreenManager::UpdateLoadingScreen()
 		//FThreadHeartBeat::Get().MonitorCheckpointEnd(GetFName());
 	}
 
-	UE_LOG(LogLoadScreenManager,Log,TEXT("Loading screen showing: %d. Reson:%s"),bCurrentlyShowingLoadingScreen ? 1:0,*DebugLogMsg);
+	//UE_LOG(LogLoadScreenManager,Log,TEXT("Loading screen showing: %d. Reson:%s"),bCurrentlyShowingLoadingScreen ? 1:0,*DebugLogMsg);
 }
 
 void UASLoadingScreenManager::StopBlockingInput()

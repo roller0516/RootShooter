@@ -25,4 +25,9 @@ public:
 	static UASLoadingProcessTask* CreateProcessTask(UObject* worldContext,const FString& ShowLoadScreenReason);
 public:
 	virtual bool ShouldShowLoadingScreen(FString& OutReason) const override;
+
+	void SetShowLoadingScreenReason(const FString& InReason);
+	void Unregister();
+private:
+	FString Reason;
 };

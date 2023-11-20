@@ -83,3 +83,24 @@ FName UASBluePrintUtil::SuspendInputForPlayer(ULocalPlayer* LocalPlayer, FName S
 
 	return NAME_None;
 }
+
+void UASBluePrintUtil::ResumeInputForPlayer(APlayerController* PlayerController, FName SuspendToken)
+{
+	ResumeInputForPlayer(PlayerController ? PlayerController->GetLocalPlayer() : nullptr, SuspendToken);
+}
+
+void UASBluePrintUtil::ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName SuspendToken)
+{
+	if (SuspendToken == NAME_None)
+	{
+		return;
+	}
+
+	if (UCommonInputSubsystem* CommonInputSubsystem = UCommonInputSubsystem::Get(LocalPlayer))
+	{
+		CommonInputSubsystem->SetInputTypeFilter(ECommonInputType::MouseAndKeyboard, SuspendToken, false);
+		CommonInputSubsystem->SetInputTypeFilter(ECommonInputType::Gamepad, SuspendToken, false);
+		CommonInputSubsystem->SetInputTypeFilter(ECommonInputType::Touch, SuspendToken, false);
+	}
+}
+

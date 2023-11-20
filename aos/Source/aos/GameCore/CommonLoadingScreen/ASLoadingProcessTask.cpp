@@ -14,13 +14,30 @@ UASLoadingProcessTask* UASLoadingProcessTask::CreateProcessTask(UObject* worldCo
 
 	if(loadingScreenManager)
 	{
-		//loadingScreenManager->register
+		UASLoadingProcessTask* NewLoadingTask = NewObject<UASLoadingProcessTask>(loadingScreenManager);
+		NewLoadingTask->SetShowLoadingScreenReason(ShowLoadScreenReason);
+
+		loadingScreenManager->RegisterLoadingProcessInterFace(NewLoadingTask);
+
+		return NewLoadingTask;
 	}
 
 	return nullptr;
 }
 
+void UASLoadingProcessTask::Unregister()
+{
+	UASLoadingScreenManager* LoadingScreenManager = Cast<UASLoadingScreenManager>(GetOuter());
+	LoadingScreenManager->UnRegisterLoadingProcessInterFace(this);
+}
+
+void UASLoadingProcessTask::SetShowLoadingScreenReason(const FString& InReason)
+{
+	Reason = InReason;
+}
+
 bool UASLoadingProcessTask::ShouldShowLoadingScreen(FString& OutReason) const
 {
+	OutReason = Reason;
 	return true;
 }

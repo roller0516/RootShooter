@@ -3,13 +3,25 @@
 
 #include "GameCore/ASGame/ASAssetManager.h"
 #include "GameCore/ASGame/FASGameplayTags.h"
+#include "Templates/UnrealTemplate.h"
 
 UASAssetManager& UASAssetManager::Get()
 {
 	check(GEngine);
 
-	return*Cast<UASAssetManager>(GEngine->AssetManager);
+	if(UASAssetManager* singleTon = Cast<UASAssetManager>(GEngine->AssetManager))
+	{
+		return *singleTon;
+	}
+
+	return*NewObject<UASAssetManager>();
 }
+
+FName UASAssetManager::GetName() const
+{
+	return FName();
+}
+
 
 void UASAssetManager::StartInitialLoading()
 {
