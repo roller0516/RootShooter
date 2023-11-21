@@ -27,6 +27,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSoftClassPtr<UCommonActivatableWidget> EscapeMenuClass;
-
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
