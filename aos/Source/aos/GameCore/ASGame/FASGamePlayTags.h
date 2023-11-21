@@ -11,6 +11,8 @@ public:
 
 	FGameplayTag Tag_UI_Layer_Menu;
 
+	FGameplayTag Tag_UI_Action_Escape;
+
 private:
 	static FASGameplayTags GameplayTags;
 };

@@ -8,7 +8,7 @@
 
 class IIBehaviorCommand;
 
-UCLASS(Abstract)
+UCLASS(Abstract,config = Input)
 class AOS_API AASBaseCharacter : public ACharacter
 {
 	GENERATED_BODY()

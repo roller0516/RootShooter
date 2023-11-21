@@ -15,7 +15,7 @@ struct FComponentRequestHandle;
  */
 
 USTRUCT()
-struct FLyraHUDLayoutRequest
+struct FHUDLayoutRequest
 {
 	GENERATED_BODY()
 
@@ -30,7 +30,7 @@ struct FLyraHUDLayoutRequest
 
 
 USTRUCT()
-struct FLyraHUDElementEntry
+struct FHUDElementEntry
 {
 	GENERATED_BODY()
 
@@ -56,11 +56,11 @@ public:
 private:
 	// Layout to add to the HUD
 	UPROPERTY(EditAnywhere, Category=UI, meta=(TitleProperty="{LayerID} -> {LayoutClass}"))
-	TArray<FLyraHUDLayoutRequest> Layout;
+	TArray<FHUDLayoutRequest> Layout;
 
 	// Widgets to add to the HUD
 	UPROPERTY(EditAnywhere, Category=UI, meta=(TitleProperty="{SlotID} -> {WidgetClass}"))
-	TArray<FLyraHUDElementEntry> Widgets;
+	TArray<FHUDElementEntry> Widgets;
 private:
 	struct FPerContextData
 	{

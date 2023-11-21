@@ -83,7 +83,7 @@ void UGameFeature_AddWidget::AddWidgets(AActor* Actor, FPerContextData& ActiveDa
 
 	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(HUD->GetOwningPlayerController()->Player))
 	{
-		for (const FLyraHUDLayoutRequest& Entry : Layout)
+		for (const FHUDLayoutRequest& Entry : Layout)
 		{
 			if (TSubclassOf<UCommonActivatableWidget> ConcreteWidgetClass = Entry.LayoutClass.Get())
 			{

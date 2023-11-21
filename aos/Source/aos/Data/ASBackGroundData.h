@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(config = Input)
 class AOS_API UASBackGroundData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()

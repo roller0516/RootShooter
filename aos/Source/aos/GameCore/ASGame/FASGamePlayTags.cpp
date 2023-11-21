@@ -8,5 +8,11 @@ void FASGameplayTags::InitializeNativeGameplayTags()
 		FName("UI.Layer.Menu"),
 		FString("UI Layer Menu")
 	);
+
+
+	GameplayTags.Tag_UI_Action_Escape = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("UI.Action.Escape"),
+		FString("UI Action Escape")
+	);
 }
 

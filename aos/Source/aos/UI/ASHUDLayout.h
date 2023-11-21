@@ -20,10 +20,13 @@ public:
 	UASHUDLayout(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeOnInitialized() override;
+
 protected:
 	//ESC ´©¸£¸é
 	void EscapeActionHandle();
 
 	UPROPERTY(EditAnywhere)
 	TSoftClassPtr<UCommonActivatableWidget> EscapeMenuClass;
+
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
