@@ -22,42 +22,8 @@ UASHUDLayout::UASHUDLayout(const FObjectInitializer& ObjectInitializer)
 void UASHUDLayout::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	
-
-	//FUIActionBinding::FindBinding();
-	
-	//RegisterUIActionBinding(ActionArg);
-
 	FUIActionTag ActionTag = FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE);
 	FBindUIActionArgs ActionArg = FBindUIActionArgs(ActionTag, false, FSimpleDelegate::CreateUObject(this, &UASHUDLayout::EscapeActionHandle));
-
-	if (TSharedPtr<FUIActionBinding> Binding = FUIActionBinding::FindBinding(RegisterUIActionBinding(ActionArg)))
-	{
-		if (Binding->OnExecuteAction.IsBound())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Bound"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Log, TEXT("UnBound"));
-		}
-	}
-
-	for(const FUIActionBindingHandle& Handle : GetActionBindings())
-	{
-		UE_LOG(LogTemp, Log, TEXT("%s"), *Handle.GetActionName().ToString());
-	}
-
-	for(const FUIInputAction& action : UCommonUIInputSettings::Get().GetUIInputActions())
-	{
-		UE_LOG(LogTemp,Log, TEXT("%s"), *action.KeyMappings[0].Key.GetFName().ToString());
-	}
-
-	if (ActionArg.OnExecuteAction.IsBound())
-	{
-		UE_LOG(LogTemp, Log, TEXT("Bind Yesssss"));
-	}
-
 }
 
 void UASHUDLayout::EscapeActionHandle()
@@ -66,12 +32,4 @@ void UASHUDLayout::EscapeActionHandle()
 	{
 		UASBluePrintUtil::PushStreamedContentToLayer_ForPlayer(GetOwningLocalPlayer(), TAG_UI_LAYER_MENU,EscapeMenuClass);
 	}
-}
-
-void UASHUDLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	
-	
 }
