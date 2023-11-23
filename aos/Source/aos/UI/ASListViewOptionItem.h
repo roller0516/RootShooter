@@ -16,11 +16,13 @@ class AOS_API UASListViewOptionItem : public UUserWidget, public IUserObjectList
 	GENERATED_BODY()
 	
 protected:
-	// IUserObjectListEntry
+
+	virtual void NativeConstruct() override;
+
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> OptionTitle;
+	UTextBlock *NameBoxText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> OptionNames;
+	UTextBlock *OptionText;
 };

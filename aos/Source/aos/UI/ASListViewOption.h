@@ -16,10 +16,14 @@ class AOS_API UASListViewOption : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(meta = (BindWidget))
-	class UVerticalBox* EntriesVerticalBox;
-
-	//UPROPERTY(EditDefaultsOnly)
-	//TSubclassOf<class UBUIInventoryEntry> EntryClass;
+	//OptionData data;
 	
 };
+//
+//USTRUCT()
+//struct OptionData
+//{
+//public:
+//	FString NameBoxText;
+//	FString optionName;
+//};
