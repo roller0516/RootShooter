@@ -13,7 +13,8 @@
 				"CoreUObject",
 				"CommonUI",
 				"ModularGameplay",
-				"GameFeatures"
+				"GameFeatures",
+				"UMG"
 			]
 		}
 	],
