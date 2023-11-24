@@ -30,6 +30,9 @@ public:
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	// UCommonActivatableWidget InterFace
 
+
+private:
+	//void ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree, class IWidgetCompilerLog& CompileLog) const;
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	EWidgetInputMode InputMode = EWidgetInputMode::Default;
