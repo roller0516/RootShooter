@@ -39,8 +39,8 @@ void UASButtonBase::RefreshButtonText()
 				return;
 			}
 		}
-		UpdateButtonText(ButtonText);
 	}
+	UpdateButtonText(ButtonText);
 }
 
 void UASButtonBase::OnInputMethodChanged(ECommonInputType CurrentInputType)

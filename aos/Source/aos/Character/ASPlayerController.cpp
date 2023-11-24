@@ -3,6 +3,10 @@
 
 #include "Character/ASPlayerController.h"
 #include "GameCore/CommonGame/ASCommonLocalPlayer.h"
+#include "UI/UICore/ASPrimaryGameLayout.h"
+#include "GameCore/ASGame/FASGamePlayTags.h"
+#include "Input/CommonUIActionRouterBase.h"
+#include "../../../Experimental/CommonUI/Source/CommonUI/Public/CommonActivatableWidget.h"
 
 AASPlayerController::AASPlayerController(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)

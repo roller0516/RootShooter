@@ -20,7 +20,7 @@ public:
 	UASHUDLayout(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativeOnInitialized() override;
-
+	
 protected:
 	//ESC ´©¸£¸é
 	void EscapeActionHandle();

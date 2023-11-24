@@ -24,6 +24,7 @@ void UASHUDLayout::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	FUIActionTag ActionTag = FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE);
 	FBindUIActionArgs ActionArg = FBindUIActionArgs(ActionTag, false, FSimpleDelegate::CreateUObject(this, &UASHUDLayout::EscapeActionHandle));
+	RegisterUIActionBinding(ActionArg);
 }
 
 void UASHUDLayout::EscapeActionHandle()

@@ -13,6 +13,8 @@ void AASGameMode::InitGame(const FString& MapName, const FString& Options, FStri
 {
 	Super::InitGame(MapName,Options,ErrorMessage);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
+
+	FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }
 
 void AASGameMode::InitGameState()
@@ -40,6 +42,7 @@ void AASGameMode::HandleMatchAssignmentIfNotExpectingOne()
 		ExperienceIdSource = TEXT("WorldSettings");
 	}
 
+	
 	OnMatchAssignmentGiven(ExperienceId, ExperienceIdSource);
 }
 

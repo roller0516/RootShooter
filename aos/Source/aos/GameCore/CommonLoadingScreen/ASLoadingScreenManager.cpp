@@ -229,7 +229,7 @@ bool UASLoadingScreenManager::CheckForAnyNeedToShowLoadingScreen()
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
