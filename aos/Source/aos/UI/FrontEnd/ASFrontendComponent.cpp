@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameCore/ASGame/ASFrontendComponent.h"
+#include "UI/FrontEnd/ASFrontendComponent.h"
 #include "ControlFlowNode.h"
 #include "ControlFlowManager.h"
 #include "aos.h"
-#include "ASExperienceStateComponent.h"
+#include "GameCore/ASGame/ASExperienceStateComponent.h"
 #include "UI/UICore/ASPrimaryGameLayout.h"
 #include "NativeGameplayTags.h"
-#include "FASGamePlayTags.h"
+#include "GameCore/ASGame/FASGamePlayTags.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/CommonActivatableWidget.h"
 
 //UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");

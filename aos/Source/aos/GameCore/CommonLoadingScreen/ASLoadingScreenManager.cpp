@@ -9,7 +9,7 @@
 #include "FLoadingScreenInputPreProcessor.h"
 #include "Framework/Application/IInputProcessor.h"
 #include "Framework/Application/SlateApplication.h"
-#include "CommonLoadingScreenSettings.h"
+#include "EditorSettings/CommonLoadingScreenSettings.h"
 #include "Blueprint/UserWidget.h"
 #include "ShaderPipelineCache.h"
 #include "UObject/ScriptInterface.h"

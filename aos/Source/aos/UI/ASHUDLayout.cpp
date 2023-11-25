@@ -3,13 +3,13 @@
 
 #include "UI/ASHUDLayout.h"
 #include "NativeGameplayTags.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/UITag.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/Input/CommonUIInputTypes.h"
-#include "GameCore/ASBluePrintUtil.h"
+#include "CommonUI/Public/UITag.h"
+#include "CommonUI/Public/Input/CommonUIInputTypes.h"
+#include "GameCore/ASGame/ASBluePrintUtil.h"
 #include "aos.h"
 #include "GameCore/ASGame/FASGamePlayTags.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/Input/CommonUIInputSettings.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/Input/UIActionBinding.h"
+#include "CommonUI/Public/Input/CommonUIInputSettings.h"
+#include "CommonUI/Public/Input/UIActionBinding.h"
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");

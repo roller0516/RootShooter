@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameCore/ASGameMode.h"
+#include "GameCore/ASGame/ASGameMode.h"
 #include "GameFramework/GameModeBase.h"
 #include "Data/ASUserFacingExperienceDefinition.h"
 #include "Kismet/GameplayStatics.h"
-#include "ASGame/ASExperienceStateComponent.h"
-#include "ASGame/ASWorldSettings.h"
+#include "GameCore/ASGame/ASExperienceStateComponent.h"
+#include "GameCore/ASGame/ASWorldSettings.h"
 #include "Data/ASExperienceDefinition.h"
 #include "Data/ASPawnData.h"
-#include "ASGame/ASAssetManager.h"
+#include "GameCore/ASGame/ASAssetManager.h"
 
 
 void AASGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

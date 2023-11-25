@@ -11,7 +11,7 @@
 #include "Templates/UnrealTypeTraits.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/Widgets/CommonActivatableWidgetContainer.h"
 #include "CommonActivatableWidget.h"
-#include "GameCore/ASBluePrintUtil.h"
+#include "GameCore/ASGame/ASBluePrintUtil.h"
 #include "GameCore/ASGame/ASAssetManager.h"
 #include "ASPrimaryGameLayout.generated.h"
 

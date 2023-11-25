@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameCore/ASBluePrintUtil.h"
+#include "GameCore/ASGame/ASBluePrintUtil.h"
 #include "GameplayTagContainer.h"
-#include "CommonGame/ASGameUIManagerSubSystem.h"
+#include "GameCore/CommonGame/ASGameUIManagerSubSystem.h"
 #include "UI/UICore/ASPrimaryGameLayout.h"
 #include "UI/UICore/ASGameUIPolicy.h"
-#include "CommonGame/ASCommonLocalPlayer.h"
+#include "GameCore/CommonGame/ASCommonLocalPlayer.h"
 #include "GameFramework/PlayerController.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/CommonActivatableWidget.h"
-#include "../../../Experimental/CommonUI/Source/CommonInput/Public/CommonInputSubsystem.h"
+#include "CommonUI/Public/CommonActivatableWidget.h"
+#include "CommonInput/Public/CommonInputSubsystem.h"
 
 int32 UASBluePrintUtil::InputSuspensions = 0;
 

@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 #include "Engine/Engine.h"
 #include "UI/ASHUD.h"
-#include "GameCore/ASBluePrintUtil.h"
+#include "GameCore/ASGame/ASBluePrintUtil.h"
 
 void UGameFeature_AddWidget::OnGameFeatureDeactivating(FGameFeatureDeactivatingContext& Context)
 {
