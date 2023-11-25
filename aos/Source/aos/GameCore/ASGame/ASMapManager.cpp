@@ -43,12 +43,12 @@ void UASMapManager::PrimaryAssetLoadComplete()
 		{
 			if (Result == EAsyncLoadingResult::Succeeded)
 			{
-				AyncLevelLoadFinished(backGroundData->GetMap(mapID)->GetName());
+				AsyncLevelLoadFinished(backGroundData->GetMap(mapID)->GetName());
 			}
 		}), 0, PKG_ContainsMap);
 }
 
-void UASMapManager::AyncLevelLoad(int ID)
+void UASMapManager::AsyncLevelLoad(int ID)
 {
 	mapID = ID;
 
@@ -63,7 +63,7 @@ void UASMapManager::AyncLevelLoad(int ID)
 	}
 }
 
-void UASMapManager::AyncLevelLoadFinished(const FString LevelName)
+void UASMapManager::AsyncLevelLoadFinished(const FString LevelName)
 {
 	UGameplayStatics::OpenLevel(this, FName(*LevelName));
 
