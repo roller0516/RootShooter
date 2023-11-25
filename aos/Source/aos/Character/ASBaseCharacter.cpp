@@ -11,7 +11,6 @@ AASBaseCharacter::AASBaseCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
 }
 
 // Called when the game starts or when spawned

@@ -16,8 +16,9 @@ class AOS_API UASAssetManager : public UAssetManager
 public:
 	static UASAssetManager& Get();
 	
+	//class UASPawnData* GetDefaultPawnData();
+
 	FName GetName() const ;
 protected:
 	virtual void StartInitialLoading() override;
-	
 };

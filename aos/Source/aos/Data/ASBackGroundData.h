@@ -9,16 +9,23 @@
 /**
  * 
  */
+
+
 UCLASS(config = Input)
 class AOS_API UASBackGroundData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-public:
+public:	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,meta = (AllowedTypes = "Map"))
-	TSoftObjectPtr<UWorld> BackgroundLevel;
+	TMap<int,TSoftObjectPtr<UWorld>> BackgroundLevel;
+
+	FORCEINLINE TSoftObjectPtr<UWorld> GetMap(int ID) const
+	{
+		return BackgroundLevel[ID];
+	}
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		return FPrimaryAssetId("BackGroundData", GetFName());
+		return FPrimaryAssetId("BackGroundData", "MapData");
 	}
 };

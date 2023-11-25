@@ -17,6 +17,12 @@ UASAssetManager& UASAssetManager::Get()
 	return*NewObject<UASAssetManager>();
 }
 
+//UASPawnData* UASAssetManager::GetDefaultPawnData()
+//{
+//	return GetAsset(DefaultPawnData);
+//}
+
+
 FName UASAssetManager::GetName() const
 {
 	return FName();

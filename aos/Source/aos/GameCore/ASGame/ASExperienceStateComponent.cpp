@@ -293,7 +293,7 @@ void UASExperienceStateComponent::OnAllActionsDeactivated()
 
 bool UASExperienceStateComponent::IsExperienceLoaded()
 {
-	return currentFeartureState == EFeatureLoadState::Loaded && currentExperience != nullptr;
+	return (currentFeartureState == EFeatureLoadState::Loaded) && (currentExperience != nullptr);
 }
 
 

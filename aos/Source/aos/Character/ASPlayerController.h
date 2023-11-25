@@ -33,4 +33,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 
+protected:
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
 };

@@ -63,15 +63,15 @@ void AASMapSpawner::AyncLevelLoad()
 	TSubclassOf<UASBackGroundData> AssetClass = Cast<UClass>(AssetPath.TryLoad());
 	const UASBackGroundData* backGroundData = GetDefault<UASBackGroundData>(AssetClass);
 
-	FString LoadPackagePath = FPaths::GetBaseFilename(backGroundData->BackgroundLevel.ToString(),false);
-
-	LoadPackageAsync(LoadPackagePath, FLoadPackageAsyncDelegate::CreateLambda([=](const FName& PackageName, UPackage* LoadedPackage, EAsyncLoadingResult::Type Result)
-		{
-			if (Result == EAsyncLoadingResult::Succeeded)
-			{
-				AyncLevelLoadFinished(backGroundData->BackgroundLevel->GetName());
-			}
-		}), 0, PKG_ContainsMap);
+	//FString LoadPackagePath = FPaths::GetBaseFilename(backGroundData->BackgroundLevel.ToString(),false);
+	//
+	//LoadPackageAsync(LoadPackagePath, FLoadPackageAsyncDelegate::CreateLambda([=](const FName& PackageName, UPackage* LoadedPackage, EAsyncLoadingResult::Type Result)
+	//	{
+	//		if (Result == EAsyncLoadingResult::Succeeded)
+	//		{
+	//			AyncLevelLoadFinished(backGroundData->BackgroundLevel->GetName());
+	//		}
+	//	}), 0, PKG_ContainsMap);
 }
 
 void AASMapSpawner::AyncLevelLoadFinished(const FString LevelName)

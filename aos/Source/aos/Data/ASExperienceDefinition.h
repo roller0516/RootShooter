@@ -20,6 +20,9 @@ class AOS_API UASExperienceDefinition : public UPrimaryDataAsset
 public:
 	UASExperienceDefinition();
 
+	UPROPERTY(EditDefaultsOnly,Category = GamePlay)
+	FName AssetName;
+
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FString> GameFeaturesToEnble;
 
@@ -29,8 +32,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
 	TArray<TObjectPtr<UExperienceActionSet>> ActionSets;
 
+	UPROPERTY(EditDefaultsOnly, Category = GamePlay)
+	TObjectPtr<class UASPawnData> pawnData;
+
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		return FPrimaryAssetId("ASExperienceDefinition",GetFName());
+		if((AssetName.ToString().IsEmpty()))
+		{
+			AssetName.ToString() = GetName();
+		}
+		
+		return FPrimaryAssetId("ASExperienceDefinition", *AssetName.ToString());
 	}
 };

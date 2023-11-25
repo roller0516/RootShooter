@@ -44,6 +44,10 @@ public:
 	void CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate&& Delegate);
 
 	void ServerSetCurrentExperience(FPrimaryAssetId primaryID,const FString& ExperienceIDSource);
+
+	bool IsExperienceLoaded();
+
+	FORCEINLINE UASExperienceDefinition* GetCurrentExperience(){return currentExperience;}
 private:
 	void StartLoad();
 	void OnLoadComplete();
@@ -51,8 +55,6 @@ private:
 	void FullLoadComplete();
 	void OnActionDeactivationCompleted();
 	void OnAllActionsDeactivated();
-	bool IsExperienceLoaded();
-
 private:
 	int NumExpectedPausers;
 

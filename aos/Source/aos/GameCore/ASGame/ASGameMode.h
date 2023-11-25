@@ -35,10 +35,16 @@ public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void InitGameState() override;
 
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	//virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+
+	const class UASPawnData* GetPawnData(const AController* controller) const;
+
 	FORCEINLINE void SetCurrentLevelState(LevelState levelState) {currentLevelState = levelState;}
 private:
 	void HandleMatchAssignmentIfNotExpectingOne();
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId,const FString& ExperienceIdSource);
+	void OnExperienceLoaded(const class UASExperienceDefinition* experience);
 private:
 	UPROPERTY(EditAnywhere)
 	TArray<UASUserFacingExperienceDefinition*> MapData;

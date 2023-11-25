@@ -60,3 +60,13 @@ void AASPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 }
+
+void AASPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+}
+
+void AASPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+}
