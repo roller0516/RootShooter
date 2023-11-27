@@ -27,9 +27,9 @@ private:
 	void PrimaryAssetLoadComplete();
 
 	UFUNCTION(BlueprintCallable)
-	void AyncLevelLoad(int ID);
+	void AsyncLevelLoad(int ID);
 
-	void AyncLevelLoadFinished(const FString LevelName);
+	void AsyncLevelLoadFinished(const FString LevelName);
 private:
 	UPROPERTY()
 	FPrimaryAssetId MapLoadAsset;
