@@ -13,7 +13,7 @@
 
 // Sets default values for this component's properties
 UASCharacterSelectComponent::UASCharacterSelectComponent(const FObjectInitializer& ObjectInitializer)
- : Super(ObjectInitializer)
+ :Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -82,7 +82,7 @@ void UASCharacterSelectComponent::OnLoadCharacterComplete(bool IsComplete)
 	
 }
 
-void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<bool> state)
+void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<void(bool)> state)
 {
 	UASAssetManager& assetManager = UASAssetManager::Get();
 	FPrimaryAssetId ExperienceId = FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"), FName("DefaultExperience"));
@@ -92,11 +92,11 @@ void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<bool> state)
 	check(AssetClass);
 	const TObjectPtr<UASCharacterData> characterData = AssetClass.GetDefaultObject();
 
-	for each (auto var in characterData->InGameCharacterBp)
-	{
-		FStreamableDelegate StemableDelegate = FStreamableDelegate::CreateLambda(this, &UASCharacterSelectComponent::OnLoadCharacterComplete);
-		TSharedPtr<FStreamableHandle> Handle = assetManager.GetStreamableManager().RequestAsyncLoad(var, StemableDelegate);
-	}
+	//for each (auto var in characterData->InGameCharacterModule)
+	//{
+	//	FStreamableDelegate StemableDelegate = FStreamableDelegate::CreateLambda(this, &UASCharacterSelectComponent::OnLoadCharacterComplete);
+	//	//TSharedPtr<FStreamableHandle> Handle = assetManager.GetStreamableManager().RequestAsyncLoad(var, StemableDelegate);
+	//}
 }
 
 bool UASCharacterSelectComponent::ShouldShowLoadingScreen(FString& OutReason) const

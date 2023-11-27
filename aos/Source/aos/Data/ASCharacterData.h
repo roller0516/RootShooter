@@ -33,10 +33,10 @@ public:
 	TMap<ShootParticle,class UParticleSystem*> particles;
 
 	UPROPERTY(EditAnywhere,Category = "Battle")
-	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterBp;
+	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterModule;
 
-	UPROPERTY(EditAnywhere,Category = "UI")
-	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterBp;
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TArray<TSubclassOf<class AASPlayerCharacter>> InteractionCharacterModule;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

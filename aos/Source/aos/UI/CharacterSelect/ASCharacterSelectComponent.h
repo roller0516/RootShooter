@@ -35,8 +35,8 @@ private:
 	void FlowStep_WaitForUserInitialization(FControlFlowNodeRef SubFlow);
 	void FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow);
 
-	void LoadSelectCharacters(TFunction<bool> state);
-
+	void LoadSelectCharacters(TFunction<void(bool)>);
+	void OnLoadCharacterComplete(bool IsComplete);
 	bool bShouldShowLoadingScreen;
 private:
 	FCharacterSelectComplete OnCharacterSelectComplete;
