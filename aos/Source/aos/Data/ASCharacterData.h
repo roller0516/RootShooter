@@ -19,7 +19,7 @@ UCLASS()
 class AOS_API UASCharacterData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
+public:
 	UPROPERTY(EditAnywhere)
 	FString Name;
 	
@@ -31,4 +31,16 @@ class AOS_API UASCharacterData : public UPrimaryDataAsset
 
 	UPROPERTY(EditAnywhere)
 	TMap<ShootParticle,class UParticleSystem*> particles;
+
+	UPROPERTY(EditAnywhere,Category = "Battle")
+	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterBp;
+
+	UPROPERTY(EditAnywhere,Category = "UI")
+	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterBp;
+
+public:
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"),"CharacterData");
+	}
 };

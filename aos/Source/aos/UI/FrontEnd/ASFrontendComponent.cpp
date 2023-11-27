@@ -42,6 +42,9 @@ bool UASFrontendComponent::ShouldShowLoadingScreen(FString& OutReason) const
 void UASFrontendComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	bShouldShowLoadingScreen = true;
+
 	AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
 	UASExperienceStateComponent* experienceComponent = GameState->FindComponentByClass<UASExperienceStateComponent>();
 

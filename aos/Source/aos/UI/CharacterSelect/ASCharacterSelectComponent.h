@@ -3,26 +3,49 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Interface/Command/ILoadingProcessInterFace.h"
+#include "Components/GameStateComponent.h"
+#include "ControlFlowNode.h"
+
 #include "ASCharacterSelectComponent.generated.h"
 
+DECLARE_DELEGATE_OneParam(FCharacterSelectComplete,bool);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AOS_API UASCharacterSelectComponent : public UActorComponent
+class FControlFlow;
+class UCommonActivatableWidget;
+class UASExperienceDefinition;
+
+UCLASS()
+class AOS_API UASCharacterSelectComponent : public UGameStateComponent, public IILoadingProcessInterFace
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UASCharacterSelectComponent();
-
+	UASCharacterSelectComponent(const FObjectInitializer& ObjectInitializer);
+	virtual bool ShouldShowLoadingScreen(FString& OutReason) const override;
+	virtual	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	void OnExperienceLoadComplete(const UASExperienceDefinition* experience);
 
-		
+	void FlowStep_WaitForUserInitialization(FControlFlowNodeRef SubFlow);
+	void FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow);
+
+	void LoadSelectCharacters(TFunction<bool> state);
+
+	bool bShouldShowLoadingScreen;
+private:
+	FCharacterSelectComplete OnCharacterSelectComplete;
+
+	TSharedPtr<FControlFlow> FrontEndFlow;
+
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSoftClassPtr<UCommonActivatableWidget> mainScreenClass;
+
+	UPROPERTY(EditAnywhere,Category = "SpawnTransForm")
+	TArray<TSubclassOf<AActor>> SpawnTransForm;
 };
