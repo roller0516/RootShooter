@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "../Character/ASBaseCharacter.h"
 #include "ASCharacterData.generated.h"
 
 /**
@@ -33,14 +34,26 @@ public:
 	TMap<ShootParticle,class UParticleSystem*> particles;
 
 	UPROPERTY(EditAnywhere,Category = "Battle")
-	TArray<TSubclassOf<class AASPlayerCharacter>> InGameCharacterModule;
+	TArray<TSoftClassPtr<class AASBaseCharacter>> InGameCharacterModule;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TArray<TSubclassOf<class AASPlayerCharacter>> InteractionCharacterModule;
+	TArray<TSoftClassPtr<class AASBaseCharacter>> InteractionCharacterModule;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		return FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"),"CharacterData");
+		return FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"), FName("CharacterData"));
+	}
+
+
+	TSoftClassPtr<class AASBaseCharacter> GetInteractionChar(CharID _charid)
+	{
+		for(int i = 0 ; i < InteractionCharacterModule.Num(); i++)
+		{
+			const AASBaseCharacter* base =  Cast<class AASBaseCharacter>(InteractionCharacterModule[i].Get());
+			if(base->charID == _charid)
+				return InteractionCharacterModule[i];
+		}
+		return nullptr;
 	}
 };

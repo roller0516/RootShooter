@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../EnumTypes.h"
 #include "ASBaseCharacter.generated.h"
 
 class IIBehaviorCommand;
@@ -17,6 +18,8 @@ public:
 	// Sets default values for this character's properties
 	AASBaseCharacter();
 
+	UPROPERTY(EditAnyWhere)
+	CharID charID = CharID::None;
 protected:
 	virtual void BeginPlay() override;
 	//virtual void SetBehaviorCommand(IIBehaviorCommand command);

@@ -6,6 +6,7 @@
 #include "Interface/Command/ILoadingProcessInterFace.h"
 #include "Components/GameStateComponent.h"
 #include "ControlFlowNode.h"
+#include "../../EnumTypes.h"
 
 #include "ASCharacterSelectComponent.generated.h"
 
@@ -34,10 +35,11 @@ private:
 
 	void FlowStep_WaitForUserInitialization(FControlFlowNodeRef SubFlow);
 	void FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow);
+	void FlowStep_WaitForCharacterSpawn(FControlFlowNodeRef SubFlow);
 
-	void LoadSelectCharacters(TFunction<void(bool)>);
-	void OnLoadCharacterComplete(bool IsComplete);
+	void LoadSelectCharacters(TFunction<void(bool)> result);
 	bool bShouldShowLoadingScreen;
+
 private:
 	FCharacterSelectComplete OnCharacterSelectComplete;
 
@@ -48,4 +50,9 @@ private:
 
 	UPROPERTY(EditAnywhere,Category = "SpawnTransForm")
 	TArray<TSubclassOf<AActor>> SpawnTransForm;
+
+	UPROPERTY();
+	TObjectPtr<class UASCharacterData> charData;
+
+	TArray<TObjectPtr<class AASBaseCharacter>> LoadCharList;
 };

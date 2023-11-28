@@ -10,6 +10,8 @@
 #include "UI/UICore/ASPrimaryGameLayout.h"
 #include "GameCore/ASGame/FASGamePlayTags.h"
 #include "Data/ASCharacterData.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values for this component's properties
 UASCharacterSelectComponent::UASCharacterSelectComponent(const FObjectInitializer& ObjectInitializer)
@@ -38,7 +40,9 @@ void UASCharacterSelectComponent::OnExperienceLoadComplete(const UASExperienceDe
 {
 	FControlFlow& Flow = FControlFlowStatics::Create(this, TEXT("FrontendFlow"));
 	Flow.QueueStep(TEXT("Wait For User Initialization"), this, &UASCharacterSelectComponent::FlowStep_WaitForUserInitialization);
+	Flow.QueueStep(TEXT("Spawn Character"), this, &UASCharacterSelectComponent::FlowStep_WaitForCharacterSpawn);
 	Flow.QueueStep(TEXT("Show MainScreen"), this, &UASCharacterSelectComponent::FlowStep_TryShowMainScreen);
+	
 
 	Flow.ExecuteFlow();
 
@@ -58,7 +62,7 @@ void UASCharacterSelectComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef
 {
 	if (UASPrimaryGameLayout* RootLayout = UASPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
 	{
-		check(mainScreenClass);
+		//check(mainScreenClass);
 		constexpr bool bSuspendInputUntilComplete = true;
 		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(FASGameplayTags::Get().Tag_UI_Layer_Menu, bSuspendInputUntilComplete, mainScreenClass,
 			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen) {
@@ -77,26 +81,48 @@ void UASCharacterSelectComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef
 	}
 }
 
-void UASCharacterSelectComponent::OnLoadCharacterComplete(bool IsComplete)
+void UASCharacterSelectComponent::FlowStep_WaitForCharacterSpawn(FControlFlowNodeRef SubFlow)
 {
-	
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),TEXT("SpawnTransFrom"), Actors);
+	UWorld* world = GetWorld();
+	for(int i = 0 ; i < LoadCharList.Num(); i++)
+	{
+		world->SpawnActor<AASBaseCharacter>(charData->InGameCharacterModule[i].Get(), Actors[i]->GetActorTransform());
+	}
+
+	SubFlow->ContinueFlow();
 }
 
-void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<void(bool)> state)
+
+void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<void(bool)> result)
 {
 	UASAssetManager& assetManager = UASAssetManager::Get();
-	FPrimaryAssetId ExperienceId = FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"), FName("DefaultExperience"));
+	FPrimaryAssetId ExperienceId = FPrimaryAssetId(FPrimaryAssetType("ASCharacterData"), FName("CharacterData"));
 	FSoftObjectPath AssetPath = assetManager.GetPrimaryAssetPath(ExperienceId);
 	
 	TSubclassOf<UASCharacterData> AssetClass = Cast<UClass>(AssetPath.TryLoad());
-	check(AssetClass);
-	const TObjectPtr<UASCharacterData> characterData = AssetClass.GetDefaultObject();
+	if(AssetClass)
+	{
+		charData = AssetClass.GetDefaultObject();
 
-	//for each (auto var in characterData->InGameCharacterModule)
-	//{
-	//	FStreamableDelegate StemableDelegate = FStreamableDelegate::CreateLambda(this, &UASCharacterSelectComponent::OnLoadCharacterComplete);
-	//	//TSharedPtr<FStreamableHandle> Handle = assetManager.GetStreamableManager().RequestAsyncLoad(var, StemableDelegate);
-	//}
+		for(int i = 0 ; i < charData->InGameCharacterModule.Num(); i++)
+		{
+			FStreamableManager& Streamable = assetManager.GetStreamableManager();
+			Streamable.RequestAsyncLoad(charData->InGameCharacterModule[i].ToSoftObjectPath(),[=]()
+			{
+				AASBaseCharacter* chars = Cast<AASBaseCharacter>(charData->InGameCharacterModule[i].Get());
+				LoadCharList.Add(chars);
+
+				if(LoadCharList.Num() == charData->InGameCharacterModule.Num())
+					result(true);
+			});
+		}
+	}
+	else
+	{
+		result(false);
+	}
 }
 
 bool UASCharacterSelectComponent::ShouldShowLoadingScreen(FString& OutReason) const
