@@ -202,7 +202,7 @@ void UASExperienceStateComponent::FullLoadComplete()
 	check(currentFeartureState != EFeatureLoadState::Loaded);
 	if (currentFeartureState != EFeatureLoadState::LoadingChaosTestingDelay)
 	{
-		const float DelaySecs = 1.0f;
+		const float DelaySecs = 0.0f;
 		if (DelaySecs > 0.0f)
 		{
 			FTimerHandle DummyHandle;
@@ -267,11 +267,10 @@ void UASExperienceStateComponent::FullLoadComplete()
 		}
 	}
 
-	OnExperienceLoaded.Broadcast(currentExperience);
-	OnExperienceLoaded.Clear();
-
 	currentFeartureState = EFeatureLoadState::Loaded;
 
+	OnExperienceLoaded.Broadcast(currentExperience);
+	OnExperienceLoaded.Clear();
 }
 
 void UASExperienceStateComponent::OnActionDeactivationCompleted()

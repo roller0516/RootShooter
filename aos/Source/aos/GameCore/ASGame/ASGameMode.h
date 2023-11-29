@@ -36,19 +36,23 @@ public:
 	virtual void InitGameState() override;
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
-	//virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	virtual const class UASPawnData* GetPawnData(const AController* controller) const;
 
-	const class UASPawnData* GetPawnData(const AController* controller) const;
-
-	FORCEINLINE void SetCurrentLevelState(LevelState levelState) {currentLevelState = levelState;}
+public:
+	FORCEINLINE void SetCurrentLevelState(LevelState levelState) { currentLevelState = levelState; }
 private:
 	void HandleMatchAssignmentIfNotExpectingOne();
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId,const FString& ExperienceIdSource);
 	void OnExperienceLoaded(const class UASExperienceDefinition* experience);
+	bool IsExperienceLoaded() const;
 private:
 	UPROPERTY(EditAnywhere)
 	TArray<UASUserFacingExperienceDefinition*> MapData;
 
 	//UPROPERTY(VisibleAnywhere)
 	LevelState currentLevelState = LevelState::Title;
+protected:
+	bool UpdatePlayerStartSpot(AController* Player, const FString& Portal, FString& OutErrorMessage) override;
+
 };

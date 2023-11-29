@@ -7,6 +7,9 @@
 #include "GameCore/ASGame/FASGamePlayTags.h"
 #include "Input/CommonUIActionRouterBase.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/CommonActivatableWidget.h"
+#include "../../../EnhancedInput/Source/EnhancedInput/Public/EnhancedPlayerInput.h"
+#include "../../../EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
+#include "../../../EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h"
 
 AASPlayerController::AASPlayerController(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)
@@ -47,8 +50,6 @@ void AASPlayerController::PlayerTick(float DeltaTime)
 void AASPlayerController::SetPlayer(UPlayer* InPlayer)
 {
 	Super::SetPlayer(InPlayer);
-
-	//if(const uaslo)
 }
 
 void AASPlayerController::BeginPlay()
@@ -63,6 +64,14 @@ void AASPlayerController::Tick(float DeltaSeconds)
 
 void AASPlayerController::OnPossess(APawn* aPawn)
 {
+	const UASCommonLocalPlayer* LP = Cast<UASCommonLocalPlayer>(GetLocalPlayer());
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
 	Super::OnPossess(aPawn);
 }
 

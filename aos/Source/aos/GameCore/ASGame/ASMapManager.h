@@ -27,7 +27,10 @@ private:
 	void PrimaryAssetLoadComplete();
 
 	UFUNCTION(BlueprintCallable)
-	void AsyncLevelLoad(int ID);
+	void AsyncLevelLoadByID(int ID);
+
+	UFUNCTION(BlueprintCallable)
+	void AsyncLevelLoadByMap(UWorld* Map);
 
 	void AsyncLevelLoadFinished(const FString LevelName);
 private:
@@ -37,7 +40,8 @@ private:
 	UPROPERTY()
 	UASLoadingProcessTask* LoadingTask;
 
-	int mapID;
+	int mapID = -1;
 
-
+	UPROPERTY()
+	TSoftObjectPtr<UWorld> map;
 };

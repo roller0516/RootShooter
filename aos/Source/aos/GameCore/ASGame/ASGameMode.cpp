@@ -25,7 +25,7 @@ void AASGameMode::InitGameState()
 	Super::InitGameState();
 
 	UASExperienceStateComponent* ExperienceComponent = GameState->FindComponentByClass<UASExperienceStateComponent>();
-	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this,&AASGameMode::OnExperienceLoaded));
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnExperienceLoaded::FDelegate::CreateUObject(this, &AASGameMode::OnExperienceLoaded));
 }
 
 UClass* AASGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -41,7 +41,7 @@ const UASPawnData* AASGameMode::GetPawnData(const AController* controller) const
 {
 	UASExperienceStateComponent* ExperienceComponent = GameState->FindComponentByClass<UASExperienceStateComponent>();
 
-	if (ExperienceComponent->IsExperienceLoaded())
+	if(ExperienceComponent->IsExperienceLoaded())
 	{
 		UASExperienceDefinition* Experience = ExperienceComponent->GetCurrentExperience();
 		if (Experience->pawnData != nullptr)
@@ -50,8 +50,17 @@ const UASPawnData* AASGameMode::GetPawnData(const AController* controller) const
 		}
 		//return UASAssetManager::Get().GetDefaultPawnData();
 	}
-
 	return nullptr;
+}
+
+void AASGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	if (IsExperienceLoaded())
+	{
+		Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	}
+	//Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	//Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void AASGameMode::HandleMatchAssignmentIfNotExpectingOne()
@@ -89,12 +98,27 @@ void AASGameMode::OnExperienceLoaded(const UASExperienceDefinition* experience)
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PC = Cast<APlayerController>(*Iterator);
-		if ((PC != nullptr))
+		if ((PC != nullptr) && (PC->GetPawn() == nullptr))
 		{
 			if (PlayerCanRestart(PC))
 			{
 				RestartPlayer(PC);
+				HandleStartingNewPlayer_Implementation(PC);
 			}
 		}
 	}
+}
+
+bool AASGameMode::IsExperienceLoaded() const
+{
+	check(GameState);
+	UASExperienceStateComponent* ExperienceComponent = GameState->FindComponentByClass<UASExperienceStateComponent>();
+	check(ExperienceComponent);
+
+	return ExperienceComponent->IsExperienceLoaded();
+}
+
+bool AASGameMode::UpdatePlayerStartSpot(AController* Player, const FString& Portal, FString& OutErrorMessage)
+{
+	return true;
 }

@@ -21,7 +21,22 @@ public:
 
 	FORCEINLINE TSoftObjectPtr<UWorld> GetMap(int ID) const
 	{
-		return BackgroundLevel[ID];
+		if(BackgroundLevel.Contains(ID))
+			return BackgroundLevel[ID];
+		
+		return nullptr;
+	}
+
+	FORCEINLINE TSoftObjectPtr<UWorld> GetMap(TSoftObjectPtr<UWorld> Map) const
+	{
+		for (auto& var : BackgroundLevel)
+		{
+			if(var.Value == Map)
+			{	
+				return var.Value;
+			}
+		}
+		return nullptr;
 	}
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

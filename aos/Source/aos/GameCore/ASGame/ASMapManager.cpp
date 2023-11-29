@@ -43,14 +43,34 @@ void UASMapManager::PrimaryAssetLoadComplete()
 		{
 			if (Result == EAsyncLoadingResult::Succeeded)
 			{
-				AsyncLevelLoadFinished(backGroundData->GetMap(mapID)->GetName());
+				if(mapID == -1 && map == nullptr)
+					return;
+				else if(mapID != -1)
+					AsyncLevelLoadFinished(backGroundData->GetMap(mapID)->GetName());
+				else
+					AsyncLevelLoadFinished(backGroundData->GetMap(map)->GetMapName());
 			}
 		}), 0, PKG_ContainsMap);
 }
 
-void UASMapManager::AsyncLevelLoad(int ID)
+void UASMapManager::AsyncLevelLoadByID(int ID)
 {
 	mapID = ID;
+
+	ShouldShowLoadingScreen();
+
+	UASAssetManager& AssetManager = UASAssetManager::Get();
+	if (AssetManager.IsValid())
+	{
+		TArray<FName> Bundles;
+		FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &UASMapManager::PrimaryAssetLoadComplete);
+		AssetManager.LoadPrimaryAsset(MapLoadAsset, Bundles, Delegate);
+	}
+}
+
+void UASMapManager::AsyncLevelLoadByMap(UWorld* Map)
+{
+	map = Map;
 
 	ShouldShowLoadingScreen();
 
