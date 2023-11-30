@@ -2,6 +2,7 @@
 
 
 #include "ASPlayerCharacter.h"
+#include "ASEnemy.h"
 #include "ASBulletHitIInterface.h"
 
 #include "EnhancedInputComponent.h"
@@ -299,6 +300,31 @@ void AASPlayerCharacter::FireWeapon()
 					BulletHitInterface->BulletHit_Implementation(BeamHitResult);
 				}
 
+				AASEnemy* HitEnemy = Cast<AASEnemy>(BeamHitResult.GetActor());
+				if (HitEnemy)
+				{
+					if (BeamHitResult.BoneName.ToString() == HitEnemy->GetHeadBone())
+					{
+						//HeadShot
+						UGameplayStatics::ApplyDamage(
+							BeamHitResult.GetActor(),
+							EquippedWeapon->GetHeadDamage(),
+							GetController(),
+							this,
+							UDamageType::StaticClass());
+						UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
+					}
+					else
+					{
+						UGameplayStatics::ApplyDamage(
+							BeamHitResult.GetActor(),
+							EquippedWeapon->GetDamage(),
+							GetController(),
+							this,
+							UDamageType::StaticClass());
+						UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
+					}
+				}
 			} 
 			else 
 			{
