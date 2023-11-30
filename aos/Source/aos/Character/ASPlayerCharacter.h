@@ -47,6 +47,7 @@ protected:
 	void FinishCrossHairBulletFire();
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
+	void UseGrenadeSkill();
 	void UseSkill();
 	void BuildTypeSkillTrace(); // 설치형 스킬 Trace
 	
@@ -233,6 +234,9 @@ protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> barrierActor;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> grenadeActor;
 public:
 	FORCEINLINE float GetCrossHairSpreadMultiplier() const {return CrossHairSpreadMultiplier;}
 	FORCEINLINE bool GetAiming() const {return bIsAiming;}

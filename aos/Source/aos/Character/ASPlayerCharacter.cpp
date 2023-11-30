@@ -131,6 +131,7 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Test Skill
 		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
+		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
 
 		//Aiming
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
@@ -368,6 +369,11 @@ void AASPlayerCharacter::CreateBarrier()
 	
 	ft.SetLocation(GroundPlacementPoint);
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
+}
+
+void AASPlayerCharacter::UseGrenadeSkill()
+{
+	GetWorld()->SpawnActor<AActor>(grenadeActor);
 }
 
 void AASPlayerCharacter::UseSkill()
