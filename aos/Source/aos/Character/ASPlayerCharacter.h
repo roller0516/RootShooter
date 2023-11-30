@@ -31,12 +31,14 @@ class AOS_API AASPlayerCharacter : public AASBaseCharacter
 
 public:
 	AASPlayerCharacter();
-public:	
+
+	
+public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 protected:
 	virtual void BeginPlay() override;
-	
+	virtual void PossessedBy(AController* NewController) override;
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
 
@@ -109,6 +111,8 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IAReloading;
+
+
 	
 	//--------------------------------------------------------particle
 	//TODO::data

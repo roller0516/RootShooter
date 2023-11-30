@@ -64,14 +64,6 @@ void AASPlayerController::Tick(float DeltaSeconds)
 
 void AASPlayerController::OnPossess(APawn* aPawn)
 {
-	const UASCommonLocalPlayer* LP = Cast<UASCommonLocalPlayer>(GetLocalPlayer());
-	check(LP);
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	check(Subsystem);
-
-	Subsystem->ClearAllMappings();
-
 	Super::OnPossess(aPawn);
 }
 

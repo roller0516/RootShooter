@@ -82,7 +82,15 @@ void AASPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	EquipWeapon(SpawnDefaultWeapon());
+	
+	Camera->FieldOfView = CameraDefaultFOV;
+	CurrentCameraFOV = CameraDefaultFOV;
+}
+
+void AASPlayerCharacter::PossessedBy(AController* NewController)
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(NewController))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
 			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -90,13 +98,6 @@ void AASPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(defaultMappingContext, 0);
 		}
 	}
-
-	EquipWeapon(SpawnDefaultWeapon());
-	
-
-
-	Camera->FieldOfView = CameraDefaultFOV;
-	CurrentCameraFOV = CameraDefaultFOV;
 }
 
 // Called every frame
