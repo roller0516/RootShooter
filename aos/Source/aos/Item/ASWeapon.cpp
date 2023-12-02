@@ -89,3 +89,17 @@ FTransform AASWeapon::GetBarrelSocketTransForm() const
 		return BarrelSocket->GetSocketTransform(ItemMesh);
 	return FTransform();
 }
+
+float AASWeapon::GetDamage()
+{
+	FRandomStream RandomStream(FDateTime::Now().GetTicks());
+
+	int32 RandomValue = RandomStream.RandRange(MinDamage, MaxDamage);
+
+	return RandomValue;
+}
+
+float AASWeapon::GetHeadDamage()
+{
+	return GetDamage() * 2;
+}

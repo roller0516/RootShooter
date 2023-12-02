@@ -14,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/ASWeapon.h"
+#include "Item/ASGrenade.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -133,7 +134,7 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Test Skill
 		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
-		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
+		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseGrenadeSkill);
 
 		//Aiming
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
@@ -281,17 +282,12 @@ void AASPlayerCharacter::FireWeapon()
 		//if (MuzzleFlash)
 		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
 
-		
-
 		FHitResult BeamHitResult;
 		bool bIsBeam = GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
 		if(bIsBeam)
 		{
 			// Does hit Actor implement BulletHitInterface?
 			if (BeamHitResult.GetActor()) {
-				
-				//if (GEngine)
-				//	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, BeamHitResult.GetActor()->GetName());
 				DrawDebugPoint(GetWorld(), BeamHitResult.ImpactPoint, 3, FColor::Red, false, 10, 0);
 				IASBulletHitIInterface* BulletHitInterface = Cast<IASBulletHitIInterface>(BeamHitResult.GetActor());
 
@@ -312,7 +308,7 @@ void AASPlayerCharacter::FireWeapon()
 							GetController(),
 							this,
 							UDamageType::StaticClass());
-						UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
+						//UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
 					}
 					else
 					{
@@ -322,7 +318,6 @@ void AASPlayerCharacter::FireWeapon()
 							GetController(),
 							this,
 							UDamageType::StaticClass());
-						UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
 					}
 				}
 			} 
@@ -337,8 +332,6 @@ void AASPlayerCharacter::FireWeapon()
 				}
 				DrawDebugPoint(GetWorld(), BeamHitResult.ImpactPoint, 3, FColor::Red, false, 10, 0);
 			}
-
-			
 
 			EquippedWeapon->ShowShotParticles(BeamHitResult);
 			//if (ShotLineParticle)
@@ -400,7 +393,20 @@ void AASPlayerCharacter::CreateBarrier()
 
 void AASPlayerCharacter::UseGrenadeSkill()
 {
-	GetWorld()->SpawnActor<AActor>(grenadeActor);
+	if (grenadeActor && EquippedWeapon)
+	{
+		FRotator MuzzleRotation = GetActorRotation();
+		FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+
+			AASGrenade* Grenade = GetWorld()->SpawnActor<AASGrenade>(grenadeActor, MuzzleLocation, MuzzleRotation);
+		}
+	}
 }
 
 void AASPlayerCharacter::UseSkill()

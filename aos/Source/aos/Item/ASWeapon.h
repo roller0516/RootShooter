@@ -39,10 +39,10 @@ private:
 	TObjectPtr<class UStaticMesh> ShellMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
-	float Damage = 20;
+	float MinDamage = 8;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
-	float HeadShotDamage = 50;
+	float MaxDamage = 12;
 
 public:
 	void ShowShotParticles(FHitResult pHitResult);
@@ -50,7 +50,7 @@ public:
 
 	FORCEINLINE FName GetClipBoneName() const {return ClipBoneName;}
 	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
-	FORCEINLINE float GetDamage() { return Damage; }
-	FORCEINLINE float GetHeadDamage() { return HeadShotDamage;}
+	FORCEINLINE float GetDamage();
+	FORCEINLINE float GetHeadDamage();
 
 };
