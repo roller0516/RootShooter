@@ -9,6 +9,9 @@
 /**
  * 
  */
+class UTextBlock;
+class UProgressBar;
+//이름 수정 예정.
 UCLASS()
 class AOS_API UASAmmoWidgetBase : public UCommonUserWidget
 {
@@ -16,11 +19,16 @@ class AOS_API UASAmmoWidgetBase : public UCommonUserWidget
 public:
 	UASAmmoWidgetBase(const FObjectInitializer& InitObejct);
 
-	void InitWeaponAmmonCount();
-
+	void InitWeaponAmmonCount(class ASWeapon* weapon);
+	void OnChangeHpProgressBar(float hpRate);
+	void OnChangeStaminaProgressBar(float staminaRate);
 private:
-	//UPROPERTY(meta = (BindWidget))
-	//TObjectPtr<class UText> ammonCountText;
+	UPROPERTY(meta = (BindWidget, AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> ammonCountText;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> HpProgressBar;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> StaminaProgressBar;
 };

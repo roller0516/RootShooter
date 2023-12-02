@@ -11,6 +11,7 @@
 #include "Engine/AssetManager.h"
 #include "aos.h"
 #include "../../../Experimental/GameFeatures/Source/GameFeatures/Public/GameFeatureAction.h"
+#include "Data/ASItemData.h"
 
 // Sets default values for this component's properties
 UASExperienceStateComponent::UASExperienceStateComponent(const FObjectInitializer& ObjectInitializer)
@@ -46,24 +47,13 @@ void UASExperienceStateComponent::ServerSetCurrentExperience(FPrimaryAssetId pri
 {
 	UASAssetManager& Assetmanager = UASAssetManager::Get();
 
-	FSoftObjectPath AssetPath = Assetmanager.GetPrimaryAssetPath(primaryID);
-	//TArray<FPrimaryAssetId> OutAssets;
-	//Assetmanager.GetPrimaryAssetIdList(TEXT("ASExperienceDefinition"), OutAssets);
-
-	//int32 AccessIdx = 3;
-	//FSoftObjectPtr AssetPtr(Assetmanager.GetPrimaryAssetPath(OutAssets[AccessIdx]));
-	//// 3. 에셋의 경로를 통해 에셋에 대한 FSoftObjectPtr을 얻어온다.
+	//FSoftObjectPath AssetPath = Assetmanager.GetPrimaryAssetPath(primaryID);
 	//
-	//if (AssetPtr.IsPending())
-	//{
-	//	AssetPtr.LoadSynchronous();
-	//	// 4. 에셋을 로딩해온다.
-	//}
-
-	TSubclassOf<UASExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
-	check(AssetClass);
-	const TObjectPtr<UASExperienceDefinition> Experience = AssetClass.GetDefaultObject();
-	check(Experience!=nullptr);
+	//TSubclassOf<UASExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
+	//check(AssetClass);
+	//const TObjectPtr<UASExperienceDefinition> Experience = AssetClass.GetDefaultObject();
+	//check(Experience!=nullptr);
+	const TObjectPtr<UASExperienceDefinition> Experience = Assetmanager.GetPrimaryData<UASExperienceDefinition>(primaryID);
 	check(currentExperience == nullptr);
 
 	currentExperience = Experience;

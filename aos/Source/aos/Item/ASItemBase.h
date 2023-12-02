@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ASItemBase.generated.h"
 
+//struct FItemBaseData;
+
 UCLASS()
 class AOS_API AASItemBase : public AActor
 {
@@ -13,21 +15,34 @@ class AOS_API AASItemBase : public AActor
 	
 public:	
 	AASItemBase();
+	AASItemBase(int32 itemID);
+public:
+	FORCEINLINE class USphereComponent* GetAreaSphere() const { return areaSphere; }
+	FORCEINLINE class UBoxComponent* GetCollisionBox() const { return collisionBox; }
+	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return itemMeshComponent; }
+
 protected:
 	virtual void BeginPlay() override;
-public:	
-	virtual void Tick(float DeltaTime) override;
+	virtual void SetTexture();
+	virtual void SetMesh();
+	virtual void SetCount();
+
+	void UpdateItemBaseData();
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
+	int32 itemID;
+
+	UPROPERTY(VisibleAnywhere,Category = "Item", meta = (AllowPrivateAccess = "true"))
+	int32 itemCount;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = Item)
+	class USkeletalMeshComponent* itemMeshComponent;
+
+	class UASItemPrimaryData* itemDataTable;
 private:
 	UPROPERTY(EditAnywhere,Category = Item)
-	class UBoxComponent* CollisionBox;
+	class UBoxComponent* collisionBox;
 
 	UPROPERTY(EditAnywhere,Category = Item)
-	class USphereComponent* AreaSphere;
-protected:
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = Item)
-	class USkeletalMeshComponent* ItemMesh;
-public:
-	FORCEINLINE class USphereComponent* GetAreaSphere() const {return AreaSphere;}
-	FORCEINLINE class UBoxComponent* GetCollisionBox() const {return CollisionBox;}
-	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const {return ItemMesh;}
+	class USphereComponent* areaSphere;
 };

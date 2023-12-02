@@ -4,30 +4,56 @@
 #include "ASItemBase.h"
 
 #include "Components/BoxComponent.h"
+#include "GameCore/ASGame/ASAssetManager.h"
+#include "Data/ASItemPrimaryData.h"
 
 // Sets default values
+
 AASItemBase::AASItemBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Item Mesh"));
-	SetRootComponent(ItemMesh);
+	PrimaryActorTick.bCanEverTick = false;
+	itemMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Item Mesh"));
+	SetRootComponent(itemMeshComponent);
 
-	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	CollisionBox->SetupAttachment(ItemMesh);
+	collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	collisionBox->SetupAttachment(itemMeshComponent);
+}
+
+AASItemBase::AASItemBase(int32 itemID)
+	: itemID(itemID)
+{
+	
 }
 
 // Called when the game starts or when spawned
 void AASItemBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UASAssetManager& asssetmanager = UASAssetManager::Get();
+	itemDataTable = asssetmanager.GetPrimaryData<UASItemPrimaryData>(FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData")));
+
+	UpdateItemBaseData();
+}
+
+void AASItemBase::SetTexture()
+{
 	
 }
 
-// Called every frame
-void AASItemBase::Tick(float DeltaTime)
+void AASItemBase::SetMesh()
 {
-	Super::Tick(DeltaTime);
-
+	
 }
 
+void AASItemBase::SetCount()
+{
+	
+}
+
+void AASItemBase::UpdateItemBaseData()
+{
+	SetTexture();
+	SetMesh();
+	SetCount();
+}

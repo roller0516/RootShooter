@@ -36,10 +36,16 @@ void UASReticleWigetBase::DrawReticle()
 {
 	//Super::DrawHUD();
 	//AHUD* hud = ->GetHUD();
-	int32 x,y;
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewportSize(x, y);
-	float sizeX = 0;
-	float sizeY = 0;
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+
+	//int32 x,y;
+	//UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewportSize(x, y);
+	float sizeX = ViewportSize.X;
+	float sizeY = ViewportSize.Y;
 
 	FVector2D ScreenCenter{ sizeX / 2,sizeY / 2 };
 

@@ -110,6 +110,18 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 	CalcAimingSpeed();
 	//SKill
 	BuildTypeSkillTrace();
+
+	FHitResult ItemTraceResult;
+	FVector HitLocation;
+	TraceUnderCrosshairs(ItemTraceResult, HitLocation);
+
+	if(ItemTraceResult.bBlockingHit)
+	{
+		//ItemTrace 
+	}
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("%d"),EquippedWeapon->GetCurrentAmmoCount()));
 }
 
 // Called to bind functionality to input
@@ -227,13 +239,25 @@ void AASPlayerCharacter::DropWeapon()
 
 AASWeapon* AASPlayerCharacter::SpawnDefaultWeapon()
 {
-	if(DefaultWeapon)
-	{
-		AASWeapon* spawnWeapon = GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
+	AASWeapon* spawnWeapon = NewObject<AASWeapon>();
+	//spawnWeapon->CreateWeapon(1001);
 
-		return spawnWeapon;
-	}
+	AASWeapon* returnWeapon = GetWorld()->SpawnActor<AASWeapon>(spawnWeapon->StaticClass());
+	returnWeapon->CreateWeapon(1001);
+	if(returnWeapon)
+		return returnWeapon;
 	return nullptr;
+
+	//GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
+	//if(DefaultWeapon)
+	//{
+	//	//AASWeapon* sapwnWeapon = NewObject<AASWeapon>();
+	//	//sapwnWeapon->CreateWeapon(1001);
+	//	//AASWeapon* spawnWeapon = GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
+	//
+	//	return spawnWeapon;
+	//}
+	//return nullptr;
 }
 
 void AASPlayerCharacter::Reloading()
@@ -246,6 +270,13 @@ void AASPlayerCharacter::Reloading()
 		AnimInstance->Montage_JumpToSection(FName("StartReloading"));
 		CombatState = ECombatState::ECS_Reloading;
 	}
+}
+
+bool AASPlayerCharacter::WeaponHasAmmo()
+{
+	if(EquippedWeapon == nullptr) return false;
+
+	return EquippedWeapon->GetCurrentAmmoCount() > 0;
 }
 
 void AASPlayerCharacter::GrapClip()
@@ -271,7 +302,7 @@ void AASPlayerCharacter::ReplaceClip()
 void AASPlayerCharacter::FireWeapon()
 {
 	if(bFiringBullet) return;
-	
+	if(!WeaponHasAmmo()) return;
 	//const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->ItemMesh->GetSocketByName("BarrelSocket");
 	if (EquippedWeapon)
 	{
@@ -336,6 +367,9 @@ void AASPlayerCharacter::FireWeapon()
 		AnimInstance->Montage_Play(Montages[MontageType::Attack]);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
+
+	if(EquippedWeapon)
+		EquippedWeapon->DecrementAmmo();
 
 	StartCrossHairBulletFire();
 }
@@ -507,68 +541,72 @@ void AASPlayerCharacter::DecreaseSpread(float decreaseAmount)
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)
 {
 	FVector OutBeamLocation;
+
+	FHitResult CrosshairHitResult;
+	bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
+
+	if(bCrosshairHit)
+	{
+		OutBeamLocation = CrosshairHitResult.Location;
+	}
+	else
+	{
+		
+	}
+
+	const FVector WeaponTraceStart = MuzzleSocketLocation;
+	const FVector StartToEnd {OutBeamLocation - MuzzleSocketLocation};
+	const FVector WeaponTraceEnd = MuzzleSocketLocation + StartToEnd * 1.25f;
+
+	GetWorld()->LineTraceSingleByChannel(
+		OutHitResult,
+		WeaponTraceStart,
+		WeaponTraceEnd,
+		ECollisionChannel::ECC_Visibility);
+
+	if (OutHitResult.bBlockingHit)
+	{
+		OutHitResult.Location = OutBeamLocation;
+		return true;
+	}
+	return false;
+}
+
+bool AASPlayerCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation)
+{
+	// Get viewport size 
 	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport)
+	if(GEngine && GEngine->GameViewport)
 	{
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 	}
 
 	FVector2D CrossHairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-	CrossHairLocation.Y -= 50.f;
-
 	FVector CrossHairWorldPosition;
 	FVector CrossHairWorldDirection;
 
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-			UGameplayStatics::GetPlayerController(this, 0),
-			CrossHairLocation, CrossHairWorldPosition,CrossHairWorldDirection);
-	
-	if (bScreenToWorld)
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrossHairLocation, CrossHairWorldPosition, CrossHairWorldDirection);
+
+	if(bScreenToWorld)
 	{
-		FHitResult ScreenTraceHit;
-		const FVector Start = CrossHairWorldPosition;
-		const FVector End = CrossHairWorldPosition + CrossHairWorldDirection * 50000.f;
-
-		OutBeamLocation = End;
-
+		//
+		const FVector Start{CrossHairWorldPosition};
+		const FVector End{Start + CrossHairWorldDirection * 50000.f};
+		OutHitLocation = End;
 		GetWorld()->LineTraceSingleByChannel(
-			ScreenTraceHit,
-			Start,
-			End,
-			ECollisionChannel::ECC_Visibility);
+		OutHitResult,
+		Start,
+		End,
+		ECollisionChannel::ECC_Visibility);
 
-		//DrawDebugLine(GetWorld(),Start,End,FColor::Cyan,false,-1,0,1.f);
-
-		if (ScreenTraceHit.bBlockingHit)
+		if(OutHitResult.bBlockingHit)
 		{
-			OutBeamLocation = ScreenTraceHit.Location;
-			// 라인 트레이스이기 때문에 물체의 부피가 없어 뚫리는 현상을 없애기 위함.
-		}
-
-		const FVector WeaponTraceStart = MuzzleSocketLocation;
-		const FVector WeaponTraceEnd = OutBeamLocation;
-				
-		GetWorld()->LineTraceSingleByChannel(
-			OutHitResult,
-			WeaponTraceStart,
-			WeaponTraceEnd,
-			ECollisionChannel::ECC_Visibility);
-		
-		//DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, -1, 0, 1.f);
-
-		if(!OutHitResult.bBlockingHit)
-		{
-			OutHitResult.Location = OutBeamLocation;
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : TRUE");
+			OutHitLocation = OutHitResult.Location;
 			return true;
 		}
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : TRUE");
-		return true;
 	}
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, "bScreen : FALSE");
 	return false;
 }
 

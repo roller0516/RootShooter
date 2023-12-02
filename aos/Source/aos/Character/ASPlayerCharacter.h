@@ -32,7 +32,6 @@ class AOS_API AASPlayerCharacter : public AASBaseCharacter
 public:
 	AASPlayerCharacter();
 
-	
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -64,6 +63,7 @@ protected:
 	void DecreaseSpread(float decreaseAmount);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
+	bool TraceUnderCrosshairs(FHitResult&OutHitResult,FVector& OutHitLocation);
 	//---------------------------------------------------------Movement
 	void CalcAimingSpeed();
 	//---------------------------------------------------------EquipWeapon
@@ -72,7 +72,10 @@ protected:
 	AASWeapon* SpawnDefaultWeapon();
 	//---------------------------------------------------------Reloading
 	void Reloading();
-	
+	//---------------------------------------------------------Ammo
+
+	bool WeaponHasAmmo();
+
 	UFUNCTION(BlueprintCallable)
 	void GrapClip();
 	
@@ -112,8 +115,6 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IAReloading;
-
-
 	
 	//--------------------------------------------------------particle
 	//TODO::data
@@ -220,7 +221,7 @@ private :
 
 	FVector GroundPlacementPoint;
 	//-------------------------------------------------------Weapon
-	UPROPERTY(VisibleAnywhere,Category = Weapon)
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	class AASWeapon* EquippedWeapon;
 
 	UPROPERTY(EditAnywhere,Category = Weapon)

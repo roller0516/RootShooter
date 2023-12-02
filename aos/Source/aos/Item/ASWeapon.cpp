@@ -7,6 +7,9 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
+#include "Data/ASItemPrimaryData.h"
+#include "Data/ASItemData.h"
+#include "ASItemBase.h"
 
 //#include "Item/ASItemBase.h"
 AASWeapon::AASWeapon()
@@ -16,12 +19,12 @@ AASWeapon::AASWeapon()
 
 void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 {
-	const USkeletalMeshSocket* BarrelSocket = ItemMesh->GetSocketByName("BarrelSocket");
-	const USkeletalMeshSocket* ShellSocket = ItemMesh->GetSocketByName("BarrelSocket");
+	const USkeletalMeshSocket* BarrelSocket = itemMeshComponent->GetSocketByName("BarrelSocket");
+	const USkeletalMeshSocket* ShellSocket = itemMeshComponent->GetSocketByName("BarrelSocket");
 
 	if(ShellSocket)
 	{
-		const FTransform ShellSocketTr = BarrelSocket->GetSocketTransform(ItemMesh);
+		const FTransform ShellSocketTr = BarrelSocket->GetSocketTransform(itemMeshComponent);
 		FVector v = ShellSocketTr.GetLocation();
 		FRotator r = ShellSocketTr.GetRotation().Rotator();
 		if (ShellEffect)
@@ -29,7 +32,7 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ShellEffect, ShellSocketTr.GetLocation());
 			UNiagaraComponent* tempTracer =
 				UNiagaraFunctionLibrary::SpawnSystemAttached(
-					ShellEffect, ItemMesh, TEXT("ShellSocket"),
+					ShellEffect, itemMeshComponent, TEXT("ShellSocket"),
 					ShellSocketTr.GetLocation(), r,
 					EAttachLocation::KeepWorldPosition, true);
 			tempTracer->SetNiagaraVariableObject(FString(TEXT("User.ShellEjectStaticMesh")), ShellMesh);
@@ -39,7 +42,7 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 
 	if (BarrelSocket) 
 	{
-		const FTransform muzzleTr = BarrelSocket->GetSocketTransform(ItemMesh);
+		const FTransform muzzleTr = BarrelSocket->GetSocketTransform(itemMeshComponent);
 		
 		FVector v = muzzleTr.GetLocation();
 		FRotator r = muzzleTr.GetRotation().Rotator();
@@ -51,7 +54,7 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleEffect, muzzleTr.GetLocation());
 			UNiagaraComponent* muzzle =
 				UNiagaraFunctionLibrary::SpawnSystemAttached(
-					MuzzleEffect, ItemMesh, TEXT("BarrelSocket"),
+					MuzzleEffect, itemMeshComponent, TEXT("BarrelSocket"),
 					muzzleTr.GetLocation(), r,
 					EAttachLocation::KeepWorldPosition, true);
 			FVector direction = hitPosition - v;
@@ -65,7 +68,7 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 		{
 			UNiagaraComponent* tempTracer =
 				UNiagaraFunctionLibrary::SpawnSystemAttached(
-					TracerEffect, ItemMesh, TEXT("BarrelSocket"),
+					TracerEffect, itemMeshComponent, TEXT("BarrelSocket"),
 					muzzleTr.GetLocation(), r,
 					EAttachLocation::KeepWorldPosition, true);
 			tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
@@ -77,15 +80,76 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 				SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
 
 			tempTracer->SetNiagaraVariablePosition(
-				FString(TEXT("User.MuzzlePostion")), ItemMesh->GetSocketLocation(TEXT("BarrelSocket")));
+				FString(TEXT("User.MuzzlePostion")), itemMeshComponent->GetSocketLocation(TEXT("BarrelSocket")));
 		}
 	}
 }
 
 FTransform AASWeapon::GetBarrelSocketTransForm() const
 {
-	const USkeletalMeshSocket* BarrelSocket = ItemMesh->GetSocketByName("BarrelSocket");
+	const USkeletalMeshSocket* BarrelSocket = itemMeshComponent->GetSocketByName("BarrelSocket");
 	if(BarrelSocket)
-		return BarrelSocket->GetSocketTransform(ItemMesh);
+		return BarrelSocket->GetSocketTransform(itemMeshComponent);
 	return FTransform();
+}
+
+void AASWeapon::CreateWeapon(int32 _itemID)
+{
+	itemID = _itemID;
+	weaponData = (FWeaponData*)itemDataTable->GetItemData(itemID);
+
+	SetMesh();
+
+	SetCount();
+
+	SetMaxAmmoCount();
+
+	curAmmonCount = maxAmmoCount;
+
+	SetActorScale3D(FVector(1,1,1));
+}
+
+void AASWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	weaponData = (FWeaponData*)itemDataTable->GetItemData(itemID);
+}
+
+void AASWeapon::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
+void AASWeapon::SetTexture()
+{
+	
+}
+
+void AASWeapon::SetMesh()
+{
+	if(weaponData)
+		itemMeshComponent->SetSkeletalMesh(weaponData->mesh.Get());
+}
+
+void AASWeapon::SetCount()
+{
+	if(itemID != 0)
+		itemCount = itemDataTable->GetItemData(itemID)->Count;
+}
+
+void AASWeapon::ResetCurAmmoCount(int32 count)
+{
+	curAmmonCount = maxAmmoCount;
+}
+
+void AASWeapon::SetMaxAmmoCount()
+{
+	if(weaponData)
+		maxAmmoCount = weaponData->maxAmmoCount;
+}
+
+void AASWeapon::DecrementAmmo()
+{
+	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);
 }

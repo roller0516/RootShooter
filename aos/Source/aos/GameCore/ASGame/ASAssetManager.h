@@ -9,16 +9,30 @@
 /**
  * 
  */
+struct  FPrimaryAssetData;
+
+
 UCLASS()
 class AOS_API UASAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
 public:
 	static UASAssetManager& Get();
-	
-	//class UASPawnData* GetDefaultPawnData();
-
 	FName GetName() const ;
 protected:
 	virtual void StartInitialLoading() override;
+
+public:
+	template<typename T>
+	TObjectPtr<T> GetPrimaryData(FPrimaryAssetId primaryID)
+	{
+		FSoftObjectPath AssetPath = GetPrimaryAssetPath(primaryID);
+		TSubclassOf<T> AssetClass = Cast<UClass>(AssetPath.TryLoad());
+
+		check(AssetClass);
+		const TObjectPtr<T> Assetobject = AssetClass.GetDefaultObject();
+		check(Assetobject);
+
+		return Assetobject;
+	}
 };

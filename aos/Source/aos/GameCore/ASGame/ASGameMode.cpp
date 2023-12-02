@@ -103,7 +103,7 @@ void AASGameMode::OnExperienceLoaded(const UASExperienceDefinition* experience)
 			if (PlayerCanRestart(PC))
 			{
 				RestartPlayer(PC);
-				HandleStartingNewPlayer_Implementation(PC);
+				//HandleStartingNewPlayer_Implementation(PC);
 			}
 		}
 	}

@@ -17,12 +17,6 @@ UASAssetManager& UASAssetManager::Get()
 	return*NewObject<UASAssetManager>();
 }
 
-//UASPawnData* UASAssetManager::GetDefaultPawnData()
-//{
-//	return GetAsset(DefaultPawnData);
-//}
-
-
 FName UASAssetManager::GetName() const
 {
 	return FName();
@@ -34,6 +28,4 @@ void UASAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FASGameplayTags::InitializeNativeGameplayTags();
-
-	//UAbilitySystemGlobals::Get().InitGlobalData();
 }
