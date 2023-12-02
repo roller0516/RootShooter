@@ -153,3 +153,18 @@ void AASWeapon::DecrementAmmo()
 {
 	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);
 }
+
+float AASWeapon::GetDamage()
+{
+	FRandomStream RandomStream(FDateTime::Now().GetTicks());
+
+	int32 RandomValue = RandomStream.RandRange(MinDamage, MaxDamage);
+
+	return RandomValue;
+}
+
+float AASWeapon::GetHeadDamage()
+{
+	return GetDamage() * 2;
+
+}

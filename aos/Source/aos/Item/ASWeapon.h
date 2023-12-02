@@ -66,6 +66,21 @@ private:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int maxAmmoCount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float MinDamage = 8;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float MaxDamage = 12;
+
+public:
+	void ShowShotParticles(FHitResult pHitResult);
+	FTransform GetBarrelSocketTransForm() const;
+
+	FORCEINLINE FName GetClipBoneName() const {return ClipBoneName;}
+	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
+	FORCEINLINE float GetDamage();
+	FORCEINLINE float GetHeadDamage();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int curAmmonCount;
 

@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "ASGrenade.generated.h"
 
 UCLASS()
@@ -11,9 +13,14 @@ class AOS_API AASGrenade : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
 	// Sets default values for this actor's properties
 	AASGrenade();
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	USphereComponent* CollisionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UProjectileMovementComponent* ProjectileMovement;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Timer")
@@ -26,19 +33,21 @@ private:
 	class USoundBase* ExplosionSound;
 
 	UPROPERTY(EditAnywhere, Category = "Grenade")
-	float Radius = 500.f;
+	float DamageRadius = 500.f;
 
-	UPROPERTY(VisibleAnywhere)
-	class UStaticMesh* grenadeMesh;
+	UPROPERTY(EditAnywhere, Category = "Grenade")
+	float MinDamage = 50;
+
+	UPROPERTY(EditAnywhere, Category = "Grenade")
+	float MaxDamage = 200.f;
 
 	FTimerHandle TimerHandle;
 
-	UStaticMeshComponent* staticMeshCompoenent;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:
-	virtual void Explode();
+	USphereComponent* GetCollisionComp() const { return CollisionComp; }
+
+	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
