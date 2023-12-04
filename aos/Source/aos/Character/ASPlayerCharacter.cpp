@@ -330,25 +330,31 @@ void AASPlayerCharacter::FireWeapon()
 				AASEnemy* HitEnemy = Cast<AASEnemy>(BeamHitResult.GetActor());
 				if (HitEnemy)
 				{
+					int32 Damage = {};
 					if (BeamHitResult.BoneName.ToString() == HitEnemy->GetHeadBone())
 					{
 						//HeadShot
+						Damage = EquippedWeapon->GetHeadDamage();
 						UGameplayStatics::ApplyDamage(
 							BeamHitResult.GetActor(),
-							EquippedWeapon->GetHeadDamage(),
+							Damage,
 							GetController(),
 							this,
 							UDamageType::StaticClass());
+						HitEnemy->ShowHitNumber(Damage, BeamHitResult.Location, true);
 						//UE_LOG(LogTemp, Warning, TEXT("Hit Componenet: %s"), *BeamHitResult.BoneName.ToString());
 					}
 					else
 					{
+						Damage = EquippedWeapon->GetDamage();
 						UGameplayStatics::ApplyDamage(
 							BeamHitResult.GetActor(),
-							EquippedWeapon->GetDamage(),
+							Damage,
 							GetController(),
 							this,
 							UDamageType::StaticClass());
+						HitEnemy->ShowHitNumber(Damage, BeamHitResult.Location, false);
+
 					}
 				}
 			} 

@@ -17,16 +17,10 @@ class AOS_API AASWeapon : public AASItemBase
 	GENERATED_BODY()
 public:
 	AASWeapon();
-	//AASWeapon(int32 itemid);
-	void ShowShotParticles(FHitResult pHitResult);
-	FTransform GetBarrelSocketTransForm() const;
 
 	void DecrementAmmo();
 	void CreateWeapon(int32 itemID);
 
-	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
-	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
-	FORCEINLINE int GetCurrentAmmoCount(){return curAmmonCount;}
 protected:
 	void SetTexture() override;
 	void SetMesh() override;
@@ -80,6 +74,7 @@ public:
 	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
 	FORCEINLINE float GetDamage();
 	FORCEINLINE float GetHeadDamage();
+	FORCEINLINE int GetCurrentAmmoCount() { return curAmmonCount; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int curAmmonCount;
