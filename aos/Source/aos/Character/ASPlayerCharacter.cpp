@@ -242,24 +242,16 @@ void AASPlayerCharacter::DropWeapon()
 AASWeapon* AASPlayerCharacter::SpawnDefaultWeapon()
 {
 	AASWeapon* spawnWeapon = NewObject<AASWeapon>();
-	//spawnWeapon->CreateWeapon(1001);
 
-	AASWeapon* returnWeapon = GetWorld()->SpawnActor<AASWeapon>(spawnWeapon->StaticClass());
-	returnWeapon->CreateWeapon(1001);
+	FTransform Tr;
+
+	Tr.SetScale3D(FVector(1,1,1));
+
+	AASWeapon* returnWeapon = GetWorld()->SpawnActor<AASWeapon>(spawnWeapon->StaticClass(),Tr);
+	returnWeapon->CreateItem(1002);
 	if(returnWeapon)
 		return returnWeapon;
 	return nullptr;
-
-	//GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
-	//if(DefaultWeapon)
-	//{
-	//	//AASWeapon* sapwnWeapon = NewObject<AASWeapon>();
-	//	//sapwnWeapon->CreateWeapon(1001);
-	//	//AASWeapon* spawnWeapon = GetWorld()->SpawnActor<AASWeapon>(DefaultWeapon);
-	//
-	//	return spawnWeapon;
-	//}
-	//return nullptr;
 }
 
 void AASPlayerCharacter::Reloading()
@@ -269,9 +261,11 @@ void AASPlayerCharacter::Reloading()
 	if (AnimInstance && reloading)
 	{
 		AnimInstance->Montage_Play(reloading);
-		AnimInstance->Montage_JumpToSection(FName("StartReloading"));
+		AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMotageSection());
 		CombatState = ECombatState::ECS_Reloading;
 	}
+
+	//EquippedWeapon->ResetAmmo();
 }
 
 bool AASPlayerCharacter::WeaponHasAmmo()
@@ -312,7 +306,7 @@ void AASPlayerCharacter::FireWeapon()
 		
 		//if (MuzzleFlash)
 		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
-
+		CombatState = ECombatState::ECS_FireTimerInProgress;
 		FHitResult BeamHitResult;
 		bool bIsBeam = GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
 		if(bIsBeam)
@@ -414,6 +408,8 @@ void AASPlayerCharacter::FinishCrossHairBulletFire()
 {
 	bFiringBullet = false;
 	GetWorldTimerManager().ClearTimer(CrossHairShootTimer);
+
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void AASPlayerCharacter::CreateBarrier()

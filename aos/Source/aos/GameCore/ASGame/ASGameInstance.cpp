@@ -2,7 +2,9 @@
 
 
 #include "GameCore/ASGame/ASGameInstance.h"
-#include "../../../Experimental/ModularGameplay/Source/ModularGameplay/Public/Components/GameFrameworkComponentManager.h"
+#include "Components/GameFrameworkComponentManager.h"
+#include "GameCore/ASGame/ASAssetManager.h"
+#include "Data/ASItemPrimaryData.h"
 
 
 UASGameInstance::UASGameInstance(const FObjectInitializer& ObjectInitializer) 
@@ -26,6 +28,10 @@ void UASGameInstance::Init()
 		//ComponentManager->RegisterInitState(GameplayTags.InitState_DataInitialized, false, GameplayTags.InitState_DataAvailable);
 		//ComponentManager->RegisterInitState(GameplayTags.InitState_GameplayReady, false, GameplayTags.InitState_DataInitialized);
 	}
+
+
+	UASAssetManager& assetManager = UASAssetManager::Get();
+	ItemData = assetManager.GetPrimaryData<UASItemPrimaryData>(FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData")));
 }
 
 void UASGameInstance::Shutdown()

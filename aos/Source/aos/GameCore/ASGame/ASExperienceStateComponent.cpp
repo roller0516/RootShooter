@@ -11,7 +11,6 @@
 #include "Engine/AssetManager.h"
 #include "aos.h"
 #include "../../../Experimental/GameFeatures/Source/GameFeatures/Public/GameFeatureAction.h"
-#include "Data/ASItemData.h"
 
 // Sets default values for this component's properties
 UASExperienceStateComponent::UASExperienceStateComponent(const FObjectInitializer& ObjectInitializer)

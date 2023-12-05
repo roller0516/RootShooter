@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Data/ASItemPrimaryData.h"
 #include "ASItemBase.generated.h"
 
 //struct FItemBaseData;
@@ -15,19 +16,18 @@ class AOS_API AASItemBase : public AActor
 	
 public:	
 	AASItemBase();
-	AASItemBase(int32 itemID);
 public:
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return areaSphere; }
 	FORCEINLINE class UBoxComponent* GetCollisionBox() const { return collisionBox; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return itemMeshComponent; }
 
+	virtual void CreateItem(int32 _itemID);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetTexture();
 	virtual void SetMesh();
 	virtual void SetCount();
-
-	void UpdateItemBaseData();
+	virtual	void UpdateItem();
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemID;
@@ -39,6 +39,12 @@ protected:
 	class USkeletalMeshComponent* itemMeshComponent;
 
 	class UASItemPrimaryData* itemDataTable;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FItemBaseData itemBaseData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* IconItemTexture;
 private:
 	UPROPERTY(EditAnywhere,Category = Item)
 	class UBoxComponent* collisionBox;

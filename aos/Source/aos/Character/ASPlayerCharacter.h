@@ -20,6 +20,7 @@ enum class ECombatState : uint8
 {
 	ECS_Unoccupied UMETA(DisplayName = "Unoccupied"),
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
+	ECS_FireTimerInProgress UMETA (DisplayName = "Fire"),
 	ECS_UsedSkill UMETA(DisplayName = "UsedSkill"),
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -233,7 +234,7 @@ private :
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,meta=(AllowPrivateAccess = "true"))
 	USceneComponent* HandSceneComponent;
 
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
 protected:
 	//-------------------------------------------------------Skill
@@ -246,4 +247,5 @@ public:
 	FORCEINLINE float GetCrossHairSpreadMultiplier() const {return CrossHairSpreadMultiplier;}
 	FORCEINLINE bool GetAiming() const {return bIsAiming;}
 	FORCEINLINE ECombatState GetCombatState() { return CombatState; }
+	FORCEINLINE class AASWeapon* GetEquipWeapon(){ return EquippedWeapon;}
 };

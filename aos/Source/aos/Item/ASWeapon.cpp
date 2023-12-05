@@ -8,13 +8,14 @@
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "Data/ASItemPrimaryData.h"
-#include "Data/ASItemData.h"
+#include "Animation/AnimInstance.h"
 #include "ASItemBase.h"
+#include "Engine/Texture2D.h"
 
 //#include "Item/ASItemBase.h"
 AASWeapon::AASWeapon()
 {
-	ClipBoneName = TEXT("smg_clip");
+	
 }
 
 void AASWeapon::ShowShotParticles(FHitResult pHitResult)
@@ -93,27 +94,58 @@ FTransform AASWeapon::GetBarrelSocketTransForm() const
 	return FTransform();
 }
 
-void AASWeapon::CreateWeapon(int32 _itemID)
+FTransform AASWeapon::GetRightHandSocket()
 {
-	itemID = _itemID;
-	weaponData = (FWeaponData*)itemDataTable->GetItemData(itemID);
+	const FTransform RightHandTr = itemMeshComponent->GetSocketTransform("RightHand");
 
+	return RightHandTr;
+}
+
+FName AASWeapon::GetReloadMotageSection()
+{
+	if(weaponType == WeaponType::SMG)
+	{
+		return FName("StartReloading");
+	}
+	else if(weaponType == WeaponType::Rifle)
+	{
+		return FName("ReloadAR");
+	}
+
+	return FName();
+}
+
+void AASWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AASWeapon::UpdateItem()
+{
 	SetMesh();
 
 	SetCount();
 
 	SetMaxAmmoCount();
 
-	curAmmonCount = maxAmmoCount;
+	SetDamage();
 
-	SetActorScale3D(FVector(1,1,1));
-}
+	SetTexture();
 
-void AASWeapon::BeginPlay()
-{
-	Super::BeginPlay();
+	SetMagazine();
 
-	weaponData = (FWeaponData*)itemDataTable->GetItemData(itemID);
+	ResetAmmo();
+
+	SetAnimInstance();
+
+	SetCrossHair();
+
+	ClipBoneName = weaponData.ClipBoneName;
+
+	ShellEffect = weaponData.ShellEffect;
+	MuzzleEffect = weaponData.MuzzleEffect;
+	TracerEffect = weaponData.TracerEffect;
+	ShellMesh = weaponData.ShellMesh;
 }
 
 void AASWeapon::PostInitializeComponents()
@@ -121,37 +153,112 @@ void AASWeapon::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+void AASWeapon::OnConstruction(const FTransform& Transform)
+{	
+	Super::OnConstruction(Transform);
+}
+
 void AASWeapon::SetTexture()
 {
-	
+	Super::SetTexture();
+
+	AmmoItemTexture = weaponData.ammoTexture;
 }
 
 void AASWeapon::SetMesh()
-{
-	if(weaponData)
-		itemMeshComponent->SetSkeletalMesh(weaponData->mesh.Get());
+{ 
+	itemMeshComponent->SetSkeletalMesh(weaponData.mesh);
 }
 
 void AASWeapon::SetCount()
 {
-	if(itemID != 0)
-		itemCount = itemDataTable->GetItemData(itemID)->Count;
+	itemCount = weaponData.Count;
 }
 
-void AASWeapon::ResetCurAmmoCount(int32 count)
+void AASWeapon::SetDamage()
 {
-	curAmmonCount = maxAmmoCount;
+	MinDamage = weaponData.MinDamage;
+	MaxDamage = weaponData.MaxDamage;
+}
+
+void AASWeapon::ResetAmmo()
+{
+	if(magazineCapacity <= 0) return;
+
+	int chai = maxAmmoCount - curAmmonCount;
+
+	if (chai > magazineCapacity)
+	{
+		curAmmonCount = magazineCapacity;
+		magazineCapacity = 0;
+	}
+	else
+	{
+		curAmmonCount = maxAmmoCount;
+		magazineCapacity -= chai;
+	}
+}
+
+void AASWeapon::SetAnimInstance()
+{
+	itemMeshComponent->SetAnimInstanceClass(weaponData.animInstance);
 }
 
 void AASWeapon::SetMaxAmmoCount()
 {
-	if(weaponData)
-		maxAmmoCount = weaponData->maxAmmoCount;
+	maxAmmoCount = weaponData.maxAmmoCount;
+}
+
+void AASWeapon::SetMagazine()
+{
+	magazineCapacity = weaponData.defaultMagazineCapacity;
+}
+
+void AASWeapon::SetCrossHair()
+{
+	if(weaponData.CrosshairsMiddle)
+	{
+		CrosshairsMiddle = weaponData.CrosshairsMiddle;
+	}
+
+	if(weaponData.CrosshairsLeft)
+	{
+		CrosshairsLeft = weaponData.CrosshairsLeft;
+	}
+
+	if(weaponData.CrosshairsBottom)
+	{
+		CrosshairsBottom = weaponData.CrosshairsBottom;
+	}
+
+	if(weaponData.CrosshairsRight)
+	{
+		CrosshairsRight = weaponData.CrosshairsRight;
+	}
+
+	if(weaponData.CrosshairsTop)
+	{
+		CrosshairsTop = weaponData.CrosshairsTop;
+	}
 }
 
 void AASWeapon::DecrementAmmo()
 {
 	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);
+}
+
+void AASWeapon::CreateItem(int32 _itemID)
+{
+	Super::CreateItem(_itemID);
+
+	if(itemDataTable->GetWeaponData(itemID))
+	{
+		weaponData = *itemDataTable->GetWeaponData(itemID);
+
+		weaponType = weaponData.weaponType;
+
+		UpdateItem();
+	}
 }
 
 float AASWeapon::GetDamage()
@@ -166,5 +273,4 @@ float AASWeapon::GetDamage()
 float AASWeapon::GetHeadDamage()
 {
 	return GetDamage() * 2;
-
 }

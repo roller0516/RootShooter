@@ -2,17 +2,18 @@
 
 #include "CoreMinimal.h"
 
-UENUM()
-enum class CharID : uint32 
+UENUM(BlueprintType)
+enum class CharID : uint8
 {
 	None,
 	Belica,
 	Blast
 };
 
-UENUM()
-enum class WeaponType : uint32
+UENUM(BlueprintType)
+enum class WeaponType : uint8
 {
 	None,
 	Rifle,
+	SMG,
 };

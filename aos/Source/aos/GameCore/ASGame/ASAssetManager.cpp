@@ -4,6 +4,7 @@
 #include "GameCore/ASGame/ASAssetManager.h"
 #include "GameCore/ASGame/FASGameplayTags.h"
 #include "Templates/UnrealTemplate.h"
+#include "Data/ASItemPrimaryData.h"
 
 UASAssetManager& UASAssetManager::Get()
 {
@@ -28,4 +29,9 @@ void UASAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FASGameplayTags::InitializeNativeGameplayTags();
+}
+
+void UASAssetManager::FinishInitialLoading()
+{
+	Super::FinishInitialLoading();
 }

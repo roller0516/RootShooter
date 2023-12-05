@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "../EnumTypes.h"
 #include "ASPlayerAniminstance.generated.h"
+
 
 /**
  * 
@@ -80,6 +82,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bShouldUseFABIK;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	WeaponType weaponType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
 	EOffsetState OffsetState;

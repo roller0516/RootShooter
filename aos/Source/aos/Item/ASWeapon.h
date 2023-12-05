@@ -19,25 +19,47 @@ public:
 	AASWeapon();
 
 	void DecrementAmmo();
-	void CreateWeapon(int32 itemID);
 
+	UFUNCTION(BlueprintCallable)
+	void ResetAmmo();
+
+	void ShowShotParticles(FHitResult pHitResult);
+
+	virtual void CreateItem(int32 _itemID) override;
+
+	FTransform GetRightHandSocket();
+	FName GetReloadMotageSection();
+
+	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
+	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
+	FORCEINLINE float GetDamage();
+	FORCEINLINE float GetHeadDamage();
+	FORCEINLINE int GetCurrentAmmoCount() { return curAmmonCount; }
 protected:
-	void SetTexture() override;
-	void SetMesh() override;
-	void SetCount() override;
-	void BeginPlay() override;
-	void PostInitializeComponents() override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	virtual void SetTexture() override;
+	virtual void SetMesh() override;
+	virtual void SetCount() override;
+	virtual void SetDamage();
+	virtual void BeginPlay() override;
+	virtual	void UpdateItem() override;
+	virtual void PostInitializeComponents() override;
 	//void SetAmmoCount(int32 count);
 private:
-	void ResetCurAmmoCount(int32 count);
+	void SetAnimInstance();
 	void SetMaxAmmoCount();
+	void SetMagazine();
+	void SetCrossHair();
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	WeaponType weaponType = WeaponType::None;
 
+	FTransform GetBarrelSocketTransForm() const;
+
 private:
-	UPROPERTY(EditAnywhere, Category = "Wepon Properties", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Wepon Properties", meta=(AllowPrivateAccess = "true"))
 	FName ClipBoneName;
 
 	FName BarrelSocketName;
@@ -45,39 +67,50 @@ private:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Wepon Properties",meta = (AllowPrivateAccess = "true"))
 	bool bMovingClip;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UNiagaraSystem> MuzzleEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UNiagaraSystem> ShellEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UNiagaraSystem> TracerEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	TObjectPtr<class UStaticMesh> ShellMesh;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int maxAmmoCount;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
-	float MinDamage = 8;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
-	float MaxDamage = 12;
-
-public:
-	void ShowShotParticles(FHitResult pHitResult);
-	FTransform GetBarrelSocketTransForm() const;
-
-	FORCEINLINE FName GetClipBoneName() const {return ClipBoneName;}
-	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
-	FORCEINLINE float GetDamage();
-	FORCEINLINE float GetHeadDamage();
-	FORCEINLINE int GetCurrentAmmoCount() { return curAmmonCount; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int curAmmonCount;
 
-	FWeaponData* weaponData;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int maxAmmoCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int magazineCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float MinDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	float MaxDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* AmmoItemTexture;
+
+	FWeaponData weaponData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UTexture2D> CrosshairsMiddle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UTexture2D> CrosshairsLeft;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UTexture2D> CrosshairsRight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UTexture2D> CrosshairsTop;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UTexture2D> CrosshairsBottom;
 };

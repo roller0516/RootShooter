@@ -5,6 +5,7 @@
 #include "ASPlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Item/ASWeapon.h"
 
 UASPlayerAnimInstance::UASPlayerAnimInstance()
 {
@@ -20,6 +21,8 @@ UASPlayerAnimInstance::UASPlayerAnimInstance()
 	OffsetState = EOffsetState::EOS_Hip;
 	CharacterRotation = FRotator::ZeroRotator;
 	CharacterRotationLastFrame = FRotator::ZeroRotator;
+	weaponType = WeaponType::None;
+	bShouldUseFABIK = false;
 }
 
 void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
@@ -52,7 +55,12 @@ void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 		bAiming = PlayerCharacter->GetAiming();
 
 		SetOffsetState();
+		if(PlayerCharacter->GetEquipWeapon())
+			weaponType = PlayerCharacter->GetEquipWeapon()->weaponType;
+
+		bShouldUseFABIK = PlayerCharacter->GetCombatState() == ECombatState::ECS_Unoccupied || PlayerCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress;
 	}
+
 	TurnInPlace();
 	Lean(deltaTime);
 }

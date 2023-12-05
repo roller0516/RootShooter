@@ -11,7 +11,6 @@
  */
 struct  FPrimaryAssetData;
 
-
 UCLASS()
 class AOS_API UASAssetManager : public UAssetManager
 {
@@ -21,7 +20,7 @@ public:
 	FName GetName() const ;
 protected:
 	virtual void StartInitialLoading() override;
-
+	virtual void FinishInitialLoading() override;
 public:
 	template<typename T>
 	TObjectPtr<T> GetPrimaryData(FPrimaryAssetId primaryID)
