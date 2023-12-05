@@ -14,7 +14,8 @@
 				"CommonUI",
 				"ModularGameplay",
 				"GameFeatures",
-				"UMG"
+				"UMG",
+				"AIModule"
 			]
 		}
 	],

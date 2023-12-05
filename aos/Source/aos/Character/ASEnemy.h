@@ -83,6 +83,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	float HitNumberDestroyTime;
 
+	UPROPERTY(EditAnywhere, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true"));
+	class UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditAnywhere, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"));
+	FVector PatrolPoint;
+
+	class AASEnemyController* EnemyController;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -98,4 +106,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowHitNumber(int32 Damage, FVector HitLocation, bool bHeadShot);
+
+	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 };
