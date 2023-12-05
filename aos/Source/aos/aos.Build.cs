@@ -8,7 +8,7 @@ public class aos : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" , "GameplayTags", "UMG" , "Slate" , "SlateCore" , "ModularGameplay", "GameFeatures", "CommonUI"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" , "GameplayTags", "UMG" , "Slate" , "SlateCore" , "ModularGameplay", "GameFeatures", "CommonUI", "NavigationSystem", "AIModule" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Niagara", "DeveloperSettings", "RenderCore" , "CommonInput" ,  "ControlFlows" });
 
