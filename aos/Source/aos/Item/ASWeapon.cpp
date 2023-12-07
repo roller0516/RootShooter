@@ -162,6 +162,7 @@ void AASWeapon::SetTexture()
 {
 	Super::SetTexture();
 
+	IconItemTexture = weaponData.Texture;
 	AmmoItemTexture = weaponData.ammoTexture;
 }
 

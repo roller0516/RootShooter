@@ -35,6 +35,10 @@ public:
 	FORCEINLINE float GetDamage();
 	FORCEINLINE float GetHeadDamage();
 	FORCEINLINE int GetCurrentAmmoCount() { return curAmmonCount; }
+	FORCEINLINE void SetIsEquip(bool _isEquip) {IsEquip = _isEquip;}
+	FORCEINLINE void SetIsUsed(bool _isUsed) { IsUsed = _isUsed;}
+	FORCEINLINE bool GetIsEquip(bool _isUsed) { return IsEquip;}
+	FORCEINLINE bool GetIsUsed(bool _isUsed) { return IsUsed; }
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
@@ -113,4 +117,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UTexture2D> CrosshairsBottom;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool IsEquip;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool IsUsed;
 };

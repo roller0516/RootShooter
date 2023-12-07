@@ -30,7 +30,8 @@ public:
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	// UCommonActivatableWidget InterFace
 
-
+	UFUNCTION(BlueprintCallable)
+	void SetBackHandle(bool isBack);
 private:
 	//void ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree, class IWidgetCompilerLog& CompileLog) const;
 protected:

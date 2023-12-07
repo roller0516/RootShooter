@@ -25,6 +25,8 @@ enum class ECombatState : uint8
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+class UASInventoryComponent;
+
 UCLASS()
 class AOS_API AASPlayerCharacter : public AASBaseCharacter
 {
@@ -58,6 +60,8 @@ protected:
 	void AimingButtonReleased();
 	void CameraInterpZoom(float deltaTime);
 	void SetLookRates();
+	void Aim();
+	void StopAiming();
 	//---------------------------------------------------------CrossHair
 	void CalcCrossHairSpread(float deltaTime);
 	void IncreaseSpread(float increaseAmount);
@@ -73,7 +77,11 @@ protected:
 	AASWeapon* SpawnDefaultWeapon();
 	//---------------------------------------------------------Reloading
 	void Reloading();
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 	//---------------------------------------------------------Ammo
+	UFUNCTION(BlueprintCallable)
+	void SwapWeapon(class AASWeapon* swapWeapon);
 
 	bool WeaponHasAmmo();
 
@@ -168,6 +176,8 @@ private :
 	UPROPERTY(EditAnywhere,Category=Aiming)
 	float AimingLookUpRate;
 
+	bool bAimingButtonPressed;
+
 	//-------------------------------------------------------CrossHair
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
 	float CrossHairSpreadMultiplier;
@@ -212,6 +222,8 @@ private :
 	//-------------------------------------------------------Move
 	float defaultMovementSpeed;
 
+	float aimingMovementSpeed;
+
 	//-------------------------------------------------------AttackSpeed
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float AttackDelayTime;
@@ -236,6 +248,10 @@ private :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UASInventoryComponent> InventoryComponent;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

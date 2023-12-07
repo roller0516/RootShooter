@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "ASInventoryComponent.h"
 
 
 // Sets default values
@@ -57,6 +58,10 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
+	aimingMovementSpeed = 350.f;
+
+	bAimingButtonPressed = false;
+
 	bUseControllerRotationYaw = true;
 
 	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
@@ -77,6 +82,8 @@ AASPlayerCharacter::AASPlayerCharacter() :
 
 	//-----------------------------------------------------------------------------Hand 
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Component"));
+
+	InventoryComponent = CreateDefaultSubobject<UASInventoryComponent>(TEXT("Inventory Component"));
 }
 
 // Called when the game starts or when spawned
@@ -86,6 +93,9 @@ void AASPlayerCharacter::BeginPlay()
 
 	EquipWeapon(SpawnDefaultWeapon());
 	
+	InventoryComponent->AddItems(EquippedWeapon);
+	InventoryComponent->AddEquipItems(EquippedWeapon);
+
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
 }
@@ -218,8 +228,7 @@ void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
 		//	ECollisionResponse::ECR_Ignore);
 		//WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(
 		//	ECollisionResponse::ECR_Ignore);
-		
-		
+
 		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName("RightHandSocket");
 		if(HandSocket)
 		{
@@ -256,6 +265,15 @@ AASWeapon* AASPlayerCharacter::SpawnDefaultWeapon()
 
 void AASPlayerCharacter::Reloading()
 {
+	if(CombatState != ECombatState::ECS_Unoccupied) return;
+
+	if(bIsAiming)
+	{
+		StopAiming();
+	}
+
+	if(EquippedWeapon == nullptr) return;
+
 	UAnimMontage* reloading = Montages[MontageType::Reloading];
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && reloading)
@@ -265,7 +283,25 @@ void AASPlayerCharacter::Reloading()
 		CombatState = ECombatState::ECS_Reloading;
 	}
 
-	//EquippedWeapon->ResetAmmo();
+	//
+}
+
+void AASPlayerCharacter::FinishReloading()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+
+	if(bAimingButtonPressed)
+	{
+		Aim();
+	}
+
+	if(EquippedWeapon == nullptr) return;
+	EquippedWeapon->ResetAmmo();
+}
+
+void AASPlayerCharacter::SwapWeapon(AASWeapon* swapWeapon)
+{
+	EquipWeapon(swapWeapon);
 }
 
 bool AASPlayerCharacter::WeaponHasAmmo()
@@ -485,12 +521,17 @@ void AASPlayerCharacter::BuildTypeSkillTrace()
 
 void AASPlayerCharacter::AimingButtonPressed()
 {
-	bIsAiming = true;
+	bAimingButtonPressed = true;
+	if(CombatState != ECombatState::ECS_Reloading)
+	{
+		Aim();
+	}
 }
 
 void AASPlayerCharacter::AimingButtonReleased()
 {
-	bIsAiming = false;
+	bAimingButtonPressed = false;
+	StopAiming();
 }
 
 void AASPlayerCharacter::CameraInterpZoom(float deltaTime)
@@ -519,6 +560,18 @@ void AASPlayerCharacter::SetLookRates()
 		BaseTurnRate = HipTurnRate;
 		BaseLookUpRate = HipLookUpRate;
 	}
+}
+
+void AASPlayerCharacter::Aim()
+{
+	bIsAiming = true;
+	GetCharacterMovement()->MaxWalkSpeed = aimingMovementSpeed;
+}
+
+void AASPlayerCharacter::StopAiming()
+{
+	bIsAiming = false;
+	GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
 }
 
 void AASPlayerCharacter::CalcCrossHairSpread(float deltaTime)

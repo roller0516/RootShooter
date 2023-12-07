@@ -30,6 +30,11 @@ TOptional<FUIInputConfig> UASActivatableWidget::GetDesiredInputConfig() const
 	}
 }
 
+void UASActivatableWidget::SetBackHandle(bool isBack)
+{
+	bIsBackHandler = isBack;
+}
+
 //void UASActivatableWidget::ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree, class IWidgetCompilerLog& CompileLog) const
 //{
 //	Super::ValidateCompiledWidgetTree(BlueprintWidgetTree, CompileLog);
