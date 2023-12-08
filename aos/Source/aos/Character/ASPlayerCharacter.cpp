@@ -112,6 +112,7 @@ void AASPlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+
 // Called every frame
 void AASPlayerCharacter::Tick(float DeltaTime)
 {
@@ -129,12 +130,11 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 
 	if(ItemTraceResult.bBlockingHit)
 	{
-		//ItemTrace 
+		rootingItem = Cast<AASItemBase>(ItemTraceResult.GetActor());
 	}
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("%d"),EquippedWeapon->GetCurrentAmmoCount()));
 }
+
+	
 
 // Called to bind functionality to input
 void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -164,6 +164,8 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Reloading
 		EnhancedInputComponent->BindAction(IAReloading,ETriggerEvent::Triggered,this,&AASPlayerCharacter::Reloading);
+
+		EnhancedInputComponent->BindAction(IARooting,ETriggerEvent::Triggered,this,&AASPlayerCharacter::PickUp);
 	}
 }
 
@@ -330,6 +332,28 @@ void AASPlayerCharacter::ReplaceClip()
 	EquippedWeapon->SetMovingClip(false);
 	CombatState = ECombatState::ECS_Unoccupied;
 }
+
+void AASPlayerCharacter::PickUp()
+{
+	//Get
+	if(rootingItem)
+	{
+		GetPickupItem(rootingItem);
+		rootingItem->PickupItem();
+	}	
+}
+
+void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
+{
+	if(AASWeapon* weapon = Cast<AASWeapon>(item))
+	{
+		AASWeapon* copy = NewObject<AASWeapon>();
+		copy->CreateItem(item->GetItemID());
+		InventoryComponent->AddItems(copy);
+	}
+}
+
+
 
 void AASPlayerCharacter::FireWeapon()
 {

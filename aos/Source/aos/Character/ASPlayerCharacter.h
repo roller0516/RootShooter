@@ -41,6 +41,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
 
@@ -90,6 +91,10 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void ReplaceClip();
+
+	void PickUp();
+
+	void GetPickupItem(class AASItemBase* item);
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -125,6 +130,8 @@ private :
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IAReloading;
 	
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IARooting;
 	//--------------------------------------------------------particle
 	//TODO::data
 	UPROPERTY(EditAnywhere, Category = Particle)
@@ -252,6 +259,13 @@ private :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UASInventoryComponent> InventoryComponent;
+
+	//-------------------------------------------------------Item
+	UPROPERTY()
+	class AASItemBase* rootingItem;
+
+
+
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

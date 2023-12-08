@@ -11,24 +11,17 @@ UASInventoryComponent::UASInventoryComponent()
 }
 
 
-bool UASInventoryComponent::CheckInventoryEquip(AASItemBase* item)
+bool UASInventoryComponent::CheckInventoryEquip()
 {
-	return false;
+	return EquipItems.Num() >= EQUIP_ITEM_CAPACITY;
 }
 
 void UASInventoryComponent::AddEquipItems(AASItemBase* weapon)
 {
-	if(EquipItems.Num() >= EQUIP_ITEM_CAPACITY)
+	EquipItems.Add(weapon);
+	if (AASWeapon* asWeapon = Cast<AASWeapon>(weapon))
 	{
-		// ±³Ã¼
-	}
-	else
-	{
-		EquipItems.Add(weapon);
-		if (AASWeapon* asWeapon = Cast<AASWeapon>(weapon))
-		{
-			asWeapon->SetIsEquip(true);
-		}
+		asWeapon->SetIsEquip(true);
 	}
 }
 

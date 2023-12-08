@@ -22,7 +22,7 @@ UASHUDLayout::UASHUDLayout(const FObjectInitializer& ObjectInitializer)
 void UASHUDLayout::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	FUIActionTag ActionTag = FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE);
+	FUIActionTag ActionTag = FUIActionTag::ConvertChecked(FASGameplayTags::Get().Tag_UI_Action_Escape);
 	FBindUIActionArgs ActionArg = FBindUIActionArgs(ActionTag, false, FSimpleDelegate::CreateUObject(this, &UASHUDLayout::EscapeActionHandle));
 	RegisterUIActionBinding(ActionArg);
 }

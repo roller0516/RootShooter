@@ -49,6 +49,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual	void UpdateItem() override;
 	virtual void PostInitializeComponents() override;
+
 	//void SetAmmoCount(int32 count);
 private:
 	void SetAnimInstance();
