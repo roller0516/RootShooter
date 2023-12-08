@@ -23,7 +23,7 @@ public:
 	
 protected:
 	//ESC ´©¸£¸é
-	void EscapeActionHandle();
+	virtual void EscapeActionHandle() override;
 
 	UPROPERTY(EditAnywhere)
 	TSoftClassPtr<UCommonActivatableWidget> EscapeMenuClass;

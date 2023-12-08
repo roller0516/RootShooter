@@ -156,6 +156,15 @@ void AASWeapon::PostInitializeComponents()
 void AASWeapon::OnConstruction(const FTransform& Transform)
 {	
 	Super::OnConstruction(Transform);
+
+	if (itemDataTable->GetWeaponData(itemID))
+	{
+		weaponData = *itemDataTable->GetWeaponData(itemID);
+
+		weaponType = weaponData.weaponType;
+
+		UpdateItem();
+	}
 }
 
 void AASWeapon::SetTexture()

@@ -17,10 +17,12 @@ class AOS_API AASItemBase : public AActor
 public:	
 	AASItemBase();
 public:
+	void PickupItem();
+	
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return areaSphere; }
 	FORCEINLINE class UBoxComponent* GetCollisionBox() const { return collisionBox; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return itemMeshComponent; }
-
+	FORCEINLINE int GetItemID(){return itemID;}
 	virtual void CreateItem(int32 _itemID);
 protected:
 	virtual void BeginPlay() override;
@@ -28,11 +30,12 @@ protected:
 	virtual void SetMesh();
 	virtual void SetCount();
 	virtual	void UpdateItem();
+	virtual void OnConstruction(const FTransform& Transform) override;
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemID;
 
-	UPROPERTY(VisibleAnywhere,Category = "Item", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere,Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemCount;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = Item)

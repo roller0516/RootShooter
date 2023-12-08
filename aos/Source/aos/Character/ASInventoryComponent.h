@@ -24,7 +24,7 @@ public:
 
 	const int32 EQUIP_ITEM_CAPACITY = 3;
 
-	bool CheckInventoryEquip(AASItemBase* item);
+	bool CheckInventoryEquip();
 
 	void AddEquipItems(AASItemBase* weapon);
 

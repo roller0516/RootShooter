@@ -29,11 +29,11 @@ public:
 	// UCommonActivatableWidget InterFace
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	// UCommonActivatableWidget InterFace
-
-	UFUNCTION(BlueprintCallable)
-	void SetBackHandle(bool isBack);
 private:
 	//void ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree, class IWidgetCompilerLog& CompileLog) const;
+
+protected:
+	virtual void EscapeActionHandle();
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	EWidgetInputMode InputMode = EWidgetInputMode::Default;
