@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ASBulletHitIInterface.h"
+#include "Character/ASPlayerCharacter.h"
 #include "ASEnemy.generated.h"
 
 UCLASS()
@@ -73,6 +74,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateRightWeapon();
 
+	void DoDamage(AASPlayerCharacter* Victim);
+	void SpawnBlood(AASPlayerCharacter* Victim, FName socketName);
+
+	UFUNCTION(BlueprintCallable)
+	void FinishDeath();
+
 private:
 	// 총알에 맞았을 때 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
@@ -129,20 +136,24 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	class USphereComponent* AgroSphere;
 
+	//-------------------------------------------------------Stun
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	bool bStunned;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	float StunChance;
 
+	//-------------------------------------------------------Attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	bool bInAttackRange;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	USphereComponent* CombatRangeSphere;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UBoxComponent* LeftWeaponCollision;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UBoxComponent* RightWeaponCollision;
 
 	FName AttackRFast;
 	FName AttackLFast;
@@ -150,9 +161,15 @@ private:
 	FName AttackL;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
-	class UBoxComponent* LeftWeaponCollision;
+	FName LeftWeaponSocket;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
-	class UBoxComponent* RightWeaponCollision;
+	FName RightWeaponSocket;
+
+	//-------------------------------------------------------Death
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	UAnimMontage* DeathMontage;
+
+	bool bDying;
 
 public:	
 	// Called every frame

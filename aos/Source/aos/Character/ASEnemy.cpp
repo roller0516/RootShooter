@@ -5,6 +5,7 @@
 #include "Character/ASPlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Blueprint/UserWidget.h"
@@ -29,7 +30,10 @@ AASEnemy::AASEnemy() :
 	AttackRFast(TEXT("AttackRFast")),
 	AttackLFast(TEXT("AttackLFast")),
 	AttackR(TEXT("AttackR")),
-	AttackL(TEXT("AttackL"))
+	AttackL(TEXT("AttackL")),
+	LeftWeaponSocket(TEXT("FX_Trail_L_03")),
+	RightWeaponSocket(TEXT("FX_Trail_R_03")),
+	bDying(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -103,7 +107,22 @@ void AASEnemy::ShowHealthBar_Implementation()
 
 void AASEnemy::Die()
 {
+	if (bDying) return;
+	bDying = true;
+
 	HideHealthBar();
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+	}
+
+	if (EnemyController)
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
+		EnemyController->StopMovement();
+	}
 }
 
 void AASEnemy::PlayHitMontage(FName Section, float PlayRate)
@@ -257,10 +276,22 @@ FName AASEnemy::GetAttackSectionName()
 
 void AASEnemy::OnLeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	auto Character = Cast<AASPlayerCharacter>(OtherActor);
+	if (Character)
+	{
+		//DoDamage(OtherActors);
+		SpawnBlood(Character, LeftWeaponSocket);
+	}
 }
 
 void AASEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	auto Character = Cast<AASPlayerCharacter>(OtherActor);
+	if (Character)
+	{
+		//DoDamage(OtherActors);
+		SpawnBlood(Character, RightWeaponSocket);
+	}
 }
 
 void AASEnemy::ActivateLeftWeapon()
@@ -281,6 +312,37 @@ void AASEnemy::ActivateRightWeapon()
 void AASEnemy::DeactivateRightWeapon()
 {
 	RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AASEnemy::DoDamage(AASPlayerCharacter* Victim)
+{
+	if (Victim == nullptr) return;
+
+	UGameplayStatics::ApplyDamage(
+		Victim,
+		10, //BaseDamage,
+		EnemyController,
+		this,
+		UDamageType::StaticClass()
+	);
+}
+
+void AASEnemy::SpawnBlood(AASPlayerCharacter* Victim, FName socketName)
+{
+	const USkeletalMeshSocket* TipSocket{ GetMesh()->GetSocketByName(socketName) };
+	if (TipSocket)
+	{
+		const FTransform SocketTransform{ TipSocket->GetSocketTransform(GetMesh()) };
+		if (Victim->GetBloodParticles())
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Victim->GetBloodParticles(), SocketTransform);
+		}
+	}
+}
+
+void AASEnemy::FinishDeath()
+{
+	Destroy();
 }
 
 // Called every frame
