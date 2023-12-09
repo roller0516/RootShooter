@@ -32,6 +32,9 @@ private:
 	UPROPERTY(meta = (BindWidget , AllowPrivateAccess = "true"))
 	class UCanvasPanel* inventoryPanel;
 
+	UPROPERTY(meta = (BindWidget, AllowPrivateAccess = "true"))
+	class UCanvasPanel* RightPanel;
+
 	virtual void NativeOnInitialized() override;
 
 	virtual void EscapeActionHandle() override;

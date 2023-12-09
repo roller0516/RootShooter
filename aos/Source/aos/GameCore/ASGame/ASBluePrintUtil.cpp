@@ -104,3 +104,19 @@ void UASBluePrintUtil::ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName Sus
 	}
 }
 
+UCommonActivatableWidget* UASBluePrintUtil::GetCurrentLayout(ULocalPlayer* LocalPlayer, FGameplayTag LayerName)
+{
+	if (const UASGameUIManagerSubSystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UASGameUIManagerSubSystem>())
+	{
+		if (const UASGameUIPolicy* Policy = UIManager->GetCurrnetGameUIPolicy())
+		{
+			if (UASPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UASCommonLocalPlayer>(LocalPlayer)))
+			{
+				return RootLayout->GetLayerWidget(LayerName)->GetActiveWidget();
+			}
+		}
+	}
+
+	return nullptr;
+}
+
