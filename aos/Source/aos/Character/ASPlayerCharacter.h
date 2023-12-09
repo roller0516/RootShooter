@@ -264,8 +264,6 @@ private :
 	UPROPERTY()
 	class AASItemBase* rootingItem;
 
-
-
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
