@@ -39,6 +39,9 @@ public:
 
 	static void ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName SuspendToken);
 
+	UFUNCTION(BlueprintCallable)
+	static UCommonActivatableWidget* GetCurrentLayout(ULocalPlayer* LocalPlayer, FGameplayTag LayerName);
+
 private:
 	static int32 InputSuspensions;
 };

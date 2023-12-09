@@ -20,6 +20,7 @@ void UASInventoryView::ShowEquipView()
 	isShowEquip = true;
 	equipPanel->SetVisibility(ESlateVisibility::Visible);
 	inventoryPanel->SetVisibility(ESlateVisibility::Hidden);
+	RightPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UASInventoryView::ShowInventoryView()
@@ -27,6 +28,7 @@ void UASInventoryView::ShowInventoryView()
 	isShowEquip = false;
 	inventoryPanel->SetVisibility(ESlateVisibility::Visible);
 	equipPanel->SetVisibility(ESlateVisibility::Hidden);
+	RightPanel->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UASInventoryView::NativeOnInitialized()
