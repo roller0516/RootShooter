@@ -33,7 +33,9 @@ AASEnemy::AASEnemy() :
 	AttackL(TEXT("AttackL")),
 	LeftWeaponSocket(TEXT("FX_Trail_L_03")),
 	RightWeaponSocket(TEXT("FX_Trail_R_03")),
-	bDying(false)
+	bDying(false),
+	bCanAttack(true),
+	AttackWaitTime(1.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,6 +81,11 @@ void AASEnemy::BeginPlay()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	EnemyController = Cast<AASEnemyController>(GetController());
+
+	if (EnemyController)
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsBool(FName("CanAttack"), true);
+	}
 
 	const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
 	const FVector WorldPatrolPoint2 = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint2);
@@ -253,6 +260,19 @@ void AASEnemy::PlayAttackMontage(FName Section, float PlayRate)
 		AnimInstance->Montage_Play(AttackMontage);
 		AnimInstance->Montage_JumpToSection(Section, AttackMontage);
 	}
+
+	bCanAttack = false;
+	GetWorldTimerManager().SetTimer(
+		AttackWaitTimer,
+		this,
+		&AASEnemy::ResetCanAttack,
+		AttackWaitTime
+	);
+
+	if (EnemyController)
+	{
+		EnemyController->GetBlackboardComponent()->SetValueAsBool(FName("CanAttack"), true);
+	}
 }
 
 FName AASEnemy::GetAttackSectionName()
@@ -320,7 +340,7 @@ void AASEnemy::DeactivateRightWeapon()
 void AASEnemy::DoDamage(AASPlayerCharacter* Victim)
 {
 	if (Victim == nullptr) return;
-
+	//TODO 원형이형 : 캐릭터 데미지 작업 연결
 	UGameplayStatics::ApplyDamage(
 		Victim,
 		10, //BaseDamage,
@@ -346,6 +366,11 @@ void AASEnemy::SpawnBlood(AASPlayerCharacter* Victim, FName socketName)
 void AASEnemy::FinishDeath()
 {
 	Destroy();
+}
+
+void AASEnemy::ResetCanAttack()
+{
+	bCanAttack = true;
 }
 
 // Called every frame
@@ -390,6 +415,15 @@ void AASEnemy::BulletHit_Implementation(FHitResult HitResult) {
 
 float AASEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (EnemyController)
+	{
+		auto Character = Cast<AASPlayerCharacter>(DamageCauser);
+		if (Character)
+		{
+			EnemyController->GetBlackboardComponent()->SetValueAsObject(FName("Target"), Character);
+		}
+	}
+
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;

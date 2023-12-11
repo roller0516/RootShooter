@@ -80,6 +80,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishDeath();
 
+	void ResetCanAttack();
+
 private:
 	// 총알에 맞았을 때 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
@@ -165,8 +167,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	FName RightWeaponSocket;
 
+	UPROPERTY(VisibleAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	bool bCanAttack;
+
+	FTimerHandle AttackWaitTimer;
+
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	float AttackWaitTime;
+
 	//-------------------------------------------------------Death
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	UAnimMontage* DeathMontage;
 
 	bool bDying;
