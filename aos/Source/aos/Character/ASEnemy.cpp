@@ -112,6 +112,9 @@ void AASEnemy::Die()
 
 	HideHealthBar();
 
+	GetMesh()->SetCollisionProfileName("Ragdoll", true);
+	GetMesh()->SetSimulatePhysics(true);
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && DeathMontage)
 	{
@@ -279,7 +282,7 @@ void AASEnemy::OnLeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	auto Character = Cast<AASPlayerCharacter>(OtherActor);
 	if (Character)
 	{
-		//DoDamage(OtherActors);
+		DoDamage(Character);
 		SpawnBlood(Character, LeftWeaponSocket);
 	}
 }
@@ -289,7 +292,7 @@ void AASEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	auto Character = Cast<AASPlayerCharacter>(OtherActor);
 	if (Character)
 	{
-		//DoDamage(OtherActors);
+		DoDamage(Character);
 		SpawnBlood(Character, RightWeaponSocket);
 	}
 }
