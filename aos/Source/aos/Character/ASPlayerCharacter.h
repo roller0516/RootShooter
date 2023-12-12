@@ -284,9 +284,12 @@ private :
 	UPROPERTY()
 	class AASItemBase* rootingItem;
 
-
 	UPROPERTY(BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
 	int currentWeaponSlot;
+
+	//-------------------------------------------------------BloodParticle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* BloodParticles;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
@@ -299,4 +302,5 @@ public:
 	FORCEINLINE bool GetAiming() const {return bIsAiming;}
 	FORCEINLINE ECombatState GetCombatState() { return CombatState; }
 	FORCEINLINE class AASWeapon* GetEquipWeapon(){ return EquippedWeapon;}
+	FORCEINLINE UParticleSystem* GetBloodParticles() const { return BloodParticles; }
 };

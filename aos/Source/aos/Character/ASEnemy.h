@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ASBulletHitIInterface.h"
+#include "Character/ASPlayerCharacter.h"
 #include "ASEnemy.generated.h"
 
 UCLASS()
@@ -40,6 +41,46 @@ protected:
 	void DestroyHitNumber(UUserWidget* HitNumber);
 
 	void UpdateHitNumbers();
+
+	UFUNCTION()
+	void AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	void SetStunned(bool Stunned);
+
+	UFUNCTION()
+	void CombatRangeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void CombatRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackMontage(FName Section, float PlayRate);
+
+	UFUNCTION(BlueprintPure)
+	FName GetAttackSectionName();
+
+	UFUNCTION()
+	void OnLeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateLeftWeapon();
+	UFUNCTION(BlueprintCallable)
+	void DeactivateLeftWeapon();
+	UFUNCTION(BlueprintCallable)
+	void ActivateRightWeapon();
+	UFUNCTION(BlueprintCallable)
+	void DeactivateRightWeapon();
+
+	void DoDamage(AASPlayerCharacter* Victim);
+	void SpawnBlood(AASPlayerCharacter* Victim, FName socketName);
+
+	UFUNCTION(BlueprintCallable)
+	void FinishDeath();
+
+	void ResetCanAttack();
 
 private:
 	// 총알에 맞았을 때 파티클
@@ -89,7 +130,56 @@ private:
 	UPROPERTY(EditAnywhere, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"));
 	FVector PatrolPoint;
 
+	UPROPERTY(EditAnywhere, Category = "BehaviorTree", meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"));
+	FVector PatrolPoint2;
+
 	class AASEnemyController* EnemyController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class USphereComponent* AgroSphere;
+
+	//-------------------------------------------------------Stun
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	bool bStunned;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	float StunChance;
+
+	//-------------------------------------------------------Attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	bool bInAttackRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	USphereComponent* CombatRangeSphere;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UBoxComponent* LeftWeaponCollision;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UBoxComponent* RightWeaponCollision;
+
+	FName AttackRFast;
+	FName AttackLFast;
+	FName AttackR;
+	FName AttackL;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	FName LeftWeaponSocket;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	FName RightWeaponSocket;
+
+	UPROPERTY(VisibleAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	bool bCanAttack;
+
+	FTimerHandle AttackWaitTimer;
+
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	float AttackWaitTime;
+
+	//-------------------------------------------------------Death
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	UAnimMontage* DeathMontage;
+
+	bool bDying;
 
 public:	
 	// Called every frame
