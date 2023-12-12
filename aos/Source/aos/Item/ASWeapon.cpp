@@ -11,6 +11,7 @@
 #include "Animation/AnimInstance.h"
 #include "ASItemBase.h"
 #include "Engine/Texture2D.h"
+#include "Components/BoxComponent.h"
 
 //#include "Item/ASItemBase.h"
 AASWeapon::AASWeapon()
@@ -36,8 +37,11 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 					ShellEffect, itemMeshComponent, TEXT("ShellSocket"),
 					ShellSocketTr.GetLocation(), r,
 					EAttachLocation::KeepWorldPosition, true);
-			tempTracer->SetNiagaraVariableObject(FString(TEXT("User.ShellEjectStaticMesh")), ShellMesh);
-			tempTracer->SetNiagaraVariableBool(FString(TEXT("User.Trigger")), true);
+			if(tempTracer)
+			{
+				tempTracer->SetNiagaraVariableObject(FString(TEXT("User.ShellEjectStaticMesh")), ShellMesh);
+				tempTracer->SetNiagaraVariableBool(FString(TEXT("User.Trigger")), true);
+			}
 		}
 	}
 
@@ -84,6 +88,16 @@ void AASWeapon::ShowShotParticles(FHitResult pHitResult)
 				FString(TEXT("User.MuzzlePostion")), itemMeshComponent->GetSocketLocation(TEXT("BarrelSocket")));
 		}
 	}
+}
+
+void AASWeapon::CopyItem(AASItemBase* weapon)
+{
+	Super::CopyItem(weapon);
+	AASWeapon* asWeapon = Cast<AASWeapon>(weapon);
+	itemID = asWeapon->itemID;
+	weaponData = asWeapon->weaponData;
+	weaponType = weaponData.weaponType;
+	UpdateItem();
 }
 
 FTransform AASWeapon::GetBarrelSocketTransForm() const
@@ -261,7 +275,12 @@ void AASWeapon::CreateItem(int32 _itemID)
 {
 	Super::CreateItem(_itemID);
 
-	if(itemDataTable->GetWeaponData(itemID))
+	RefreshItem();
+}
+void AASWeapon::RefreshItem()
+{
+	
+	if (itemDataTable->GetWeaponData(itemID))
 	{
 		weaponData = *itemDataTable->GetWeaponData(itemID);
 
@@ -269,6 +288,12 @@ void AASWeapon::CreateItem(int32 _itemID)
 
 		UpdateItem();
 	}
+}
+
+
+void AASWeapon::SetActive(bool active)
+{
+	SetActorHiddenInGame(!active);
 }
 
 float AASWeapon::GetDamage()

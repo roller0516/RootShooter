@@ -59,6 +59,8 @@ void UASPlayerAnimInstance::UpdateAnimationProperties(float deltaTime)
 			weaponType = PlayerCharacter->GetEquipWeapon()->weaponType;
 
 		bShouldUseFABIK = PlayerCharacter->GetCombatState() == ECombatState::ECS_Unoccupied || PlayerCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress;
+
+		bEquiping = PlayerCharacter->GetCombatState() == ECombatState::ECS_Equip;
 	}
 
 	TurnInPlace();

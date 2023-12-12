@@ -13,6 +13,7 @@ enum class MontageType :uint8
 {
 	Reloading,
 	Attack,
+	Equip,
 };
 
 UENUM()
@@ -22,6 +23,7 @@ enum class ECombatState : uint8
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
 	ECS_FireTimerInProgress UMETA (DisplayName = "Fire"),
 	ECS_UsedSkill UMETA(DisplayName = "UsedSkill"),
+	ECS_Equip UMETA(DisplayName = "Equip"),
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -75,7 +77,16 @@ protected:
 	//---------------------------------------------------------EquipWeapon
 	void EquipWeapon(class AASWeapon* WeaponToEquip);
 	void DropWeapon(); // Detach
-	AASWeapon* SpawnDefaultWeapon();
+	AASWeapon* SpawnWeapon(AASWeapon* copyItem);
+
+	void ChangeWeapon1();
+	void ChangeWeapon2();
+	void ChangeWeapon3();
+
+	void ExchangeInventoryItems(int32 currentItemidx,int32 newItemidx);
+
+	UFUNCTION(BlueprintCallable)
+	void FinishEquip();
 	//---------------------------------------------------------Reloading
 	void Reloading();
 	UFUNCTION(BlueprintCallable)
@@ -132,6 +143,15 @@ private :
 	
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IARooting;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IAWeaponSlot1;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IAWeaponSlot2;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IAWeaponSlot3;
 	//--------------------------------------------------------particle
 	//TODO::data
 	UPROPERTY(EditAnywhere, Category = Particle)
@@ -265,7 +285,8 @@ private :
 	class AASItemBase* rootingItem;
 
 
-
+	UPROPERTY(BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	int currentWeaponSlot;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

@@ -4,7 +4,9 @@
 #include "UI/UICore/ASActivatableWidget.h"
 #include "CommonInputModeTypes.h"
 #include "Editor/WidgetCompilerLog.h"
-#include "../../../Experimental/CommonUI/Source/CommonUI/Public/Input/CommonUIActionRouterBase.h"
+#include "Input/CommonUIActionRouterBase.h"
+#include "GameFramework/PlayerController.h"
+#include "Character/ASPlayerCharacter.h"
 
 #define LOCTEXT_NAMESPACE "Aos"
 
@@ -28,6 +30,25 @@ TOptional<FUIInputConfig> UASActivatableWidget::GetDesiredInputConfig() const
 	default:
 		return TOptional<FUIInputConfig>();
 	}
+}
+void UASActivatableWidget::NativeOnActivated()
+{
+	Super::NativeOnActivated();
+	if(GetOwningPlayer())
+		GetOwningPlayer()->OnPossessedPawnChanged.AddDynamic(this, &UASActivatableWidget::OnChangePlayer);
+}
+
+void UASActivatableWidget::NativeOnDeactivated()
+{
+	Super::NativeOnDeactivated();
+	GetOwningPlayer()->OnPossessedPawnChanged.RemoveAll(this);
+}
+
+void UASActivatableWidget::OnChangePlayer(APawn* OldPawn, APawn* NewPawn)
+{
+	AASPlayerCharacter* _player = Cast<AASPlayerCharacter>(NewPawn);
+	if(_player)
+		player = _player;
 }
 void UASActivatableWidget::EscapeActionHandle()
 {

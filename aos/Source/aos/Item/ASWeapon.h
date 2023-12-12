@@ -24,9 +24,10 @@ public:
 	void ResetAmmo();
 
 	void ShowShotParticles(FHitResult pHitResult);
-
+	virtual void CopyItem(AASItemBase* weapon) override;
 	virtual void CreateItem(int32 _itemID) override;
-
+	virtual void RefreshItem() override;
+	void SetActive(bool active);
 	FTransform GetRightHandSocket();
 	FName GetReloadMotageSection();
 
@@ -48,6 +49,7 @@ protected:
 	virtual void SetDamage();
 	virtual void BeginPlay() override;
 	virtual	void UpdateItem() override;
+	
 	virtual void PostInitializeComponents() override;
 
 	//void SetAmmoCount(int32 count);
@@ -56,6 +58,7 @@ private:
 	void SetMaxAmmoCount();
 	void SetMagazine();
 	void SetCrossHair();
+	
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")

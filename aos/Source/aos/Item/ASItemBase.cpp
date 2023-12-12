@@ -24,8 +24,10 @@ AASItemBase::AASItemBase()
 }
 
 void AASItemBase::PickupItem()
-{
-	Destroy(true);
+{	
+	//itemMeshComponent->SetHiddenInGame(true);
+	SetActorHiddenInGame(true);
+	collisionBox->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
 
 // Called when the game starts or when spawned
@@ -71,6 +73,27 @@ void AASItemBase::CreateItem(int32 _itemID)
 	}
 }
 
+void AASItemBase::CopyItem(AASItemBase* item)
+{
+	itemID = item->itemID;
+	if (GetWorld())
+	{
+		UASGameInstance* instance = Cast<UASGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		itemDataTable = instance->ItemData;
+	}
+	else
+	{
+		UASAssetManager& assetManager = UASAssetManager::Get();
+		itemDataTable = assetManager.GetPrimaryData<UASItemPrimaryData>(FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData")));
+	}
+
+	if (itemDataTable->GetItemData(itemID))
+	{
+		itemBaseData = *itemDataTable->GetItemData(itemID);
+		UpdateItem();
+	}
+}
+
 void AASItemBase::UpdateItem()
 {
 	SetTexture();
@@ -88,5 +111,10 @@ void AASItemBase::OnConstruction(const FTransform& Transform)
 		itemBaseData = *itemDataTable->GetItemData(itemID);
 		UpdateItem();
 	}
+}
+
+void AASItemBase::RefreshItem()
+{
+	
 }
 

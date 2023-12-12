@@ -57,6 +57,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category=Aiming,meta=(AllowPrivateAccess = "true"))
 	bool bAiming;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equip, meta = (AllowPrivateAccess = "true"))
+	bool bEquiping;
 	//-------------------------------------------------------TrunYaw
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))

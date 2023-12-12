@@ -28,10 +28,13 @@ public:
 
 	// UCommonActivatableWidget InterFace
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
+	virtual void NativeOnActivated() override;
+	virtual void NativeOnDeactivated() override;
 	// UCommonActivatableWidget InterFace
 private:
 	//void ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree, class IWidgetCompilerLog& CompileLog) const;
-
+	UFUNCTION()
+	void OnChangePlayer(APawn* OldPawn, APawn* NewPawn);
 protected:
 	virtual void EscapeActionHandle();
 protected:
@@ -40,4 +43,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	EMouseCaptureMode MouseCaptureMode = EMouseCaptureMode::CapturePermanently;
+
+	UPROPERTY(BlueprintReadWrite,meta = (AllowPrivateAccess = "true"))
+	class AASPlayerCharacter* player;
 };

@@ -18,12 +18,13 @@ public:
 	AASItemBase();
 public:
 	void PickupItem();
-	
+	virtual void RefreshItem();
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return areaSphere; }
 	FORCEINLINE class UBoxComponent* GetCollisionBox() const { return collisionBox; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return itemMeshComponent; }
 	FORCEINLINE int GetItemID(){return itemID;}
 	virtual void CreateItem(int32 _itemID);
+	virtual void CopyItem(AASItemBase* item);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetTexture();
@@ -31,6 +32,7 @@ protected:
 	virtual void SetCount();
 	virtual	void UpdateItem();
 	virtual void OnConstruction(const FTransform& Transform) override;
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemID;
@@ -48,9 +50,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconItemTexture;
-private:
-	UPROPERTY(EditAnywhere,Category = Item)
+
+	UPROPERTY(EditAnywhere, Category = Item)
 	class UBoxComponent* collisionBox;
+
+private:
 
 	UPROPERTY(EditAnywhere,Category = Item)
 	class USphereComponent* areaSphere;

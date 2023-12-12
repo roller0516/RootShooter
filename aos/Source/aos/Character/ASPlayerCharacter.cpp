@@ -91,10 +91,12 @@ void AASPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EquipWeapon(SpawnDefaultWeapon());
+	auto defaultWeapon = SpawnWeapon(nullptr);
 	
-	InventoryComponent->AddItems(EquippedWeapon);
-	InventoryComponent->AddEquipItems(EquippedWeapon);
+	EquipWeapon(defaultWeapon);
+	
+	InventoryComponent->AddItems(defaultWeapon);
+	InventoryComponent->AddEquipItems(defaultWeapon);
 
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
@@ -166,6 +168,10 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(IAReloading,ETriggerEvent::Triggered,this,&AASPlayerCharacter::Reloading);
 
 		EnhancedInputComponent->BindAction(IARooting,ETriggerEvent::Triggered,this,&AASPlayerCharacter::PickUp);
+
+		EnhancedInputComponent->BindAction(IAWeaponSlot1,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon1);
+		EnhancedInputComponent->BindAction(IAWeaponSlot2,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon2);
+		EnhancedInputComponent->BindAction(IAWeaponSlot3,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon3);
 	}
 }
 
@@ -233,11 +239,14 @@ void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
 
 		const USkeletalMeshSocket* HandSocket = GetMesh()->GetSocketByName("RightHandSocket");
 		if(HandSocket)
-		{
-			HandSocket->AttachActor(Cast<AActor>(WeaponToEquip),GetMesh());
+		{	
+			//DropWeapon();
+			bool isAttach = HandSocket->AttachActor(Cast<AActor>(WeaponToEquip),GetMesh());
 		}
-
+		//WeaponToEquip->RefreshItem();
 		EquippedWeapon = WeaponToEquip;
+		
+		//DefaultWeapon = weaponto
 	}
 }
 
@@ -250,20 +259,85 @@ void AASPlayerCharacter::DropWeapon()
 	}
 }
 
-AASWeapon* AASPlayerCharacter::SpawnDefaultWeapon()
+AASWeapon* AASPlayerCharacter::SpawnWeapon(AASWeapon* copyItem)
 {
-	AASWeapon* spawnWeapon = NewObject<AASWeapon>();
-
 	FTransform Tr;
-
-	Tr.SetScale3D(FVector(1,1,1));
-
-	AASWeapon* returnWeapon = GetWorld()->SpawnActor<AASWeapon>(spawnWeapon->StaticClass(),Tr);
-	returnWeapon->CreateItem(1002);
+	AASWeapon* returnWeapon = GetWorld()->SpawnActor<AASWeapon>(AASWeapon::StaticClass(), Tr);
+	Tr.SetScale3D(FVector(1, 1, 1));
+	if(copyItem == nullptr)
+	{
+		returnWeapon->CreateItem(1002);
+	}
+	else
+	{
+		returnWeapon->CopyItem(copyItem);
+	}
 	if(returnWeapon)
 		return returnWeapon;
 	return nullptr;
 }
+
+void AASPlayerCharacter::ChangeWeapon1()
+{
+	ExchangeInventoryItems(currentWeaponSlot, 0);
+	currentWeaponSlot = 0;
+}
+
+void AASPlayerCharacter::ChangeWeapon2()
+{
+	ExchangeInventoryItems(currentWeaponSlot, 1);
+	currentWeaponSlot = 1;
+}
+
+void AASPlayerCharacter::ChangeWeapon3()
+{
+	ExchangeInventoryItems(currentWeaponSlot, 2);
+	currentWeaponSlot = 2;
+}
+
+void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newItemidx)
+{
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (EquippedWeapon == nullptr) return;
+
+	if (bIsAiming)
+	{
+		StopAiming();
+	}
+
+	if(currentItemidx == newItemidx || InventoryComponent->EquipItems.Num() - 1 < newItemidx) return;
+	AASWeapon* weapon = Cast<AASWeapon>(InventoryComponent->EquipItems[newItemidx]);
+	if (weapon)
+	{
+		auto oldEquippedWeapon = EquippedWeapon;
+		auto NewWeapon = weapon;
+
+		EquipWeapon(NewWeapon);
+		
+		NewWeapon->SetIsEquip(true);
+		NewWeapon->SetActive(true);
+
+		oldEquippedWeapon->SetIsEquip(false);
+		oldEquippedWeapon->SetActive(false);
+		//oldEquippedWeapon->Destroy(true);
+		
+		UAnimMontage* equip = Montages[MontageType::Equip];
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && equip)
+		{
+			AnimInstance->Montage_Play(equip);
+			AnimInstance->Montage_JumpToSection(FName("Equip"));
+			CombatState = ECombatState::ECS_Equip;
+		}
+
+	}
+}
+
+void AASPlayerCharacter::FinishEquip()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 
 void AASPlayerCharacter::Reloading()
 {
@@ -303,6 +377,7 @@ void AASPlayerCharacter::FinishReloading()
 
 void AASPlayerCharacter::SwapWeapon(AASWeapon* swapWeapon)
 {
+	
 	EquipWeapon(swapWeapon);
 }
 
@@ -347,9 +422,9 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 {
 	if(AASWeapon* weapon = Cast<AASWeapon>(item))
 	{
-		AASWeapon* copy = NewObject<AASWeapon>();
-		copy->CreateItem(item->GetItemID());
-		InventoryComponent->AddItems(copy);
+		//AASWeapon* copy = NewObject<AASWeapon>();
+		//copy->CreateItem(item->GetItemID());
+		InventoryComponent->AddItems(weapon);
 	}
 }
 
