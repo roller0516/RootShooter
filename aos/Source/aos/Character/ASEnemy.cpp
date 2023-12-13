@@ -119,8 +119,8 @@ void AASEnemy::Die()
 
 	HideHealthBar();
 
-	GetMesh()->SetCollisionProfileName("Ragdoll", true);
-	GetMesh()->SetSimulatePhysics(true);
+	//GetMesh()->SetCollisionProfileName("Ragdoll", true);
+	//GetMesh()->SetSimulatePhysics(true);
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && DeathMontage)
