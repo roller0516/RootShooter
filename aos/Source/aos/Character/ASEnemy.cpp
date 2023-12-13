@@ -21,7 +21,7 @@ AASEnemy::AASEnemy() :
 	Health(100.f),
 	MaxHealth(100.f),
 	HealthBarDisplayTime(4.f),
-	//bCanHitReact(true),
+	bCanHitReact(true),
 	HitReactTimeMin(.5f),
 	HitReactTimeMax(3.f),
 	HitNumberDestroyTime(1.5f),
