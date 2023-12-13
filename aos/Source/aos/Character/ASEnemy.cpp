@@ -128,11 +128,18 @@ void AASEnemy::Die()
 		AnimInstance->Montage_Play(DeathMontage);
 	}
 
-	if (EnemyController)
-	{
-		EnemyController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
-		EnemyController->StopMovement();
+	if (DeathParticles) {
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathParticles, GetActorTransform().GetLocation(), FRotator(0.f), true);
 	}
+
+	//if (EnemyController)
+	//{
+	//	EnemyController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
+	//	EnemyController->StopMovement();
+	//}
+
+	Destroy();
 }
 
 void AASEnemy::PlayHitMontage(FName Section, float PlayRate)

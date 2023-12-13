@@ -179,6 +179,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	UAnimMontage* DeathMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UParticleSystem* DeathParticles;
+
 	bool bDying;
 
 public:	
