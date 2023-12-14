@@ -17,3 +17,14 @@ enum class WeaponType : uint8
 	Rifle,
 	SMG,
 };
+
+
+UENUM(BlueprintType)
+enum class ItemGrade : uint8
+{
+	Normal,
+	Rare,
+	Epic,
+	SpeicalRare,
+	SuperSpeicalRare,
+};

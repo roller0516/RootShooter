@@ -75,6 +75,7 @@ protected:
 	//---------------------------------------------------------Movement
 	void CalcAimingSpeed();
 	//---------------------------------------------------------EquipWeapon
+	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AASWeapon* WeaponToEquip);
 	void DropWeapon(); // Detach
 	AASWeapon* SpawnWeapon(AASWeapon* copyItem);
