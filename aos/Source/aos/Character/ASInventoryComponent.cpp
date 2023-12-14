@@ -8,6 +8,7 @@
 UASInventoryComponent::UASInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	EquipItems.SetNum(EQUIP_ITEM_CAPACITY);
 }
 
 
@@ -16,11 +17,12 @@ bool UASInventoryComponent::CheckInventoryEquip()
 	return EquipItems.Num() >= EQUIP_ITEM_CAPACITY;
 }
 
-void UASInventoryComponent::AddEquipItems(AASItemBase* weapon)
+void UASInventoryComponent::SetEquipItemIndex(AASItemBase* weapon, int32 index)
 {
-	EquipItems.Add(weapon);
+	//EquipItems.Add(weapon);
 	if (AASWeapon* asWeapon = Cast<AASWeapon>(weapon))
 	{
+		EquipItems[index] = weapon;
 		asWeapon->SetIsEquip(true);
 	}
 }

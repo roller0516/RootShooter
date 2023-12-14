@@ -96,7 +96,7 @@ void AASPlayerCharacter::BeginPlay()
 	EquipWeapon(defaultWeapon);
 	
 	InventoryComponent->AddItems(defaultWeapon);
-	InventoryComponent->AddEquipItems(defaultWeapon);
+	InventoryComponent->SetEquipItemIndex(defaultWeapon,0);
 
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
@@ -243,11 +243,16 @@ void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
 			//DropWeapon();
 			bool isAttach = HandSocket->AttachActor(Cast<AActor>(WeaponToEquip),GetMesh());
 		}
-		//WeaponToEquip->RefreshItem();
-		EquippedWeapon = WeaponToEquip;
-		
-		//DefaultWeapon = weaponto
 	}
+	else
+	{
+		if(EquippedWeapon)
+		{
+			EquippedWeapon->SetActive(false);
+		}
+	}
+
+	EquippedWeapon = WeaponToEquip;
 }
 
 void AASPlayerCharacter::DropWeapon()
@@ -298,7 +303,7 @@ void AASPlayerCharacter::ChangeWeapon3()
 void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newItemidx)
 {
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	if (EquippedWeapon == nullptr) return;
+	//if (EquippedWeapon == nullptr) return;
 
 	if (bIsAiming)
 	{
@@ -317,8 +322,12 @@ void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newI
 		NewWeapon->SetIsEquip(true);
 		NewWeapon->SetActive(true);
 
-		oldEquippedWeapon->SetIsEquip(false);
-		oldEquippedWeapon->SetActive(false);
+		if(oldEquippedWeapon)
+		{
+			oldEquippedWeapon->SetIsEquip(false);
+			oldEquippedWeapon->SetActive(false);
+		}
+		
 		//oldEquippedWeapon->Destroy(true);
 		
 		UAnimMontage* equip = Montages[MontageType::Equip];

@@ -26,7 +26,7 @@ public:
 
 	bool CheckInventoryEquip();
 
-	void AddEquipItems(AASItemBase* weapon);
+	void SetEquipItemIndex(AASItemBase* weapon,int32 index);
 
 	FORCEINLINE void AddItems(AASItemBase* Item)
 	{
