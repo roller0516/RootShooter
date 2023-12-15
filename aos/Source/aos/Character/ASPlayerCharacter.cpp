@@ -544,8 +544,8 @@ void AASPlayerCharacter::StartCrossHairBulletFire()
 	GetWorldTimerManager().SetTimer(CrossHairShootTimer,this,
 		&AASPlayerCharacter::FinishCrossHairBulletFire,ShootTimeDuration);
 
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
+	//if(GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
 }
 
 void AASPlayerCharacter::FinishCrossHairBulletFire()
@@ -562,10 +562,10 @@ void AASPlayerCharacter::CreateBarrier()
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FTransform ft;
 
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
-	}
+	//if(GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
+	//}
 	
 	ft.SetLocation(GroundPlacementPoint);
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);

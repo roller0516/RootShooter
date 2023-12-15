@@ -416,7 +416,7 @@ void AASEnemy::BulletHit_Implementation(FHitResult HitResult) {
 	}
 
 	if (GEngine) {
-		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Blue,FString::Printf(TEXT("hit")));
+		//GEngine->AddOnScreenDebugMessage(-1,1,FColor::Blue,FString::Printf(TEXT("hit")));
 	}
 }
 
