@@ -285,19 +285,16 @@ AASWeapon* AASPlayerCharacter::SpawnWeapon(AASWeapon* copyItem)
 void AASPlayerCharacter::ChangeWeapon1()
 {
 	ExchangeInventoryItems(currentWeaponSlot, 0);
-	currentWeaponSlot = 0;
 }
 
 void AASPlayerCharacter::ChangeWeapon2()
 {
 	ExchangeInventoryItems(currentWeaponSlot, 1);
-	currentWeaponSlot = 1;
 }
 
 void AASPlayerCharacter::ChangeWeapon3()
 {
 	ExchangeInventoryItems(currentWeaponSlot, 2);
-	currentWeaponSlot = 2;
 }
 
 void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newItemidx)
@@ -339,6 +336,7 @@ void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newI
 			CombatState = ECombatState::ECS_Equip;
 		}
 
+		currentWeaponSlot = newItemidx;
 	}
 }
 
@@ -544,8 +542,8 @@ void AASPlayerCharacter::StartCrossHairBulletFire()
 	GetWorldTimerManager().SetTimer(CrossHairShootTimer,this,
 		&AASPlayerCharacter::FinishCrossHairBulletFire,ShootTimeDuration);
 
-	//if(GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
 }
 
 void AASPlayerCharacter::FinishCrossHairBulletFire()
@@ -562,10 +560,10 @@ void AASPlayerCharacter::CreateBarrier()
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FTransform ft;
 
-	//if(GEngine)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
-	//}
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
+	}
 	
 	ft.SetLocation(GroundPlacementPoint);
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
