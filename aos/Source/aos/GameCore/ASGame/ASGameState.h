@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+#include "EnumTypes.h"
 #include "ASGameState.generated.h"
 
 /**
@@ -11,6 +12,7 @@
  */
 
 class UASExperienceStateComponent;
+class UASCharacterSelectComponent;
 
 UCLASS()
 class AOS_API AASGameState : public AGameStateBase
@@ -28,4 +30,5 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UASExperienceStateComponent> ExperienceState;
+
 };

@@ -10,6 +10,8 @@
 #include "Data/ASExperienceDefinition.h"
 #include "Data/ASPawnData.h"
 #include "GameCore/ASGame/ASAssetManager.h"
+#include "GameCore/ASGame/ASGameInstance.h"
+
 
 
 void AASGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -30,10 +32,17 @@ void AASGameMode::InitGameState()
 
 UClass* AASGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	if(const UASPawnData* PawnData = GetPawnData(InController))
-	{
-		return PawnData->PawnClass;
+	if (const UASPawnData* PawnData = GetPawnData(InController))
+	{	
+		UASGameInstance* gi = Cast<UASGameInstance>(GetGameInstance());
+
+		if (PawnData->pawnClass.Contains((gi->GetCharID())))
+		{
+			return PawnData->pawnClass[gi->GetCharID()];
+		}
+		return Super::GetDefaultPawnClassForController_Implementation(InController);
 	}
+
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 

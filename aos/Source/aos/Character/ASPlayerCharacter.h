@@ -11,6 +11,7 @@
 UENUM()
 enum class MontageType :uint8
 {
+	Grenade,
 	Reloading,
 	Attack,
 	Equip,
@@ -24,6 +25,7 @@ enum class ECombatState : uint8
 	ECS_FireTimerInProgress UMETA (DisplayName = "Fire"),
 	ECS_UsedSkill UMETA(DisplayName = "UsedSkill"),
 	ECS_Equip UMETA(DisplayName = "Equip"),
+	ECS_Grenade UMETA(DisplayName = "Grenade"),
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -55,6 +57,9 @@ protected:
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
 	void UseGrenadeSkill();
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnGrenade();
 	void UseSkill();
 	void BuildTypeSkillTrace(); // 설치형 스킬 Trace
 	
@@ -107,6 +112,9 @@ protected:
 	void PickUp();
 
 	void GetPickupItem(class AASItemBase* item);
+
+	UFUNCTION(BlueprintCallable)
+	void FinishGrenade();
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

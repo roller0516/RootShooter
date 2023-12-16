@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "../EnumTypes.h"
 #include "ASPawnData.generated.h"
 
 /**
@@ -17,5 +18,5 @@ public:
 	UASPawnData(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class APawn> PawnClass;
+	TMap<CharID,TSubclassOf<class APawn>> pawnClass;
 };

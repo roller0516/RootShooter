@@ -435,7 +435,10 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 	}
 }
 
-
+void AASPlayerCharacter::FinishGrenade()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
 
 void AASPlayerCharacter::FireWeapon()
 {
@@ -573,17 +576,28 @@ void AASPlayerCharacter::UseGrenadeSkill()
 {
 	if (grenadeActor && EquippedWeapon)
 	{
-		FRotator MuzzleRotation = GetActorRotation();
-		FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
-
-		UWorld* World = GetWorld();
-		if (World)
+		UAnimMontage* Grenade = Montages[MontageType::Grenade];
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && Grenade)
 		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-
-			AASGrenade* Grenade = GetWorld()->SpawnActor<AASGrenade>(grenadeActor, MuzzleLocation, MuzzleRotation);
+			AnimInstance->Montage_Play(Grenade);
+			CombatState = ECombatState::ECS_Grenade;
 		}
+	}
+}
+
+void AASPlayerCharacter::SpawnGrenade()
+{
+	FRotator MuzzleRotation = GetActorRotation();
+	FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+
+		AASGrenade* Grenade = GetWorld()->SpawnActor<AASGrenade>(grenadeActor, MuzzleLocation, MuzzleRotation);
 	}
 }
 

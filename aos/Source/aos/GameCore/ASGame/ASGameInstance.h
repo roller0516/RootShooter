@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameCore/CommonGame/ASCommonGameInstance.h"
+#include "EnumTypes.h"
 #include "ASGameInstance.generated.h"
 
 /**
@@ -20,6 +21,13 @@ public:
 	virtual void Shutdown() override;
 
 public:
-		UPROPERTY()
-		class UASItemPrimaryData* ItemData;
+	UPROPERTY()
+	class UASItemPrimaryData* ItemData;
+
+
+	FORCEINLINE CharID GetCharID() { return selectCharID; }
+	FORCEINLINE void SetCharID(CharID charid) { selectCharID = charid; }
+private:
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	CharID selectCharID;
 };

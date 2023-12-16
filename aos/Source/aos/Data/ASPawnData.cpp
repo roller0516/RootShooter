@@ -6,5 +6,5 @@
 UASPawnData::UASPawnData(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	PawnClass = nullptr;
+	//PawnClass = nullptr;
 }
