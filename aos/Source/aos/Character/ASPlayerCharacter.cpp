@@ -444,26 +444,25 @@ void AASPlayerCharacter::FinishGrenade()
 
 void AASPlayerCharacter::Cloacking()
 {
+	if (!CloackingMaterial) return;
+
 	if (!isCloacking)
 	{
 		SaveMaterials = GetMesh()->GetMaterials();
-	}
 
-	if (!CloackingMaterial)
-	{
-		return;
-	}
-
-	for (int i = 0; i < SaveMaterials.Num(); i++)
-	{
-		if (!isCloacking)
+		for (int i = 0; i < SaveMaterials.Num(); i++)
 		{
 			GetMesh()->SetMaterial(i, CloackingMaterial);
 		}
-		else
+		isCloacking = true;
+	}
+	else
+	{
+		for (int i = 0; i < SaveMaterials.Num(); i++)
 		{
 			GetMesh()->SetMaterial(i, SaveMaterials[i]);
 		}
+		isCloacking = false;
 	}
 }
 

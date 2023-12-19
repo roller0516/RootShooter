@@ -116,6 +116,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishGrenade();
 
+	void GetCloacking();
 	void Cloacking();
 private :
 	//---------------------------------------------------------Camera
@@ -312,7 +313,6 @@ private :
 	UPROPERTY()
 	TArray<UMaterialInterface*> SaveMaterials;
 
-	UPROPERTY()
 	bool isCloacking;
 
 protected:
@@ -328,4 +328,5 @@ public:
 	FORCEINLINE ECombatState GetCombatState() { return CombatState; }
 	FORCEINLINE class AASWeapon* GetEquipWeapon(){ return EquippedWeapon;}
 	FORCEINLINE UParticleSystem* GetBloodParticles() const { return BloodParticles; }
+	FORCEINLINE bool GetCloacking() const { return isCloacking; }
 };
