@@ -37,7 +37,8 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	CrossHairSpreadMultiplier(1.25f),
 	ShootTimeDuration(0.05f),
 	bFiringBullet(false),
-	AttackDelayTime(0.1)
+	AttackDelayTime(0.1),
+	isCloacking(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -159,6 +160,7 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		//Test Skill
 		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
 		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseGrenadeSkill);
+		EnhancedInputComponent->BindAction(IASkill3, ETriggerEvent::Triggered, this, &AASPlayerCharacter::Cloacking);
 
 		//Aiming
 		EnhancedInputComponent->BindAction(IAAiming,ETriggerEvent::Triggered,this,&AASPlayerCharacter::AimingButtonPressed);
@@ -438,6 +440,31 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 void AASPlayerCharacter::FinishGrenade()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+}
+
+void AASPlayerCharacter::Cloacking()
+{
+	if (!isCloacking)
+	{
+		SaveMaterials = GetMesh()->GetMaterials();
+	}
+
+	if (!CloackingMaterial)
+	{
+		return;
+	}
+
+	for (int i = 0; i < SaveMaterials.Num(); i++)
+	{
+		if (!isCloacking)
+		{
+			GetMesh()->SetMaterial(i, CloackingMaterial);
+		}
+		else
+		{
+			GetMesh()->SetMaterial(i, SaveMaterials[i]);
+		}
+	}
 }
 
 void AASPlayerCharacter::FireWeapon()

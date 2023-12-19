@@ -115,6 +115,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void FinishGrenade();
+
+	void Cloacking();
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -143,6 +145,9 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IASkill2;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IASkill3;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IAAiming;
@@ -299,6 +304,17 @@ private :
 	//-------------------------------------------------------BloodParticle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* BloodParticles;
+
+	//-------------------------------------------------------Cloacking
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UMaterial* CloackingMaterial;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> SaveMaterials;
+
+	UPROPERTY()
+	bool isCloacking;
+
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)
