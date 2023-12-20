@@ -38,6 +38,12 @@ private:
 	void FlowStep_WaitForCharacterSpawn(FControlFlowNodeRef SubFlow);
 
 	void LoadSelectCharacters(TFunction<void(bool)> result);
+
+	//UFUNCTION(BlueprintCallable)
+	//void ZoomInCharacter();
+	//UFUNCTION(BlueprintCallable)
+	//void ZoomOutCharacter();
+
 	bool bShouldShowLoadingScreen;
 
 private:
@@ -54,5 +60,11 @@ private:
 	UPROPERTY();
 	TObjectPtr<class UASCharacterData> charData;
 
-	TArray<TObjectPtr<class AASBaseCharacter>> LoadCharList;
+	TArray<TSoftClassPtr<class AASBaseCharacter>> LoadCharList;
+
+	UPROPERTY(BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<class AActor>> cameraList;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class AActor> mainCam;
 };

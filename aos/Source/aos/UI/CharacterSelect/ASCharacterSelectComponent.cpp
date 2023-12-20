@@ -11,6 +11,8 @@
 #include "GameCore/ASGame/FASGamePlayTags.h"
 #include "Data/ASCharacterData.h"
 #include "Kismet/GameplayStatics.h"
+#include "Character/ASPlayerCharacter.h"
+#include "Camera/CameraComponent.h"
 
 
 // Sets default values for this component's properties
@@ -88,8 +90,22 @@ void UASCharacterSelectComponent::FlowStep_WaitForCharacterSpawn(FControlFlowNod
 	UWorld* world = GetWorld();
 	for(int i = 0 ; i < LoadCharList.Num(); i++)
 	{
-		world->SpawnActor<AASBaseCharacter>(charData->InGameCharacterModule[i].Get(), Actors[i]->GetActorTransform());
+		//auto pc = Cast<AASPlayerCharacter>(LoadCharList[i].Get());
+		//if(pc == nullptr) return;
+		AASPlayerCharacter* playerChar = world->SpawnActor<AASPlayerCharacter>(LoadCharList[i].Get(), Actors[i]->GetActorTransform());
+
+		check(playerChar);
+
+		UCameraComponent* cameraComponent = playerChar->FindComponentByClass<UCameraComponent>();
+		cameraList.Add(cameraComponent->GetOwner());
 	}
+
+	//TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("MainCamera"), Actors);
+
+	mainCam = Actors[0];
+
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(mainCam);
 
 	SubFlow->ContinueFlow();
 }
@@ -106,15 +122,15 @@ void UASCharacterSelectComponent::LoadSelectCharacters(TFunction<void(bool)> res
 	{
 		charData = AssetClass.GetDefaultObject();
 
-		for(int i = 0 ; i < charData->InGameCharacterModule.Num(); i++)
+		for(int i = 0 ; i < charData->InteractionCharacterModule.Num(); i++)
 		{
 			FStreamableManager& Streamable = assetManager.GetStreamableManager();
-			Streamable.RequestAsyncLoad(charData->InGameCharacterModule[i].ToSoftObjectPath(),[=]()
+			Streamable.RequestAsyncLoad(charData->InteractionCharacterModule[i].ToSoftObjectPath(),[=]()
 			{
-				AASBaseCharacter* chars = Cast<AASBaseCharacter>(charData->InGameCharacterModule[i].Get());
-				LoadCharList.Add(chars);
+				//AASBaseCharacter* chars = Cast<AASBaseCharacter>();
+				LoadCharList.Add(charData->InteractionCharacterModule[i]);
 
-				if(LoadCharList.Num() == charData->InGameCharacterModule.Num())
+				if(LoadCharList.Num() == charData->InteractionCharacterModule.Num())
 					result(true);
 			});
 		}

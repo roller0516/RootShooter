@@ -58,7 +58,10 @@ void AASItemBase::CreateItem(int32 _itemID)
 	if(GetWorld())
 	{
 		UASGameInstance* instance = Cast<UASGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		itemDataTable = instance->ItemData;
+		if(instance)
+		{
+			itemDataTable = instance->ItemData;
+		}
 	}
 	else
 	{

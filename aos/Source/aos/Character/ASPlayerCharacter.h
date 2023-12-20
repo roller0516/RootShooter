@@ -116,7 +116,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishGrenade();
 
-	void GetCloacking();
 	void Cloacking();
 private :
 	//---------------------------------------------------------Camera
