@@ -59,7 +59,7 @@ private:
 
 	UPROPERTY();
 	TObjectPtr<class UASCharacterData> charData;
-
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<TSoftClassPtr<class AASBaseCharacter>> LoadCharList;
 
 	UPROPERTY(BlueprintReadOnly,meta = (AllowPrivateAccess = "true"))
@@ -67,4 +67,7 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class AActor> mainCam;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<class AASBaseCharacter>> AfterLoadCharList;
 };

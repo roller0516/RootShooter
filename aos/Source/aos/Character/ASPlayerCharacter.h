@@ -117,6 +117,12 @@ protected:
 	void FinishGrenade();
 
 	void Cloacking();
+
+	UFUNCTION(BlueprintCallable)
+	void EnableCustomDepth(AActor* TouchedActor);
+	UFUNCTION(BlueprintCallable)
+	void DisableCustomDepth(AActor* TouchedActor);
+
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

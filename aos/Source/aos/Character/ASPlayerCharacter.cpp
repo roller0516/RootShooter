@@ -101,6 +101,8 @@ void AASPlayerCharacter::BeginPlay()
 
 	Camera->FieldOfView = CameraDefaultFOV;
 	CurrentCameraFOV = CameraDefaultFOV;
+
+	DisableCustomDepth(this);
 }
 
 void AASPlayerCharacter::PossessedBy(AController* NewController)
@@ -114,6 +116,7 @@ void AASPlayerCharacter::PossessedBy(AController* NewController)
 		}
 	}
 }
+
 
 
 // Called every frame
@@ -464,6 +467,16 @@ void AASPlayerCharacter::Cloacking()
 		}
 		isCloacking = false;
 	}
+}
+
+void AASPlayerCharacter::EnableCustomDepth(AActor* TouchedActor)
+{
+	GetMesh()->SetRenderCustomDepth(true);
+}
+
+void AASPlayerCharacter::DisableCustomDepth(AActor* TouchedActor)
+{
+	GetMesh()->SetRenderCustomDepth(false);
 }
 
 void AASPlayerCharacter::FireWeapon()

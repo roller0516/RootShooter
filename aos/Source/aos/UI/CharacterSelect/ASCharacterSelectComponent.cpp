@@ -96,6 +96,8 @@ void UASCharacterSelectComponent::FlowStep_WaitForCharacterSpawn(FControlFlowNod
 
 		check(playerChar);
 
+		AfterLoadCharList.Add(playerChar);
+
 		UCameraComponent* cameraComponent = playerChar->FindComponentByClass<UCameraComponent>();
 		cameraList.Add(cameraComponent->GetOwner());
 	}
