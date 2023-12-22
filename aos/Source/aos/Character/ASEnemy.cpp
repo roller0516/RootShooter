@@ -348,10 +348,13 @@ void AASEnemy::DeactivateRightWeapon()
 void AASEnemy::DoDamage(AASPlayerCharacter* Victim)
 {
 	if (Victim == nullptr) return;
-	//TODO 원형이형 : 캐릭터 데미지 작업 연결
+
+	FRandomStream RandomStream(FDateTime::Now().GetTicks());
+	int32 RandomDamage = RandomStream.RandRange(MinDamage, MaxDamage);
+
 	UGameplayStatics::ApplyDamage(
 		Victim,
-		10, //BaseDamage,
+		RandomDamage,
 		EnemyController,
 		this,
 		UDamageType::StaticClass()
