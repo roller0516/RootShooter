@@ -45,6 +45,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
@@ -74,6 +75,11 @@ protected:
 	void CalcCrossHairSpread(float deltaTime);
 	void IncreaseSpread(float increaseAmount);
 	void DecreaseSpread(float decreaseAmount);
+
+	UFUNCTION()
+	void ChangeMouseRate(float turnRate, float lookUpRate);
+	UFUNCTION()
+	void ChangeAmingMouseRate(float turnRate, float lookUpRate);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
 	bool TraceUnderCrosshairs(FHitResult&OutHitResult,FVector& OutHitLocation);

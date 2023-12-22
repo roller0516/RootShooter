@@ -19,7 +19,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "ASInventoryComponent.h"
-
+#include "GameCore/ASGame/ASGameInstance.h"
+#include "Data/ASGameOptionData.h"
 
 // Sets default values
 AASPlayerCharacter::AASPlayerCharacter() :
@@ -103,6 +104,11 @@ void AASPlayerCharacter::BeginPlay()
 	CurrentCameraFOV = CameraDefaultFOV;
 
 	DisableCustomDepth(this);
+
+	UASGameInstance* gameInstance = Cast<UASGameInstance>(GetGameInstance());
+
+	gameInstance->GameOpitionData->OnAimingMouseRateChange.AddDynamic(this, &AASPlayerCharacter::ChangeAmingMouseRate);
+	gameInstance->GameOpitionData->OnMouseRateChange.AddDynamic(this, &AASPlayerCharacter::ChangeMouseRate);
 }
 
 void AASPlayerCharacter::PossessedBy(AController* NewController)
@@ -117,7 +123,14 @@ void AASPlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+void AASPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UASGameInstance* gameInstance = Cast<UASGameInstance>(GetGameInstance());
 
+	gameInstance->GameOpitionData->OnMouseRateChange.RemoveDynamic(this,&AASPlayerCharacter::ChangeMouseRate);
+	gameInstance->GameOpitionData->OnAimingMouseRateChange.RemoveDynamic(this, &AASPlayerCharacter::ChangeAmingMouseRate);
+	Super::EndPlay(EndPlayReason);
+}
 
 // Called every frame
 void AASPlayerCharacter::Tick(float DeltaTime)
@@ -782,6 +795,18 @@ void AASPlayerCharacter::DecreaseSpread(float decreaseAmount)
 	{
 		SpreadCurrent -= decreaseAmount;
 	}
+}
+
+void AASPlayerCharacter::ChangeMouseRate(float turnRate, float lookUpRate)
+{
+	HipTurnRate = turnRate;
+	HipLookUpRate = lookUpRate;
+}
+
+void AASPlayerCharacter::ChangeAmingMouseRate(float turnRate, float lookUpRate)
+{
+	AimingTurnRate = turnRate;
+	AimingLookUpRate = lookUpRate;
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)
