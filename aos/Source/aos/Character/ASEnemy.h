@@ -82,6 +82,7 @@ protected:
 
 	void ResetCanAttack();
 
+	void DropItem();
 private:
 	// 총알에 맞았을 때 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));

@@ -36,10 +36,16 @@ UClass* AASGameMode::GetDefaultPawnClassForController_Implementation(AController
 	{	
 		UASGameInstance* gi = Cast<UASGameInstance>(GetGameInstance());
 
-		if (PawnData->pawnClass.Contains((gi->GetCharID())))
+		CharID id = gi->GetCharID();
+#if WITH_EDITOR
+		if(id == CharID::None)
+			 id = CharID::Belica;
+#endif
+		if (PawnData->pawnClass.Contains((id)))
 		{
-			return PawnData->pawnClass[gi->GetCharID()];
+			return PawnData->pawnClass[id];
 		}
+
 		return Super::GetDefaultPawnClassForController_Implementation(InController);
 	}
 

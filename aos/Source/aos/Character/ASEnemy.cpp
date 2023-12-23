@@ -15,7 +15,10 @@
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "GameCore/ASGame/ASGameInstance.h"
+#include "Data/ASItemPrimaryData.h"
+#include "Item/ASItemBase.h"
+#include "Item/ASWeapon.h"
 // Sets default values
 AASEnemy::AASEnemy() :
 	Health(100.f),
@@ -118,7 +121,7 @@ void AASEnemy::Die()
 	bDying = true;
 
 	HideHealthBar();
-
+	DropItem();
 	//GetMesh()->SetCollisionProfileName("Ragdoll", true);
 	//GetMesh()->SetSimulatePhysics(true);
 
@@ -382,6 +385,43 @@ void AASEnemy::FinishDeath()
 void AASEnemy::ResetCanAttack()
 {
 	bCanAttack = true;
+}
+
+void AASEnemy::DropItem()
+{
+	UASGameInstance* gi = Cast<UASGameInstance>(GetGameInstance());
+	TArray<FItemBaseData*> data = gi->ItemData->GetRandomItemDatas();
+	for(int i = 0 ; i < data.Num(); i++)
+	{
+		FTransform tr;
+		
+		tr.SetLocation(GetActorLocation() + FVector(0, 0, FMath::RandRange(10, 20)));
+		tr.SetRotation(GetActorRotation().Quaternion());
+
+		if(gi->ItemData->GetItemData(data[i]->ItemID))
+		{
+			AASItemBase* item = GetWorld()->SpawnActor<AASItemBase>(AASItemBase::StaticClass(), tr);
+			item->SetActorScale3D(FVector(0.5f,0.5f,0.5f));
+			item->CreateItem(data[i]->ItemID);
+			item->SetItemProperties(E_ItemState::E_Drop);
+		}
+		else if(gi->ItemData->GetWeaponData(data[i]->ItemID))
+		{
+			AASWeapon* item = GetWorld()->SpawnActor<AASWeapon>(AASWeapon::StaticClass(), tr);
+			if(item)
+			{
+				item->SetActorScale3D(FVector(1,1,1));
+				item->CreateItem(data[i]->ItemID);
+				item->SetItemProperties(E_ItemState::E_Drop);
+			}
+		}
+		else
+		{
+			
+		}
+
+		
+	}
 }
 
 // Called every frame
