@@ -456,7 +456,7 @@ void AASPlayerCharacter::PickUp()
 	if(rootingItem)
 	{
 		GetPickupItem(rootingItem);
-		rootingItem->PickupItem();
+		rootingItem->SetItemProperties(E_ItemState::E_PickUp);
 	}	
 }
 

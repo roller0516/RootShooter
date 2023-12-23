@@ -29,6 +29,9 @@ public:
 	TObjectPtr<USkeletalMesh> mesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	TObjectPtr<UStaticMesh> staticMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	TObjectPtr<UTexture2D> Texture;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
@@ -125,8 +128,10 @@ public:
 	FItemBaseData* GetItemData(int32 itemID);
 	FWeaponData* GetWeaponData(int32 itemID);
 	
+	TArray<FItemBaseData*> GetRandomItemDatas();
+
 	virtual void PostLoad() override;
-	
+	virtual void UpdateAssetBundleData() override;
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
 		return FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData"));

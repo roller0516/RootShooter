@@ -8,6 +8,12 @@
 #include "ASItemBase.generated.h"
 
 //struct FItemBaseData;
+enum class E_ItemState : uint8
+{
+	E_None,
+	E_Drop,
+	E_PickUp
+};
 
 UCLASS()
 class AOS_API AASItemBase : public AActor
@@ -17,14 +23,20 @@ class AOS_API AASItemBase : public AActor
 public:	
 	AASItemBase();
 public:
-	void PickupItem();
+
+	void SetItemProperties(E_ItemState state);
+	
 	virtual void RefreshItem();
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void CreateItem(int32 _itemID);
+	virtual void CopyItem(AASItemBase* item);
+
+
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return areaSphere; }
 	FORCEINLINE class UBoxComponent* GetCollisionBox() const { return collisionBox; }
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const { return itemMeshComponent; }
-	FORCEINLINE int GetItemID(){return itemID;}
-	virtual void CreateItem(int32 _itemID);
-	virtual void CopyItem(AASItemBase* item);
+	FORCEINLINE int GetItemID() { return itemID; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetTexture();
@@ -33,6 +45,8 @@ protected:
 	virtual	void UpdateItem();
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	void BounceItem();
+	void StopBounceItem();
 protected:
 	UPROPERTY(EditAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemID;
@@ -40,8 +54,14 @@ protected:
 	UPROPERTY(EditAnywhere,Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemCount;
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = Item)
+	UPROPERTY(VisibleAnyWhere,BlueprintReadOnly, Category = Item)
 	class USkeletalMeshComponent* itemMeshComponent;
+
+	UPROPERTY(VisibleAnyWhere)
+	class UBoxComponent* collisionBox;
+
+	UPROPERTY(VisibleAnyWhere)
+	class UStaticMeshComponent* staticMesh;
 
 	class UASItemPrimaryData* itemDataTable;
 
@@ -51,11 +71,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconItemTexture;
 
-	UPROPERTY(EditAnywhere, Category = Item)
-	class UBoxComponent* collisionBox;
-
+	E_ItemState currentState;
 private:
 
-	UPROPERTY(EditAnywhere,Category = Item)
+	UPROPERTY(VisibleAnyWhere,Category = Item)
 	class USphereComponent* areaSphere;
+
+	FTimerHandle BounceItemTimer;
+
+	UPROPERTY(EditAnywhere, Category = Item)
+	float BounceItemTime;
+
+	bool bFalling;
 };
