@@ -184,6 +184,12 @@ private:
 
 	bool bDying;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Properties", meta = (AllowPrivateAccess = "true"))
+	float MinDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Properties", meta = (AllowPrivateAccess = "true"))
+	float MaxDamage;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

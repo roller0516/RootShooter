@@ -39,7 +39,9 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	ShootTimeDuration(0.05f),
 	bFiringBullet(false),
 	AttackDelayTime(0.1),
-	isCloacking(false)
+	isCloacking(false),
+	Health(100.f),
+	MaxHealth(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -191,6 +193,21 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(IAWeaponSlot2,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon2);
 		EnhancedInputComponent->BindAction(IAWeaponSlot3,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon3);
 	}
+}
+
+float AASPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (Health - DamageAmount <= 0.f)
+	{
+		Health = 0.f;
+		/*Die();*/
+	}
+	else
+	{
+		Health -= DamageAmount;
+	}
+
+	return DamageAmount;
 }
 
 
