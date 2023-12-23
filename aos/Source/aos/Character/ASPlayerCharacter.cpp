@@ -19,7 +19,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "ASInventoryComponent.h"
-
+#include "GameCore/ASGame/ASGameInstance.h"
+#include "Data/ASGameOptionData.h"
 
 // Sets default values
 AASPlayerCharacter::AASPlayerCharacter() :
@@ -38,7 +39,9 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	ShootTimeDuration(0.05f),
 	bFiringBullet(false),
 	AttackDelayTime(0.1),
-	isCloacking(false)
+	isCloacking(false),
+	Health(100.f),
+	MaxHealth(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -103,6 +106,11 @@ void AASPlayerCharacter::BeginPlay()
 	CurrentCameraFOV = CameraDefaultFOV;
 
 	DisableCustomDepth(this);
+
+	UASGameInstance* gameInstance = Cast<UASGameInstance>(GetGameInstance());
+
+	gameInstance->GameOpitionData->OnAimingMouseRateChange.AddDynamic(this, &AASPlayerCharacter::ChangeAmingMouseRate);
+	gameInstance->GameOpitionData->OnMouseRateChange.AddDynamic(this, &AASPlayerCharacter::ChangeMouseRate);
 }
 
 void AASPlayerCharacter::PossessedBy(AController* NewController)
@@ -117,7 +125,14 @@ void AASPlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
+void AASPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UASGameInstance* gameInstance = Cast<UASGameInstance>(GetGameInstance());
 
+	gameInstance->GameOpitionData->OnMouseRateChange.RemoveDynamic(this,&AASPlayerCharacter::ChangeMouseRate);
+	gameInstance->GameOpitionData->OnAimingMouseRateChange.RemoveDynamic(this, &AASPlayerCharacter::ChangeAmingMouseRate);
+	Super::EndPlay(EndPlayReason);
+}
 
 // Called every frame
 void AASPlayerCharacter::Tick(float DeltaTime)
@@ -178,6 +193,21 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(IAWeaponSlot2,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon2);
 		EnhancedInputComponent->BindAction(IAWeaponSlot3,ETriggerEvent::Triggered,this,&AASPlayerCharacter::ChangeWeapon3);
 	}
+}
+
+float AASPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (Health - DamageAmount <= 0.f)
+	{
+		Health = 0.f;
+		/*Die();*/
+	}
+	else
+	{
+		Health -= DamageAmount;
+	}
+
+	return DamageAmount;
 }
 
 
@@ -782,6 +812,18 @@ void AASPlayerCharacter::DecreaseSpread(float decreaseAmount)
 	{
 		SpreadCurrent -= decreaseAmount;
 	}
+}
+
+void AASPlayerCharacter::ChangeMouseRate(float turnRate, float lookUpRate)
+{
+	HipTurnRate = turnRate;
+	HipLookUpRate = lookUpRate;
+}
+
+void AASPlayerCharacter::ChangeAmingMouseRate(float turnRate, float lookUpRate)
+{
+	AimingTurnRate = turnRate;
+	AimingLookUpRate = lookUpRate;
 }
 
 bool AASPlayerCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)

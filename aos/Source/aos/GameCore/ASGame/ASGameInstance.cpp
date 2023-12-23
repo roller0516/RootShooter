@@ -5,6 +5,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameCore/ASGame/ASAssetManager.h"
 #include "Data/ASItemPrimaryData.h"
+#include "Data/ASGameOptionData.h"
 
 
 UASGameInstance::UASGameInstance(const FObjectInitializer& ObjectInitializer) 
@@ -32,6 +33,7 @@ void UASGameInstance::Init()
 
 	UASAssetManager& assetManager = UASAssetManager::Get();
 	ItemData = assetManager.GetPrimaryData<UASItemPrimaryData>(FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData")));
+	GameOpitionData = assetManager.GetPrimaryData<UASGameOptionData>(FPrimaryAssetId(FPrimaryAssetType("GameOptionData"), FName("GameOptionData")));
 }
 
 void UASGameInstance::Shutdown()

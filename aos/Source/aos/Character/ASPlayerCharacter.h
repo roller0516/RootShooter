@@ -42,9 +42,12 @@ public:
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
@@ -74,6 +77,11 @@ protected:
 	void CalcCrossHairSpread(float deltaTime);
 	void IncreaseSpread(float increaseAmount);
 	void DecreaseSpread(float decreaseAmount);
+
+	UFUNCTION()
+	void ChangeMouseRate(float turnRate, float lookUpRate);
+	UFUNCTION()
+	void ChangeAmingMouseRate(float turnRate, float lookUpRate);
 	//---------------------------------------------------------Beam
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
 	bool TraceUnderCrosshairs(FHitResult&OutHitResult,FVector& OutHitLocation);
@@ -319,6 +327,13 @@ private :
 	TArray<UMaterialInterface*> SaveMaterials;
 
 	bool isCloacking;
+
+	//-------------------------------------------------------HP
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = combat, meta = (AllowPrivateAccess = "true"));
+	float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	float MaxHealth;
 
 protected:
 	//-------------------------------------------------------Skill

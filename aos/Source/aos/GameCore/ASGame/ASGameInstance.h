@@ -24,6 +24,8 @@ public:
 	UPROPERTY()
 	class UASItemPrimaryData* ItemData;
 
+	UPROPERTY(BlueprintReadOnly)
+	class UASGameOptionData* GameOpitionData;
 
 	FORCEINLINE CharID GetCharID() { return selectCharID; }
 	FORCEINLINE void SetCharID(CharID charid) { selectCharID = charid; }
