@@ -293,6 +293,7 @@ void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
 	}
 
 	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetItemProperties(E_ItemState::E_Equip);
 }
 
 void AASPlayerCharacter::DropWeapon()
@@ -301,6 +302,7 @@ void AASPlayerCharacter::DropWeapon()
 	{
 		FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld,true);
 		EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
+		EquippedWeapon->SetItemProperties(E_ItemState::E_None);
 	}
 }
 

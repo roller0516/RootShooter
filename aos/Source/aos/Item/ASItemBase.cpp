@@ -8,9 +8,11 @@
 #include "GameCore/ASGame/ASGameInstance.h"
 #include "Data/ASItemPrimaryData.h"
 #include "Components/BoxComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "GameCore/ASGame/ASAssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 
@@ -20,17 +22,25 @@ AASItemBase::AASItemBase()
 	BounceItemTime = 0.7f;
 
 	PrimaryActorTick.bCanEverTick = false;
+	root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(root);
 
 	itemMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Item Mesh"));
-	SetRootComponent(itemMeshComponent);
-	itemMeshComponent->SetSimulatePhysics(false);
+	//itemMeshComponent->SetSimulatePhysics(false);
+	itemMeshComponent->SetupAttachment(root);
 
 	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("static Mesh"));
-	staticMesh->SetupAttachment(itemMeshComponent);
-	staticMesh->SetSimulatePhysics(false);
+	//staticMesh->SetSimulatePhysics(false);
+	staticMesh->SetupAttachment(root);
 	
 	collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	collisionBox->SetupAttachment(itemMeshComponent);
+	collisionBox->SetupAttachment(root);
+	
+	particle = CreateDefaultSubobject<USceneComponent>(TEXT("Particle"));
+	particle->SetupAttachment(root);
+	FTransform tr;
+	tr.SetRotation(FRotator(90,0,0).Quaternion());
+	particle->SetRelativeTransform(tr);
 }
 
 void AASItemBase::SetItemProperties(E_ItemState state)
@@ -47,24 +57,36 @@ void AASItemBase::SetItemProperties(E_ItemState state)
 	case E_ItemState::E_Drop:
 		if(itemBaseData.mesh)
 		{
-			itemMeshComponent->SetSimulatePhysics(true);
-			itemMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			//itemMeshComponent->SetSimulatePhysics(true);
+			//itemMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			itemMeshComponent->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
 			itemMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+			itemMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 		}
 		else
 		{
-			staticMesh->SetSimulatePhysics(true);
-			staticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			//staticMesh->SetSimulatePhysics(true);
+			//staticMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			staticMesh->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
 			staticMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+			staticMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 		}
 
-		BounceItem();
+		//BounceItem();
+
+		if(lootParticle)
+		{
+			UGameplayStatics::SpawnEmitterAttached(lootParticle,particle);
+		}
+		
 		break;
 	case E_ItemState::E_PickUp:
 		SetActorHiddenInGame(true);
 		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+		break;
+	case E_ItemState::E_Equip:
+		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		break;
 	default:
 		break;
@@ -189,6 +211,9 @@ void AASItemBase::UpdateItem()
 	SetTexture();
 	SetMesh();
 	SetCount();
+
+	if(itemBaseData.lootParticle)
+		lootParticle = itemBaseData.lootParticle;
 }
 
 void AASItemBase::OnConstruction(const FTransform& Transform)
@@ -211,17 +236,5 @@ void AASItemBase::RefreshItem()
 void AASItemBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//if(currentState == E_ItemState::E_Drop && bFalling)
-	//{
-	//	
-	//}
-	//if(IsDrop)
-	//{
-	//	
-	//	//FVector L  = GetActorLocation() + FVector::UpVector + FVector::RightVector * DeltaTime * 100;
-	//	//SetActorLocation(L);
-	//	//UKismetMathLibrary::
-	//}
 }
 

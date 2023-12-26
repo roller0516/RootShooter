@@ -46,6 +46,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	ItemGrade itemGradeType;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	class UParticleSystem* lootParticle;
 };
 
 USTRUCT(BlueprintType)

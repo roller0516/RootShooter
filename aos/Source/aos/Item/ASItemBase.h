@@ -12,7 +12,8 @@ enum class E_ItemState : uint8
 {
 	E_None,
 	E_Drop,
-	E_PickUp
+	E_PickUp,
+	E_Equip,
 };
 
 UCLASS()
@@ -72,6 +73,15 @@ protected:
 	UTexture2D* IconItemTexture;
 
 	E_ItemState currentState;
+
+	UPROPERTY(VisibleAnyWhere)
+	class USceneComponent* root;
+
+	UPROPERTY(VisibleAnyWhere)
+	class USceneComponent* particle;
+
+	UPROPERTY(VisibleAnyWhere)
+	class UParticleSystem* lootParticle;
 private:
 
 	UPROPERTY(VisibleAnyWhere,Category = Item)

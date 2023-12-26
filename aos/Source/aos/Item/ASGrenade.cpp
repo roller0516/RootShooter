@@ -66,6 +66,13 @@ void AASGrenade::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 			UDamageType::StaticClass());
 		HitEnemy->BulletHit_Implementation(SweepResult);
 		HitEnemy->ShowHitNumber(Damage, this->GetActorLocation(), false);
+
+
+		if (OtherComp->IsA<AASEnemy>())
+		{
+			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		}
+
 	}
 }
 void AASGrenade::OnHitActor(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -85,10 +92,6 @@ void AASGrenade::OnHitActor(UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 		UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 
-		if(OtherComp->IsA<AASEnemy>())
-		{
-			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-		}
 		Destroy();
 	}
 

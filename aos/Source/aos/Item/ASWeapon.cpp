@@ -160,6 +160,8 @@ void AASWeapon::UpdateItem()
 	MuzzleEffect = weaponData.MuzzleEffect;
 	TracerEffect = weaponData.TracerEffect;
 	ShellMesh = weaponData.ShellMesh;
+
+	lootParticle = weaponData.lootParticle;
 }
 
 void AASWeapon::PostInitializeComponents()
@@ -274,6 +276,9 @@ void AASWeapon::DecrementAmmo()
 void AASWeapon::CreateItem(int32 _itemID)
 {
 	Super::CreateItem(_itemID);
+
+	//if(!itemBaseData)
+	itemBaseData = *itemDataTable->GetWeaponData(itemID);
 
 	RefreshItem();
 }
