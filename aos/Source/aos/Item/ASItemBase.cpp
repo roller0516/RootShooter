@@ -216,6 +216,10 @@ void AASItemBase::UpdateItem()
 		lootParticle = itemBaseData.lootParticle;
 }
 
+void AASItemBase::SetSound()
+{
+}
+
 void AASItemBase::OnConstruction(const FTransform& Transform)
 {
 	UASAssetManager& assetManager = UASAssetManager::Get();

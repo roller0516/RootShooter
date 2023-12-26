@@ -524,7 +524,7 @@ void AASPlayerCharacter::FireWeapon()
 	if (EquippedWeapon)
 	{
 		//const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
-		
+		EquippedWeapon->PlayFireSound();
 		//if (MuzzleFlash)
 		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
 		CombatState = ECombatState::ECS_FireTimerInProgress;

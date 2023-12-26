@@ -44,6 +44,7 @@ protected:
 	virtual void SetMesh();
 	virtual void SetCount();
 	virtual	void UpdateItem();
+	virtual void SetSound();
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	void BounceItem();

@@ -113,6 +113,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TObjectPtr<class UTexture2D> CrosshairsBottom;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	USoundBase* FireSound;
 };
 
 UCLASS()

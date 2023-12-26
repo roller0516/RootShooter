@@ -154,6 +154,8 @@ void AASWeapon::UpdateItem()
 
 	SetCrossHair();
 
+	SetSound();
+
 	ClipBoneName = weaponData.ClipBoneName;
 
 	ShellEffect = weaponData.ShellEffect;
@@ -268,6 +270,11 @@ void AASWeapon::SetCrossHair()
 	}
 }
 
+void AASWeapon::SetSound()
+{
+	FireSound = weaponData.FireSound;
+}
+
 void AASWeapon::DecrementAmmo()
 {
 	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);
@@ -313,4 +320,9 @@ float AASWeapon::GetDamage()
 float AASWeapon::GetHeadDamage()
 {
 	return GetDamage() * 2;
+}
+
+void AASWeapon::PlayFireSound()
+{
+	UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 }

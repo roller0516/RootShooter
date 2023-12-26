@@ -30,6 +30,7 @@ public:
 	void SetActive(bool active);
 	FTransform GetRightHandSocket();
 	FName GetReloadMotageSection();
+	void PlayFireSound();
 
 	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
 	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
@@ -47,6 +48,7 @@ protected:
 	virtual void SetMesh() override;
 	virtual void SetCount() override;
 	virtual void SetDamage();
+	virtual void SetSound() override;
 	virtual void BeginPlay() override;
 	virtual	void UpdateItem() override;
 	
@@ -58,7 +60,6 @@ private:
 	void SetMaxAmmoCount();
 	void SetMagazine();
 	void SetCrossHair();
-	
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
@@ -128,4 +129,7 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool IsUsed;
+
+	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	USoundBase* FireSound;
 };
