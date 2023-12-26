@@ -42,7 +42,7 @@ void AASItemBase::SetItemProperties(E_ItemState state)
 	case E_ItemState::E_None:
 		//collisionBox->SetcollisionRes
 		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility,ECollisionResponse::ECR_Block);
-		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,ECollisionResponse::ECR_Block);
+		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,ECollisionResponse::ECR_Ignore);
 		break;
 	case E_ItemState::E_Drop:
 		if(itemBaseData.mesh)

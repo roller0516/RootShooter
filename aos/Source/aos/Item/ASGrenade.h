@@ -6,21 +6,34 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "ASItemBase.h"
 #include "ASGrenade.generated.h"
 
 UCLASS()
-class AOS_API AASGrenade : public AActor
+class AOS_API AASGrenade : public AASItemBase
 {
 	GENERATED_BODY()
 	
 	// Sets default values for this actor's properties
+public:
 	AASGrenade();
+	virtual void BeginPlay() override;
+protected:
+	void Explosion();
+public:
+	USphereComponent* GetCollisionComp() const { return CollisionComp; }
+	
+	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-	USphereComponent* CollisionComp;
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	UProjectileMovementComponent* ProjectileMovement;
+	UFUNCTION()
+	void OnHitActor(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+protected:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	float Damage;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Timer")
@@ -43,11 +56,15 @@ private:
 
 	FTimerHandle TimerHandle;
 
-public:
-	USphereComponent* GetCollisionComp() const { return CollisionComp; }
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	USphereComponent* CollisionComp;
 
-	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	USphereComponent* OnHitCollision;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	FVector explosionEffectScale;
 };
