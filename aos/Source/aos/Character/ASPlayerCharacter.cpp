@@ -144,6 +144,7 @@ void AASPlayerCharacter::Tick(float DeltaTime)
 	CalcAimingSpeed();
 	//SKill
 	BuildTypeSkillTrace();
+	DrawGrenadePath();
 
 	FHitResult ItemTraceResult;
 	FVector HitLocation;
@@ -177,7 +178,7 @@ void AASPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		//Test Skill
 		EnhancedInputComponent->BindAction(IASkill1, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseSkill);
-		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::UseGrenadeSkill);
+		EnhancedInputComponent->BindAction(IASkill2, ETriggerEvent::Triggered, this, &AASPlayerCharacter::SetGrenadeSkill);
 		EnhancedInputComponent->BindAction(IASkill3, ETriggerEvent::Triggered, this, &AASPlayerCharacter::Cloacking);
 
 		//Aiming
@@ -248,6 +249,10 @@ void AASPlayerCharacter::MouseLeftClick()
 	{
 		CreateBarrier();
 		CombatState = ECombatState::ECS_Unoccupied;
+	}
+	else if (CombatState == ECombatState::ECS_Grenade)
+	{
+		UseGrenadeSkill();
 	}
 	else
 	{
@@ -641,6 +646,43 @@ void AASPlayerCharacter::CreateBarrier()
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
 }
 
+void AASPlayerCharacter::SetGrenadeSkill()
+{
+	CombatState = ECombatState::ECS_Grenade;
+}
+
+void AASPlayerCharacter::DrawGrenadePath()
+{
+	if (CombatState != ECombatState::ECS_Grenade) return;
+
+	// Projectile의 경로를 미리 보기 위해 DrawDebugLine 사용
+	FRotator MuzzleRotation = GetActorRotation();
+	FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
+
+	const float MaxGrenadeThrowDistance = 3000.f;
+
+	FVector StartLocation = MuzzleLocation;
+	FVector EndLocation = StartLocation + MuzzleRotation.Vector() * MaxGrenadeThrowDistance;
+
+	const float Gravity = -980.f;
+	const float TimeStep = 0.05f;
+	const int32 MaxIterations = 100;
+	const float initSpeed = 5000.f;
+
+	FVector Velocity = MuzzleRotation.Vector() * initSpeed;
+	FVector PreviousLocation = MuzzleLocation;
+
+	for (int32 i = 0; i < MaxIterations; ++i)
+	{
+		float Time = i * TimeStep;
+		FVector NextLocation = MuzzleLocation + Velocity * Time + 0.5f * FVector(0, 0, Gravity) * FMath::Square(Time);
+
+		DrawDebugLine(GetWorld(), PreviousLocation, NextLocation, FColor::Red, false, 0.01, 0, 1);
+
+		PreviousLocation = NextLocation;
+	}
+}
+
 void AASPlayerCharacter::UseGrenadeSkill()
 {
 	if (grenadeActor && EquippedWeapon)
@@ -650,7 +692,6 @@ void AASPlayerCharacter::UseGrenadeSkill()
 		if (AnimInstance && Grenade)
 		{
 			AnimInstance->Montage_Play(Grenade);
-			CombatState = ECombatState::ECS_Grenade;
 		}
 	}
 }

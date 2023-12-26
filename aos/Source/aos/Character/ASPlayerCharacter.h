@@ -59,7 +59,9 @@ protected:
 	void FinishCrossHairBulletFire();
 	//---------------------------------------------------------Skill
 	void CreateBarrier();
+	void SetGrenadeSkill();
 	void UseGrenadeSkill();
+	void DrawGrenadePath();
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnGrenade();
