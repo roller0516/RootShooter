@@ -497,6 +497,17 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 void AASPlayerCharacter::FinishGrenade()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+	if (splineMeshs.Num() > 0)
+	{
+		for (int i = 0; i < splineMeshs.Num(); i++)
+		{
+			if (splineMeshs[i])
+				splineMeshs[i]->DestroyComponent();
+		}
+
+		splineMeshs.Empty();
+	}
+	splinComponent->ClearSplinePoints(true);
 }
 
 void AASPlayerCharacter::Cloacking()
