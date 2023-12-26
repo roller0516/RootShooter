@@ -268,6 +268,26 @@ private :
 
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
 	float SpreadIncreaseSpeed;
+
+	FVector TargetPoint;
+
+	FRotator TargetRotator;
+
+	FVector ImpactPoint;
+
+	FRotator ImpactRotator;
+
+	UPROPERTY(VisibleAnywhere)
+	class USplineComponent* splinComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMesh* splineMesh;
+
+	UPROPERTY(EditAnywhere)
+	class UMaterial* splineMeshMeterial;
+
+
+	TArray<class USplineMeshComponent* > splineMeshs;
 	//-------------------------------------------------------ShootingTime
 	UPROPERTY(EditAnywhere,Category = ShootTimer)
 	float ShootTimeDuration;

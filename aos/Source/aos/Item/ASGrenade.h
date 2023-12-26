@@ -18,6 +18,7 @@ class AOS_API AASGrenade : public AASItemBase
 public:
 	AASGrenade();
 	virtual void BeginPlay() override;
+	virtual void Tick(float deltaTime) override;
 protected:
 	void Explosion();
 public:
@@ -67,4 +68,6 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	FVector explosionEffectScale;
+
+	TArray<AActor*> ignores;
 };

@@ -25,7 +25,7 @@ AASGrenade::AASGrenade()
 	OnHitCollision->OnComponentBeginOverlap.AddDynamic(this, &AASGrenade::OnBeginOverlap);
 	OnHitCollision->SetupAttachment(CollisionComp);
 	OnHitCollision->InitSphereRadius(100.f);
-
+	
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
@@ -36,6 +36,8 @@ AASGrenade::AASGrenade()
 
 	explosionEffectScale = FVector(5,5,5);
 
+	staticMesh->SetupAttachment(CollisionComp);
+
 	Damage = 100;
 	
 	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AASGrenade::Explosion, countDownTime);
@@ -45,7 +47,15 @@ void AASGrenade::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ignores.Add(this);
+
+ 
 	//GetWorld()->GetTimerManager().SetTimer(TimerHandle,this,&AASGrenade::Explosion,countDownTime);
+}
+
+void AASGrenade::Tick(float deltaTime)
+{
+	Super::Tick(deltaTime);
 }
 
 void AASGrenade::Explosion()
