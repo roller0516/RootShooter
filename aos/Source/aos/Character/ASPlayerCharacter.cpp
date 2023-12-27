@@ -551,6 +551,26 @@ void AASPlayerCharacter::FinialArcSpawn(FVector location)
 	FinalArc->SetActorLocation(location);
 }
 
+void AASPlayerCharacter::Heal(int Amount)
+{
+	if (Health + Amount < MaxHealth)
+	{
+		Health += Amount;
+	}
+	else
+	{
+		Health = MaxHealth;
+	}
+}
+
+void AASPlayerCharacter::GetAmmo(int Amount)
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->IncreaseAmmo(Amount);
+	}
+}
+
 void AASPlayerCharacter::FireWeapon()
 {
 	if(bFiringBullet) return;

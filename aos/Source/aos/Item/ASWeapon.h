@@ -22,6 +22,8 @@ public:
 	virtual void CreateItem(int32 _itemID) override;
 	virtual void RefreshItem() override;
 
+	void IncreaseAmmo(int32 AddAmmo);
+
 	void DecrementAmmo();
 
 	UFUNCTION(BlueprintCallable)
