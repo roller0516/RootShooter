@@ -215,6 +215,8 @@ void AASEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	auto playerCharacter = Cast<AASPlayerCharacter>(OtherActor);
 	if (playerCharacter)
 	{
+		if (playerCharacter->GetCloacking()) return;
+
 		EnemyController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), playerCharacter);
 	}
 }

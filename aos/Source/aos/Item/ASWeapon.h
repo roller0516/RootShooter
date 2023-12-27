@@ -23,8 +23,10 @@ public:
 	virtual void RefreshItem() override;
 
 	void IncreaseAmmo(int32 AddAmmo);
-
 	void DecrementAmmo();
+
+	void SetCloacking(UMaterial* CloackingMaterial);
+	void SetUnCloacking();
 
 	UFUNCTION(BlueprintCallable)
 	void ResetAmmo();
@@ -138,4 +140,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> SaveMaterials;
 };

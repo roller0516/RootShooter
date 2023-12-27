@@ -45,7 +45,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	void Heal(int Amount);
-	void GetAmmo(int Amount);
+	void PickupAmmoItem(int Amount);
 
 protected:
 	virtual void BeginPlay() override;

@@ -277,12 +277,30 @@ void AASWeapon::SetSound()
 
 void AASWeapon::IncreaseAmmo(int32 AddAmmo)
 {
-	curAmmonCount += AddAmmo;
+	magazineCapacity += AddAmmo;
 }
 
 void AASWeapon::DecrementAmmo()
 {
 	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);
+}
+
+void AASWeapon::SetCloacking(UMaterial* CloackingMaterial)
+{
+	SaveMaterials = itemMeshComponent->GetMaterials();
+
+	for (int i = 0; i < SaveMaterials.Num(); i++)
+	{
+		itemMeshComponent->SetMaterial(i, CloackingMaterial);
+	}
+}
+
+void AASWeapon::SetUnCloacking()
+{
+	for (int i = 0; i < SaveMaterials.Num(); i++)
+	{
+		itemMeshComponent->SetMaterial(i, SaveMaterials[i]);
+	}
 }
 
 void AASWeapon::CreateItem(int32 _itemID)
