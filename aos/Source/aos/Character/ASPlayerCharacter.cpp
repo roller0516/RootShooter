@@ -533,6 +533,26 @@ void AASPlayerCharacter::DisableCustomDepth(AActor* TouchedActor)
 	GetMesh()->SetRenderCustomDepth(false);
 }
 
+void AASPlayerCharacter::Heal(int Amount)
+{
+	if (Health + Amount < MaxHealth)
+	{
+		Health += Amount;
+	}
+	else
+	{
+		Health = MaxHealth;
+	}
+}
+
+void AASPlayerCharacter::GetAmmo(int Amount)
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->IncreaseAmmo(Amount);
+	}
+}
+
 void AASPlayerCharacter::FireWeapon()
 {
 	if(bFiringBullet) return;

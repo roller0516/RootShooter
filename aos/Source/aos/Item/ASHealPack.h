@@ -11,16 +11,25 @@ class AOS_API AASHealPack : public AActor
 {
 	GENERATED_BODY()
 	
+private:
+	UPROPERTY()
+	int HealthBonus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	int MinHeal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	int MaxHeal;
+
 public:	
-	// Sets default values for this actor's properties
 	AASHealPack();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
+	class UBoxComponent* OverlapBox;
 
+	UFUNCTION()
+	void UseItem(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

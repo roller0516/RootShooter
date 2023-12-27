@@ -275,6 +275,11 @@ void AASWeapon::SetSound()
 	FireSound = weaponData.FireSound;
 }
 
+void AASWeapon::IncreaseAmmo(int32 AddAmmo)
+{
+	curAmmonCount += AddAmmo;
+}
+
 void AASWeapon::DecrementAmmo()
 {
 	curAmmonCount = FMath::Clamp(curAmmonCount -= 1, 0, maxAmmoCount);

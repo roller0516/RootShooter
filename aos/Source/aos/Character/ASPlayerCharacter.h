@@ -43,6 +43,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	void Heal(int Amount);
+	void GetAmmo(int Amount);
 
 protected:
 	virtual void BeginPlay() override;

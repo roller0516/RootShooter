@@ -18,6 +18,7 @@ class AOS_API AASWeapon : public AASItemBase
 public:
 	AASWeapon();
 
+	void IncreaseAmmo(int32 AddAmmo);
 	void DecrementAmmo();
 
 	UFUNCTION(BlueprintCallable)

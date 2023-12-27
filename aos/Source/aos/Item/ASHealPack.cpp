@@ -1,27 +1,36 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Item/ASHealPack.h"
+#include "Components/BoxComponent.h"
+#include "Character/ASPlayerCharacter.h"
 
 // Sets default values
 AASHealPack::AASHealPack()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+	HealthBonus = FMath::RandRange(MinHeal, MaxHeal);
+
+	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox")); 
+	OverlapBox->SetupAttachment(RootComponent);
+	OverlapBox->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f)); 
+	OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &AASHealPack::UseItem);
 }
 
 // Called when the game starts or when spawned
 void AASHealPack::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void AASHealPack::Tick(float DeltaTime)
+void AASHealPack::UseItem(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
+	if (OtherActor == nullptr) return;
 
+	auto playerCharacter = Cast<AASPlayerCharacter>(OtherActor);
+	if (playerCharacter)
+	{
+		playerCharacter->Heal(HealthBonus);
+		Destroy();
+	}
 }
-
