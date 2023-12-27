@@ -36,6 +36,7 @@ public:
 	FName GetReloadMotageSection();
 	void PlayFireSound();
 
+	FORCEINLINE float GetShootTimeDuration(){return weaponData.ShootTimeDuration; }
 	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
 	FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
 	FORCEINLINE float GetDamage();

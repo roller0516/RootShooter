@@ -38,7 +38,6 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	AimingTurnRate(20.f),
 	AimingLookUpRate(20.0f),
 	CrossHairSpreadMultiplier(1.25f),
-	ShootTimeDuration(0.05f),
 	bFiringBullet(false),
 	AttackDelayTime(0.1),
 	isCloacking(false),
@@ -73,7 +72,6 @@ AASPlayerCharacter::AASPlayerCharacter() :
 	defaultMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
 	CombatState = ECombatState::ECS_Unoccupied;
-
 	//------------------------------------------------------------------------------Cross Spread Init
 	//생성자에서 초기화 하려니까 너무 길어져서.. 이쪽으로 옮김 
 	SpreadMin = 0;
@@ -247,6 +245,25 @@ void AASPlayerCharacter::CharacterLook(const FInputActionValue& value)
 	}
 }
 
+void AASPlayerCharacter::ClearSpline()
+{
+	if (splineMeshs.Num() > 0)
+	{
+		for (int i = 0; i < splineMeshs.Num(); i++)
+		{
+			if (splineMeshs[i])
+				splineMeshs[i]->DestroyComponent();
+		}
+
+		splineMeshs.Empty();
+	}
+
+	if(splinComponent)
+		splinComponent->ClearSplinePoints(true);
+	if(FinalArc)
+		FinalArc->SetActorHiddenInGame(true);
+}
+
 void AASPlayerCharacter::MouseLeftClick()
 {
 	if (CombatState == ECombatState::ECS_Reloading) return;
@@ -254,7 +271,8 @@ void AASPlayerCharacter::MouseLeftClick()
 	if(CombatState == ECombatState::ECS_UsedSkill)
 	{
 		CreateBarrier();
-		CombatState = ECombatState::ECS_Unoccupied;
+
+		ChangeCombatState(ECombatState::ECS_Unoccupied);
 	}
 	else if (CombatState == ECombatState::ECS_Grenade)
 	{
@@ -266,12 +284,17 @@ void AASPlayerCharacter::MouseLeftClick()
 	}
 }
 
+void AASPlayerCharacter::ChangeCombatState(ECombatState changeState)
+{
+	CombatState = changeState;
+
+	if(CombatState != ECombatState::ECS_Grenade)
+		ClearSpline();
+}
+
 void AASPlayerCharacter::CalcAimingSpeed()
 {
-	//if(bIsAiming)
-	//	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	//else
-	//	GetCharacterMovement()->MaxWalkSpeed = defaultMovementSpeed;
+
 }
 
 void AASPlayerCharacter::EquipWeapon(AASWeapon* WeaponToEquip)
@@ -390,7 +413,7 @@ void AASPlayerCharacter::ExchangeInventoryItems(int32 currentItemidx, int32 newI
 
 void AASPlayerCharacter::FinishEquip()
 {
-	CombatState = ECombatState::ECS_Unoccupied;
+	ChangeCombatState(ECombatState::ECS_Unoccupied);
 
 	if (splineMeshs.Num() > 0)
 	{
@@ -428,7 +451,7 @@ void AASPlayerCharacter::Reloading()
 
 void AASPlayerCharacter::FinishReloading()
 {
-	CombatState = ECombatState::ECS_Unoccupied;
+	ChangeCombatState(ECombatState::ECS_Unoccupied);
 
 	if(bAimingButtonPressed)
 	{
@@ -441,7 +464,6 @@ void AASPlayerCharacter::FinishReloading()
 
 void AASPlayerCharacter::SwapWeapon(AASWeapon* swapWeapon)
 {
-	
 	EquipWeapon(swapWeapon);
 }
 
@@ -469,7 +491,7 @@ void AASPlayerCharacter::GrapClip()
 void AASPlayerCharacter::ReplaceClip()
 {
 	EquippedWeapon->SetMovingClip(false);
-	CombatState = ECombatState::ECS_Unoccupied;
+	ChangeCombatState(ECombatState::ECS_Unoccupied);
 }
 
 void AASPlayerCharacter::PickUp()
@@ -492,19 +514,7 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 
 void AASPlayerCharacter::FinishGrenade()
 {
-	CombatState = ECombatState::ECS_Unoccupied;
-	if (splineMeshs.Num() > 0)
-	{
-		for (int i = 0; i < splineMeshs.Num(); i++)
-		{
-			if (splineMeshs[i])
-				splineMeshs[i]->DestroyComponent();
-		}
-
-		splineMeshs.Empty();
-	}
-	splinComponent->ClearSplinePoints(true);
-	FinalArc->SetActorHiddenInGame(true);
+	ChangeCombatState(ECombatState::ECS_Unoccupied);
 }
 
 void AASPlayerCharacter::Cloacking()
@@ -660,7 +670,7 @@ void AASPlayerCharacter::StartCrossHairBulletFire()
 	bFiringBullet = true;
 	
 	GetWorldTimerManager().SetTimer(CrossHairShootTimer,this,
-		&AASPlayerCharacter::FinishCrossHairBulletFire,ShootTimeDuration);
+		&AASPlayerCharacter::FinishCrossHairBulletFire,EquippedWeapon->GetShootTimeDuration());
 
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"Fire");
@@ -670,8 +680,7 @@ void AASPlayerCharacter::FinishCrossHairBulletFire()
 {
 	bFiringBullet = false;
 	GetWorldTimerManager().ClearTimer(CrossHairShootTimer);
-
-	CombatState = ECombatState::ECS_Unoccupied;
+	ChangeCombatState(ECombatState::ECS_Unoccupied);
 }
 
 void AASPlayerCharacter::CreateBarrier()
@@ -691,7 +700,7 @@ void AASPlayerCharacter::CreateBarrier()
 
 void AASPlayerCharacter::SetGrenadeSkill()
 {
-	CombatState = ECombatState::ECS_Grenade;
+	ChangeCombatState(ECombatState::ECS_Grenade);
 }
 
 void AASPlayerCharacter::DrawGrenadePath()
@@ -799,7 +808,7 @@ void AASPlayerCharacter::SpawnGrenade()
 
 void AASPlayerCharacter::UseSkill()
 {
-	CombatState = ECombatState::ECS_UsedSkill;
+	ChangeCombatState(ECombatState::ECS_UsedSkill);
 }
 
 void AASPlayerCharacter::BuildTypeSkillTrace()
@@ -808,29 +817,18 @@ void AASPlayerCharacter::BuildTypeSkillTrace()
 	
 	FVector ground = (FVector::UpVector * -100.f); //지면까지의 거리
 	
-	FVector Start = GetActorLocation() + (GetActorForwardVector() * TraceDistance) + ground;
-	FVector End = Start + FVector::UpVector * 1000;
-	FVector HalfSize =  FVector(5,5,5);
-	
-	TArray<AActor*> IgnoreActors;
+	FVector Start = GetActorLocation() + (GetActorForwardVector() * TraceDistance);
+	FVector End = Start + FVector::UpVector * -10000;
+
 	FHitResult Hit;
-	
-	UKismetSystemLibrary::BoxTraceSingle(
-		GetWorld(),
-		Start,
-		End,
-		HalfSize,
-		FRotator::ZeroRotator,
-		TraceTypeQuery1,
-		false,
-		IgnoreActors,
-		EDrawDebugTrace::ForOneFrame,
-		Hit,true
-		);
+	FCollisionQueryParams params;
+	params.bDebugQuery = true;
 
+	GetWorld()->LineTraceSingleByChannel(Hit,Start,End,ECollisionChannel::ECC_Visibility);
 
-	if(Hit.bBlockingHit)
+	if(Hit.GetActor())
 	{
+		if(AASEnemy* enemy = Cast<AASEnemy>(Hit.GetActor())) return;
 		GroundPlacementPoint = Hit.ImpactPoint;
 	}
 }

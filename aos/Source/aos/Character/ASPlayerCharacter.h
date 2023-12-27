@@ -54,8 +54,9 @@ protected:
 
 	void CharacterMove(const FInputActionValue& Value);
 	void CharacterLook(const FInputActionValue& Value);
-
+	void ClearSpline();
 	void MouseLeftClick();
+	void ChangeCombatState(ECombatState changeState);
 	//---------------------------------------------------------Attack
 	void FireWeapon();
 	void StartCrossHairBulletFire();
@@ -298,9 +299,6 @@ private :
 
 	AActor* FinalArc;
 	//-------------------------------------------------------ShootingTime
-	UPROPERTY(EditAnywhere,Category = ShootTimer)
-	float ShootTimeDuration;
-
 	bool bFiringBullet;
 
 	FTimerHandle CrossHairShootTimer;

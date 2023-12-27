@@ -116,6 +116,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	USoundBase* FireSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	float ShootTimeDuration = 0.05f;
 };
 
 UCLASS()
