@@ -519,6 +519,8 @@ void AASPlayerCharacter::Cloacking()
 		{
 			GetMesh()->SetMaterial(i, CloackingMaterial);
 		}
+
+		if (EquippedWeapon) { EquippedWeapon->SetCloacking(CloackingMaterial); }
 		isCloacking = true;
 	}
 	else
@@ -527,6 +529,8 @@ void AASPlayerCharacter::Cloacking()
 		{
 			GetMesh()->SetMaterial(i, SaveMaterials[i]);
 		}
+
+		if (EquippedWeapon) { EquippedWeapon->SetUnCloacking(); }
 		isCloacking = false;
 	}
 }
