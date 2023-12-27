@@ -409,10 +409,10 @@ void AASPlayerCharacter::Reloading()
 {
 	if(CombatState != ECombatState::ECS_Unoccupied) return;
 
+	if(EquippedWeapon->IsAmmoFull()) return;
+
 	if(bIsAiming)
-	{
 		StopAiming();
-	}
 
 	if(EquippedWeapon == nullptr) return;
 
@@ -424,8 +424,6 @@ void AASPlayerCharacter::Reloading()
 		AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMotageSection());
 		CombatState = ECombatState::ECS_Reloading;
 	}
-
-	//
 }
 
 void AASPlayerCharacter::FinishReloading()
@@ -488,8 +486,6 @@ void AASPlayerCharacter::GetPickupItem(AASItemBase* item)
 {
 	if(AASWeapon* weapon = Cast<AASWeapon>(item))
 	{
-		//AASWeapon* copy = NewObject<AASWeapon>();
-		//copy->CreateItem(item->GetItemID());
 		InventoryComponent->AddItems(weapon);
 	}
 }
@@ -508,6 +504,7 @@ void AASPlayerCharacter::FinishGrenade()
 		splineMeshs.Empty();
 	}
 	splinComponent->ClearSplinePoints(true);
+	FinalArc->SetActorHiddenInGame(true);
 }
 
 void AASPlayerCharacter::Cloacking()
@@ -544,17 +541,25 @@ void AASPlayerCharacter::DisableCustomDepth(AActor* TouchedActor)
 	GetMesh()->SetRenderCustomDepth(false);
 }
 
+void AASPlayerCharacter::FinialArcSpawn(FVector location)
+{
+	if (FinalArc == nullptr)
+	{
+		FinalArc = GetWorld()->SpawnActor<AActor>(FinalArcSubclass, location, FRotator::ZeroRotator);
+	}
+	FinalArc->SetActorHiddenInGame(false);
+	FinalArc->SetActorLocation(location);
+}
+
 void AASPlayerCharacter::FireWeapon()
 {
 	if(bFiringBullet) return;
 	if(!WeaponHasAmmo()) return;
-	//const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->ItemMesh->GetSocketByName("BarrelSocket");
+
 	if (EquippedWeapon)
 	{
-		//const FTransform muzzleTr = BarrelSocket->GetSocketTransform(GetMesh());
 		EquippedWeapon->PlayFireSound();
-		//if (MuzzleFlash)
-		//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, muzzleTr);
+
 		CombatState = ECombatState::ECS_FireTimerInProgress;
 		FHitResult BeamHitResult;
 		bool bIsBeam = GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
@@ -613,21 +618,7 @@ void AASPlayerCharacter::FireWeapon()
 				DrawDebugPoint(GetWorld(), BeamHitResult.ImpactPoint, 3, FColor::Red, false, 10, 0);
 			}
 
-			//TargetPoint = BeamHitResult.ImpactPoint;
-		
 			EquippedWeapon->ShowShotParticles(BeamHitResult);
-			//if (ShotLineParticle)
-			//{
-			//	UParticleSystemComponent* beam = UGameplayStatics::SpawnEmitterAtLocation(
-			//		GetWorld(),
-			//		ShotLineParticle,
-			//		muzzleTr);
-			//		
-			//	if (beam)
-			//	{
-			//		beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
-			//	}
-			//}
 		}
 	}
 
@@ -681,24 +672,18 @@ void AASPlayerCharacter::CreateBarrier()
 void AASPlayerCharacter::SetGrenadeSkill()
 {
 	CombatState = ECombatState::ECS_Grenade;
-	
 }
 
 void AASPlayerCharacter::DrawGrenadePath()
 {
 	if (CombatState != ECombatState::ECS_Grenade) return;
 
-	
-
 	FPredictProjectilePathParams projectParams;
 
-	//TArray<AActor> ignores;
-
-	//FRotator MuzzleRotation = GetActorRotation();
-
 	FHitResult BeamHitResult;
-	GetBeamEndLocation(EquippedWeapon->GetBarrelSocketTransForm().GetLocation(), BeamHitResult);
-	TargetPoint = BeamHitResult.ImpactPoint;
+	FVector HitLocation;
+	TraceUnderCrosshairs(BeamHitResult, HitLocation);
+	TargetPoint = HitLocation;
 
 	FRotator r = UKismetMathLibrary::MakeRotFromX(TargetPoint - EquippedWeapon->GetBarrelSocketTransForm().GetLocation());
 
@@ -707,8 +692,7 @@ void AASPlayerCharacter::DrawGrenadePath()
 
 	projectParams.ActorsToIgnore.Add(this);
 	projectParams.StartLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation();
-	projectParams.LaunchVelocity = UKismetMathLibrary::GetForwardVector(ImpactRotator) * FVector(2000.f,2000.f,2000.f);
-	//projectParams.DrawDebugTime = 5.0f;
+	projectParams.LaunchVelocity = UKismetMathLibrary::GetForwardVector(ImpactRotator) * 2000.f;
 	projectParams.DrawDebugType = EDrawDebugTrace::None;
 	projectParams.MaxSimTime = 5.0f;
 	projectParams.bTraceWithChannel = true;
@@ -717,14 +701,16 @@ void AASPlayerCharacter::DrawGrenadePath()
 	
 	
 	FPredictProjectilePathResult result;
+
 	UGameplayStatics::PredictProjectilePath(GetWorld(), projectParams, result);
 
 	splinComponent->ClearSplinePoints(true);
-
 	for(int i = 0 ; i < result.PathData.Num(); i++)
 	{
 		splinComponent->AddSplinePointAtIndex(result.PathData[i].Location, i, ESplineCoordinateSpace::World);
 	}
+
+	FinialArcSpawn(result.PathData.Last().Location);
 
 	if(splineMeshs.Num() >0)
 	{
@@ -742,12 +728,15 @@ void AASPlayerCharacter::DrawGrenadePath()
 		USplineMeshComponent* SplineComp = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
 		if (SplineComp)
 		{
-			SplineComp->RegisterComponentWithWorld(GetWorld());
 			SplineComp->SetMobility(EComponentMobility::Movable);
-			SplineComp->AttachToComponent(splinComponent,FAttachmentTransformRules::KeepRelativeTransform);
+			SplineComp->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+			
 			SplineComp->SetStartScale(FVector2D(0.05f,0.05f));
 			SplineComp->SetEndScale(FVector2D(0.05f,0.05f));
 			SplineComp->SetStaticMesh(splineMesh);
+
+			SplineComp->RegisterComponentWithWorld(GetWorld());
+			SplineComp->AttachToComponent(splinComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
 			const FVector start = splinComponent->GetLocationAtSplinePoint(i,ESplineCoordinateSpace::Local);
 			const FVector startTan = splinComponent->GetTangentAtSplinePoint(i,ESplineCoordinateSpace::Local);
@@ -756,40 +745,11 @@ void AASPlayerCharacter::DrawGrenadePath()
 
 			SplineComp->SetStartAndEnd(start,startTan, End, EndTan , true);
 			SplineComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			if(splineMeshMeterial)
-				SplineComp->SetMaterial(0, splineMeshMeterial);
+			if (splineMeshMeterial)
+				SplineComp->SetMaterial(0,splineMeshMeterial);
 		}
-
 		splineMeshs.Add(SplineComp);
 	}
-
-	//slinComponent->SetSplinePointType(result.PathData.Num() - 1, ESplinePointType::CurveClamped);
-	// Projectile의 경로를 미리 보기 위해 DrawDebugLine 사용
-	
-	//FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
-	//
-	//const float MaxGrenadeThrowDistance = 3000.f;
-	//
-	//FVector StartLocation = MuzzleLocation;
-	//FVector EndLocation = StartLocation + MuzzleRotation.Vector() * MaxGrenadeThrowDistance;
-	//
-	//const float Gravity = -980.f;
-	//const float TimeStep = 0.05f;
-	//const int32 MaxIterations = 100;
-	//const float initSpeed = 5000.f;
-	//
-	//FVector Velocity = MuzzleRotation.Vector() * initSpeed;
-	//FVector PreviousLocation = MuzzleLocation;
-	//
-	//for (int32 i = 0; i < MaxIterations; ++i)
-	//{
-	//	float Time = i * TimeStep;
-	//	FVector NextLocation = MuzzleLocation + Velocity * Time + 0.5f * FVector(0, 0, Gravity) * FMath::Square(Time);
-	//
-	//	DrawDebugLine(GetWorld(), PreviousLocation, NextLocation, FColor::Red, false, 0.01, 0, 1);
-	//
-	//	PreviousLocation = NextLocation;
-	//}
 }
 
 void AASPlayerCharacter::UseGrenadeSkill()
@@ -807,9 +767,6 @@ void AASPlayerCharacter::UseGrenadeSkill()
 
 void AASPlayerCharacter::SpawnGrenade()
 {
-	//FRotator MuzzleRotation = GetActorRotation();
-	//FVector MuzzleLocation = EquippedWeapon->GetBarrelSocketTransForm().GetLocation() + MuzzleRotation.Vector() * 100.0f;
-
 	UWorld* World = GetWorld();
 	if (World)
 	{

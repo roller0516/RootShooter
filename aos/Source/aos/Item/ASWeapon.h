@@ -18,15 +18,17 @@ class AOS_API AASWeapon : public AASItemBase
 public:
 	AASWeapon();
 
+	virtual void CopyItem(AASItemBase* weapon) override;
+	virtual void CreateItem(int32 _itemID) override;
+	virtual void RefreshItem() override;
+
 	void DecrementAmmo();
 
 	UFUNCTION(BlueprintCallable)
 	void ResetAmmo();
 
 	void ShowShotParticles(FHitResult pHitResult);
-	virtual void CopyItem(AASItemBase* weapon) override;
-	virtual void CreateItem(int32 _itemID) override;
-	virtual void RefreshItem() override;
+
 	void SetActive(bool active);
 	FTransform GetRightHandSocket();
 	FName GetReloadMotageSection();
@@ -41,6 +43,7 @@ public:
 	FORCEINLINE void SetIsUsed(bool _isUsed) { IsUsed = _isUsed;}
 	FORCEINLINE bool GetIsEquip(bool _isUsed) { return IsEquip;}
 	FORCEINLINE bool GetIsUsed(bool _isUsed) { return IsUsed; }
+	FORCEINLINE bool IsAmmoFull(){return curAmmonCount == maxAmmoCount; }
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 

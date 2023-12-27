@@ -133,6 +133,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void DisableCustomDepth(AActor* TouchedActor);
 
+	void FinialArcSpawn(FVector location);
 private :
 	//---------------------------------------------------------Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -284,10 +285,15 @@ private :
 	class UStaticMesh* splineMesh;
 
 	UPROPERTY(EditAnywhere)
-	class UMaterial* splineMeshMeterial;
+	class UMaterialInterface* splineMeshMeterial;
 
-
+	UPROPERTY(VisibleAnywhere)
 	TArray<class USplineMeshComponent* > splineMeshs;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AActor> FinalArcSubclass;
+
+	AActor* FinalArc;
 	//-------------------------------------------------------ShootingTime
 	UPROPERTY(EditAnywhere,Category = ShootTimer)
 	float ShootTimeDuration;
