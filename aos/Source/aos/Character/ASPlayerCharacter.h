@@ -259,6 +259,9 @@ private :
 	UPROPERTY(EditAnywhere,Category = CrossHairs)
 	float SpreadMin;
 
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	float SpreadAimingMin;
+
 	UPROPERTY(EditAnywhere,Category = CrossHairs)
 	float SpreadHipMax;
 	

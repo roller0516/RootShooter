@@ -19,6 +19,8 @@
 #include "Data/ASItemPrimaryData.h"
 #include "Item/ASItemBase.h"
 #include "Item/ASWeapon.h"
+#include "Item/ASAmmo.h"
+#include "Item/ASHealPack.h"
 // Sets default values
 AASEnemy::AASEnemy() :
 	Health(100.f),
@@ -38,7 +40,9 @@ AASEnemy::AASEnemy() :
 	RightWeaponSocket(TEXT("FX_Trail_R_03")),
 	bDying(false),
 	bCanAttack(true),
-	AttackWaitTime(1.f)
+	AttackWaitTime(1.f),
+	MinDamage(5),
+	MaxDamage(15)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -393,12 +397,15 @@ void AASEnemy::DropItem()
 {
 	UASGameInstance* gi = Cast<UASGameInstance>(GetGameInstance());
 	TArray<FItemBaseData*> data = gi->ItemData->GetRandomItemDatas();
+	//SubclassOf로 해서 가져오도록
+	FTransform tr;
+
+	tr.SetLocation(GetActorLocation() + FVector(0, 0, FMath::RandRange(10, 20)));
+	tr.SetRotation(GetActorRotation().Quaternion());
+
 	for(int i = 0 ; i < data.Num(); i++)
 	{
-		FTransform tr;
 		
-		tr.SetLocation(GetActorLocation() + FVector(0, 0, FMath::RandRange(10, 20)));
-		tr.SetRotation(GetActorRotation().Quaternion());
 
 		if(gi->ItemData->GetItemData(data[i]->ItemID))
 		{
@@ -417,12 +424,17 @@ void AASEnemy::DropItem()
 				item->SetItemProperties(E_ItemState::E_Drop);
 			}
 		}
-		else
-		{
-			
-		}
+	}
 
-		
+
+	for(int i = 0 ; i < gi->ItemData->InteractionItem.Num(); i++)
+	{
+		AASItemBase* item = GetWorld()->SpawnActor<AASItemBase>(gi->ItemData->InteractionItem[i], tr);
+		if (item)
+		{
+			item->SetActorScale3D(FVector(1, 1, 1));
+			item->SetItemProperties(E_ItemState::E_Drop);
+		}
 	}
 }
 

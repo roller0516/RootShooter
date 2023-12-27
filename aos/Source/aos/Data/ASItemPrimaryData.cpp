@@ -33,9 +33,9 @@ TArray<FItemBaseData*> UASItemPrimaryData::GetRandomItemDatas()
 
 	TArray<FItemBaseData*> randomItemList;
 
-	if(num <= 100)
+	if(num <= 30)
 	{
-		int32 num2 = FMath::FRandRange(0,WeaponDatas.Num() - 1);
+		int32 num2 = FMath::FRandRange(0,WeaponDatas.Num());
 
 		randomItemList.Add(WeaponDatas[num2]);
 
@@ -46,9 +46,14 @@ TArray<FItemBaseData*> UASItemPrimaryData::GetRandomItemDatas()
 	}
 	else
 	{
-		for (int i = 0; i < ItemDatas.Num(); i++)
+		int32 num2 = FMath::FRandRange(0,num);
+
+		if(num2 > 15)
 		{
-			randomItemList.Add(ItemDatas[i]);
+			for (int i = 0; i < ItemDatas.Num(); i++)
+			{
+				randomItemList.Add(ItemDatas[i]);
+			}
 		}
 	}
 

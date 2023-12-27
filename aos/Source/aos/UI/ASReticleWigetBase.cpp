@@ -34,19 +34,6 @@ UASReticleWigetBase::UASReticleWigetBase(const FObjectInitializer& ObjectInitial
 
 void UASReticleWigetBase::DrawReticle()
 {
-	//Super::DrawHUD();
-	//AHUD* hud = ->GetHUD();
-	//FVector2D ViewportSize;
-	//if (GEngine && GEngine->GameViewport)
-	//{
-	//	GEngine->GameViewport->GetViewportSize(ViewportSize);
-	//}
-
-	//int32 x,y;
-	//UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewportSize(x, y);
-	//float sizeX = ViewportSize.X;
-	//float sizeY = ViewportSize.Y;
-	//
 	FVector2D ScreenCenter;
 
 	FVector2D CrossHairLocation = FVector2D{ ScreenCenter.X,ScreenCenter.Y - CrossHairOffSet };

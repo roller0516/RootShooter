@@ -272,7 +272,10 @@ void AASPlayerCharacter::MouseLeftClick()
 	{
 		CreateBarrier();
 
-		ChangeCombatState(ECombatState::ECS_Unoccupied);
+		FTimerHandle f;
+		GetWorld()->GetTimerManager().SetTimer(f,[this](){
+			ChangeCombatState(ECombatState::ECS_Unoccupied);
+		}, 0.5f, false);
 	}
 	else if (CombatState == ECombatState::ECS_Grenade)
 	{
@@ -561,6 +564,16 @@ void AASPlayerCharacter::FinialArcSpawn(FVector location)
 	{
 		FinalArc = GetWorld()->SpawnActor<AActor>(FinalArcSubclass, location, FRotator::ZeroRotator);
 	}
+
+	if (CombatState == ECombatState::ECS_UsedSkill)
+	{
+		FinalArc->SetActorScale3D(FVector(8.0f, 8.0f, 8.0f));
+	}
+	else
+	{
+		FinalArc->SetActorScale3D(FVector(1, 1, 1));
+	}
+
 	FinalArc->SetActorHiddenInGame(false);
 	FinalArc->SetActorLocation(location);
 }
@@ -704,7 +717,15 @@ void AASPlayerCharacter::CreateBarrier()
 
 void AASPlayerCharacter::SetGrenadeSkill()
 {
-	ChangeCombatState(ECombatState::ECS_Grenade);
+	if(CombatState == ECombatState::ECS_Grenade)
+	{
+		ChangeCombatState(ECombatState::ECS_Unoccupied);
+
+	}
+	else
+	{
+		ChangeCombatState(ECombatState::ECS_Grenade);
+	}
 }
 
 void AASPlayerCharacter::DrawGrenadePath()
@@ -833,6 +854,8 @@ void AASPlayerCharacter::BuildTypeSkillTrace()
 	if(Hit.GetActor())
 	{
 		if(AASEnemy* enemy = Cast<AASEnemy>(Hit.GetActor())) return;
+
+		FinialArcSpawn(GroundPlacementPoint);
 		GroundPlacementPoint = Hit.ImpactPoint;
 	}
 }

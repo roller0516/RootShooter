@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ASItemBase.h"
 #include "ASHealPack.generated.h"
 
 UCLASS()
-class AOS_API AASHealPack : public AActor
+class AOS_API AASHealPack : public AASItemBase
 {
 	GENERATED_BODY()
 	

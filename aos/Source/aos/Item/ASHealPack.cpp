@@ -8,7 +8,8 @@ AASHealPack::AASHealPack()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	HealthBonus = FMath::RandRange(MinHeal, MaxHeal);
+	MinHeal = 10;
+	MaxHeal = 15;
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +21,8 @@ void AASHealPack::BeginPlay()
 void AASHealPack::UseItem(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor == nullptr) return;
+
+	HealthBonus = FMath::RandRange(MinHeal, MaxHeal);
 
 	auto playerCharacter = Cast<AASPlayerCharacter>(OtherActor);
 	if (playerCharacter)

@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ASItemBase.h"
 #include "ASAmmo.generated.h"
 
 UCLASS()
-class AOS_API AASAmmo : public AActor
+class AOS_API AASAmmo : public AASItemBase
 {
 	GENERATED_BODY()
 	

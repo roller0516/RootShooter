@@ -144,6 +144,10 @@ public:
 	{
 		return FPrimaryAssetId(FPrimaryAssetType("ASItemData"), FName("ItemData"));
 	}
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<AActor>> InteractionItem;
+
 protected:
 	void CashedItemDataTable();
 private:
