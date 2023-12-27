@@ -513,24 +513,24 @@ void AASPlayerCharacter::Cloacking()
 
 	if (!isCloacking)
 	{
-		SaveMaterials = GetMesh()->GetMaterials();
+		//SaveMaterials = GetMesh()->GetMaterials();
 
-		for (int i = 0; i < SaveMaterials.Num(); i++)
-		{
-			GetMesh()->SetMaterial(i, CloackingMaterial);
-		}
+		//for (int i = 0; i < SaveMaterials.Num(); i++)
+		//{
+		//	GetMesh()->SetMaterial(i, CloackingMaterial);
+		//}
 
-		if (EquippedWeapon) { EquippedWeapon->SetCloacking(CloackingMaterial); }
+		//if (EquippedWeapon) { EquippedWeapon->SetCloacking(CloackingMaterial); }
 		isCloacking = true;
 	}
 	else
 	{
-		for (int i = 0; i < SaveMaterials.Num(); i++)
-		{
-			GetMesh()->SetMaterial(i, SaveMaterials[i]);
-		}
+		//for (int i = 0; i < SaveMaterials.Num(); i++)
+		//{
+		//	GetMesh()->SetMaterial(i, SaveMaterials[i]);
+		//}
 
-		if (EquippedWeapon) { EquippedWeapon->SetUnCloacking(); }
+		//if (EquippedWeapon) { EquippedWeapon->SetUnCloacking(); }
 		isCloacking = false;
 	}
 }
