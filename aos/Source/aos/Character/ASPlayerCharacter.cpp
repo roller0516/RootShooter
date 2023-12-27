@@ -563,7 +563,7 @@ void AASPlayerCharacter::Heal(int Amount)
 	}
 }
 
-void AASPlayerCharacter::GetAmmo(int Amount)
+void AASPlayerCharacter::PickupAmmoItem(int Amount)
 {
 	if (EquippedWeapon)
 	{
