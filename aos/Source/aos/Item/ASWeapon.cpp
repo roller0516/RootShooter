@@ -277,7 +277,7 @@ void AASWeapon::SetSound()
 
 void AASWeapon::IncreaseAmmo(int32 AddAmmo)
 {
-	curAmmonCount += AddAmmo;
+	magazineCapacity += AddAmmo;
 }
 
 void AASWeapon::DecrementAmmo()
