@@ -32,8 +32,24 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaSeconds ) override;
 
+	UFUNCTION(BlueprintCallable)
+	void SaveOptionControllData();
 
+	UFUNCTION(BlueprintCallable)
+	void SaveOptionAudioData(float volume,float UI, float VoiceChat,float SFX,float Music);
+
+	class UASSaveGame* SaveGamedata;
+
+	UFUNCTION(BlueprintCallable)
+	class UASSaveGame* LoadData(FString SaveSlotName);
+
+	void InitSoundMix();
 protected:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
+
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound, meta = (AllowPrivateAccess = "true"))
+	class USoundMix* soundMix;
 };
