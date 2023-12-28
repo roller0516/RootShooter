@@ -76,13 +76,15 @@ void AASItemBase::SetItemProperties(E_ItemState state)
 
 		if(lootParticle)
 		{
-			UGameplayStatics::SpawnEmitterAttached(lootParticle,particle);
+			particle = UGameplayStatics::SpawnEmitterAttached(lootParticle,particle);
 		}
 		
 		break;
 	case E_ItemState::E_PickUp:
 		SetActorHiddenInGame(true);
 		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+		particle->SetHiddenInGame(true);
+		PlayPickupSound();
 		break;
 	case E_ItemState::E_Equip:
 		collisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
@@ -124,6 +126,12 @@ void AASItemBase::StopBounceItem()
 {
 	bFalling = false;
 	SetItemProperties(E_ItemState::E_None);
+}
+
+void AASItemBase::PlayPickupSound()
+{
+	if(PickupSound)
+		UGameplayStatics::PlaySound2D(GetWorld(), PickupSound);
 }
 
 // Called when the game starts or when spawned
@@ -211,6 +219,7 @@ void AASItemBase::UpdateItem()
 	SetTexture();
 	SetMesh();
 	SetCount();
+	SetSound();
 
 	if(itemBaseData.lootParticle)
 		lootParticle = itemBaseData.lootParticle;
@@ -218,6 +227,8 @@ void AASItemBase::UpdateItem()
 
 void AASItemBase::SetSound()
 {
+	 if(itemBaseData.PickUpSound)
+		 PickupSound = itemBaseData.PickUpSound;
 }
 
 void AASItemBase::OnConstruction(const FTransform& Transform)

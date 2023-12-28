@@ -42,4 +42,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = UI)
 	TSoftClassPtr<UCommonActivatableWidget> mainScreenClass;
+
+	UASExperienceDefinition* experience;
 };

@@ -27,6 +27,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	class UASGameOptionData* GameOpitionData;
 
+	//UPROPERTY()
+	//class USoundClass* BGSound;
+
 	FORCEINLINE CharID GetCharID() { return selectCharID; }
 	FORCEINLINE void SetCharID(CharID charid) { selectCharID = charid; }
 private:

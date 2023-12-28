@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/ASPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Data/ASExperienceDefinition.h"
 
 
 // Sets default values for this component's properties
@@ -38,13 +39,15 @@ void UASCharacterSelectComponent::BeginPlay()
 	}
 }
 
-void UASCharacterSelectComponent::OnExperienceLoadComplete(const UASExperienceDefinition* experience)
+void UASCharacterSelectComponent::OnExperienceLoadComplete(const UASExperienceDefinition* Experience)
 {
 	FControlFlow& Flow = FControlFlowStatics::Create(this, TEXT("FrontendFlow"));
 	Flow.QueueStep(TEXT("Wait For User Initialization"), this, &UASCharacterSelectComponent::FlowStep_WaitForUserInitialization);
 	Flow.QueueStep(TEXT("Spawn Character"), this, &UASCharacterSelectComponent::FlowStep_WaitForCharacterSpawn);
 	Flow.QueueStep(TEXT("Show MainScreen"), this, &UASCharacterSelectComponent::FlowStep_TryShowMainScreen);
 	
+	
+	experience = const_cast<UASExperienceDefinition*>(Experience);
 
 	Flow.ExecuteFlow();
 
@@ -73,6 +76,8 @@ void UASCharacterSelectComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef
 				case EAsyncWidgetLayerState::AfterPush:
 					bShouldShowLoadingScreen = false;
 					SubFlow->ContinueFlow();
+					if(experience->bgSound)
+						UGameplayStatics::PlaySound2D(GetWorld(),experience->bgSound);
 					return;
 				case EAsyncWidgetLayerState::Canceled:
 					bShouldShowLoadingScreen = false;

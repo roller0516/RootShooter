@@ -10,6 +10,8 @@
 #include "NativeGameplayTags.h"
 #include "GameCore/ASGame/FASGamePlayTags.h"
 #include "../../../Experimental/CommonUI/Source/CommonUI/Public/CommonActivatableWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Data/ASExperienceDefinition.h"
 
 //UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
 //UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");
@@ -64,6 +66,8 @@ void UASFrontendComponent::OnExperiencedLoaded(const UASExperienceDefinition* Ex
 		.QueueStep(TEXT("Try Join Requested Session"), this, &UASFrontendComponent::FlowStep_TryJoinRequestedSession)
 		.QueueStep(TEXT("Try Show Main Screen"), this, &UASFrontendComponent::FlowStep_TryShowMainScreen);
 
+	experience = const_cast<UASExperienceDefinition*>(Experience);
+
 	Flow.ExecuteFlow();
 
 	FrontEndFlow = Flow.AsShared();
@@ -95,6 +99,10 @@ void UASFrontendComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlo
 				{
 				case EAsyncWidgetLayerState::AfterPush:
 					bShouldShowLoadingScreen = false;
+
+					if (experience->bgSound)
+						UGameplayStatics::PlaySound2D(GetWorld(), experience->bgSound);
+
 					SubFlow->ContinueFlow();
 					return;
 				case EAsyncWidgetLayerState::Canceled:

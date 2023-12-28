@@ -49,6 +49,7 @@ protected:
 
 	void BounceItem();
 	void StopBounceItem();
+	void PlayPickupSound();
 protected:
 	UPROPERTY(EditAnywhere, Category = "Item", meta = (AllowPrivateAccess = "true"))
 	int32 itemID;
@@ -83,6 +84,9 @@ protected:
 
 	UPROPERTY(VisibleAnyWhere)
 	class UParticleSystem* lootParticle;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* PickupSound;
 private:
 
 	UPROPERTY(VisibleAnyWhere,Category = Item)

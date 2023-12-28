@@ -535,6 +535,8 @@ void AASPlayerCharacter::Cloacking()
 
 		//if (EquippedWeapon) { EquippedWeapon->SetCloacking(CloackingMaterial); }
 		isCloacking = true;
+		if(InvisibilitySound)
+			UGameplayStatics::PlaySound2D(GetWorld(), InvisibilitySound);
 	}
 	else
 	{
@@ -710,7 +712,8 @@ void AASPlayerCharacter::CreateBarrier()
 	{
 		GEngine->AddOnScreenDebugMessage(-1,1,FColor::Red,FString::Printf(TEXT("%f : %f :%f"),GroundPlacementPoint.X,GroundPlacementPoint.Y,GroundPlacementPoint.Z));
 	}
-	
+	if(BarrierSound)
+		UGameplayStatics::PlaySound2D(GetWorld(), BarrierSound);
 	ft.SetLocation(GroundPlacementPoint);
 	GetWorld()->SpawnActor<AActor>(barrierActor, ft, spawnParams);
 }
@@ -725,6 +728,8 @@ void AASPlayerCharacter::SetGrenadeSkill()
 	else
 	{
 		ChangeCombatState(ECombatState::ECS_Grenade);
+		if(GrenadeSound)
+			UGameplayStatics::PlaySound2D(GetWorld(),GrenadeSound);
 	}
 }
 

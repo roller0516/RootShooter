@@ -48,6 +48,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	class UParticleSystem* lootParticle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	USoundBase* PickUpSound;
 };
 
 USTRUCT(BlueprintType)

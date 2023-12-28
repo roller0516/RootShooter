@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = GamePlay)
 	TObjectPtr<class UASPawnData> pawnData;
 
+	UPROPERTY(EditDefaultsOnly, Category = GamePlay)
+	TObjectPtr<class USoundBase> bgSound;
+
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
 		if((AssetName.ToString().IsEmpty()))

@@ -151,31 +151,34 @@ void AASPlayerController::InitSoundMix()
 			for (int i = 0; i < soundMix->SoundClassEffects.Num(); i++)
 			{
 				FString soundName = soundMix->SoundClassEffects[i].SoundClassObject.GetName();
-
+				float volume = 0;
 				if (soundName.Equals(FString("Music")))
 				{
-					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.MusicSoundVolum / 100;
+					volume = ld->soundOption.MusicSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("Overall")))
 				{
-					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.VolumeSoundVolum / 100;
+					volume = ld->soundOption.VolumeSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("SFX")))
 				{
-					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.SFXSoundVolum / 100;
+					volume = ld->soundOption.SFXSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("UI")))
 				{
-					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.UISoundVolum / 100;
+					volume = ld->soundOption.UISoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("VoiceChat")))
 				{
-					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.VoiceChatSoundVolum / 100;
+					volume = ld->soundOption.VoiceChatSoundVolum / 100;
 				}
 				else
 				{
 					UE_LOG(LogTemp, Error, TEXT("Not Find Sound , Sound Name : %s"), *soundName);
 				}
+
+				UGameplayStatics::SetSoundMixClassOverride(GetWorld(), soundMix, soundMix->SoundClassEffects[i].SoundClassObject, volume);
+				UGameplayStatics::PushSoundMixModifier(GetWorld(), soundMix);
 			}
 		}
 		else

@@ -23,11 +23,12 @@ void AASHealPack::UseItem(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	if (OtherActor == nullptr) return;
 
 	HealthBonus = FMath::RandRange(MinHeal, MaxHeal);
-
+	
 	auto playerCharacter = Cast<AASPlayerCharacter>(OtherActor);
 	if (playerCharacter)
 	{
 		playerCharacter->Heal(HealthBonus);
+		PlayPickupSound();
 		Destroy();
 	}
 }

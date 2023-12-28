@@ -367,6 +367,14 @@ private :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"));
 	float MaxHealth;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound, meta = (AllowPrivateAccess = "true"));
+	USoundBase* GrenadeSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound, meta = (AllowPrivateAccess = "true"));
+	USoundBase* BarrierSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound, meta = (AllowPrivateAccess = "true"));
+	USoundBase* InvisibilitySound;
 protected:
 	//-------------------------------------------------------Skill
 	UPROPERTY(EditAnywhere)

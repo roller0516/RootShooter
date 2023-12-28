@@ -70,4 +70,6 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<class AASBaseCharacter>> AfterLoadCharList;
+
+	UASExperienceDefinition* experience;
 };
