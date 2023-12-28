@@ -154,23 +154,23 @@ void AASPlayerController::InitSoundMix()
 
 				if (soundName.Equals(FString("Music")))
 				{
-					soundMix->SoundClassEffects[i].VolumeAdjuster = ld->soundOption.MusicSoundVolum / 100;
+					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.MusicSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("Overall")))
 				{
-					soundMix->SoundClassEffects[i].VolumeAdjuster = ld->soundOption.VolumeSoundVolum / 100;
+					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.VolumeSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("SFX")))
 				{
-					soundMix->SoundClassEffects[i].VolumeAdjuster = ld->soundOption.SFXSoundVolum / 100;
+					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.SFXSoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("UI")))
 				{
-					soundMix->SoundClassEffects[i].VolumeAdjuster = ld->soundOption.UISoundVolum / 100;
+					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.UISoundVolum / 100;
 				}
 				else if (soundName.Equals(FString("VoiceChat")))
 				{
-					soundMix->SoundClassEffects[i].VolumeAdjuster = ld->soundOption.VoiceChatSoundVolum / 100;
+					soundMix->SoundClassEffects[i].SoundClassObject->Properties.Volume = ld->soundOption.VoiceChatSoundVolum / 100;
 				}
 				else
 				{
