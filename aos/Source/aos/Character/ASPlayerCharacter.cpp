@@ -270,12 +270,19 @@ void AASPlayerCharacter::MouseLeftClick()
 
 	if(CombatState == ECombatState::ECS_UsedSkill)
 	{
-		CreateBarrier();
+		if(isCreateBarrier == false)
+		{
+			CreateBarrier();
+			isCreateBarrier = true;
 
-		FTimerHandle f;
-		GetWorld()->GetTimerManager().SetTimer(f,[this](){
-			ChangeCombatState(ECombatState::ECS_Unoccupied);
-		}, 0.5f, false);
+			FTimerHandle f;
+			GetWorld()->GetTimerManager().SetTimer(f, [this]() 
+			{
+				isCreateBarrier = false;
+				ChangeCombatState(ECombatState::ECS_Unoccupied);
+					
+			}, 0.5f, false);
+		}
 	}
 	else if (CombatState == ECombatState::ECS_Grenade)
 	{

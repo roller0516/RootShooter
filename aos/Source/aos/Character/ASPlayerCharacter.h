@@ -360,6 +360,7 @@ private :
 
 	bool isCloacking;
 
+	bool isCreateBarrier;
 	//-------------------------------------------------------HP
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = combat, meta = (AllowPrivateAccess = "true"));
 	float Health;
