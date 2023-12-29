@@ -400,12 +400,13 @@ void AASEnemy::DropItem()
 	//SubclassOf로 해서 가져오도록
 	FTransform tr;
 
-	tr.SetLocation(GetActorLocation() + FVector(0, 0, FMath::RandRange(10, 20)));
-	tr.SetRotation(GetActorRotation().Quaternion());
-
 	for(int i = 0 ; i < data.Num(); i++)
 	{
-		
+		int x = FMath::RandRange(-30, 30);
+		int y = FMath::RandRange(-30, 30);
+
+		tr.SetLocation(GetActorLocation() + FVector(x, y, 10));
+		tr.SetRotation(GetActorRotation().Quaternion());
 
 		if(gi->ItemData->GetItemData(data[i]->ItemID))
 		{
@@ -429,6 +430,12 @@ void AASEnemy::DropItem()
 
 	for(int i = 0 ; i < gi->ItemData->InteractionItem.Num(); i++)
 	{
+		int x = FMath::RandRange(-30, 30);
+		int y = FMath::RandRange(-30, 30);
+
+		tr.SetLocation(GetActorLocation() + FVector(x, y, 10));
+		tr.SetRotation(GetActorRotation().Quaternion());
+
 		AASItemBase* item = GetWorld()->SpawnActor<AASItemBase>(gi->ItemData->InteractionItem[i], tr);
 		if (item)
 		{
