@@ -92,8 +92,7 @@ void UASPlayerAnimInstance::Lean(float DeltaTime)
 
 	YawDelta = FMath::Clamp(Interp, -90.f, 90.f);
 
-	//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("YawDelta : %f"), YawDelta));
-	if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("CharacterYaw : %f"), Delta.Yaw));
+	//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("CharacterYaw : %f"), Delta.Yaw));
 }
 
 void UASPlayerAnimInstance::NativeInitializeAnimation()
@@ -140,8 +139,5 @@ void UASPlayerAnimInstance::TurnInPlace()
 				RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
 			}
 		}
-		//if (GEngine) GEngine->AddOnScreenDebugMessage(1, 1, FColor::Red, FString::Printf(TEXT("CharacterYaw : %f"), CharacterYaw));
-		//if (GEngine) GEngine->AddOnScreenDebugMessage(2, 1, FColor::Red, FString::Printf(TEXT("RootYawOffset : %f"), RootYawOffset));
-		//if (GEngine) GEngine->AddOnScreenDebugMessage(3, 1, FColor::Red, FString::Printf(TEXT("CharacterYawLastFrame : %f"), CharacterYawLastFrame));
 	}
 }

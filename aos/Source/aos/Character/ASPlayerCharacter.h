@@ -238,6 +238,7 @@ private :
 	UPROPERTY(EditAnywhere,Category=Aiming)
 	float AimingLookUpRate;
 
+	UPROPERTY(BlueprintReadOnly, Category = CrossHairs, meta = (AllowPrivateAccess = "true"))
 	bool bAimingButtonPressed;
 
 	//-------------------------------------------------------CrossHair

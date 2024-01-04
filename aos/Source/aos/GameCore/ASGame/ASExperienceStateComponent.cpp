@@ -120,11 +120,11 @@ void UASExperienceStateComponent::StartLoad()
 		}));
 	}
 
-	TSet<FPrimaryAssetId> PreloadAssetList;
+	TArray<FPrimaryAssetId> PreloadAssetList;
 
 	if (PreloadAssetList.Num() > 0)
 	{
-		AssetManager.ChangeBundleStateForPrimaryAssets(PreloadAssetList.Array(), BundlesToLoad, {});
+		AssetManager.ChangeBundleStateForPrimaryAssets(PreloadAssetList, BundlesToLoad, {});
 	}
 }
 
@@ -211,23 +211,6 @@ void UASExperienceStateComponent::FullLoadComplete()
 	{
 		context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
 	}
-
-	//auto ActivateListOfActions = [&context](const TArray<UGameFeatureAction*>& ActionList)
-	//	{
-	//		for (UGameFeatureAction* Action : ActionList)
-	//		{
-	//			if (Action != nullptr)
-	//			{
-	//				//@TODO: The fact that these don't take a world are potentially problematic in client-server PIE
-	//				// The current behavior matches systems like gameplay tags where loading and registering apply to the entire process,
-	//				// but actually applying the results to actors is restricted to a specific world
-	//				Action->OnGameFeatureRegistering();
-	//				Action->OnGameFeatureLoading();
-	//				Action->OnGameFeatureActivating(context);
-	//			}
-	//		}
-	//	};
-
 
 	for(UGameFeatureAction* Action : currentExperience->Actions)
 	{

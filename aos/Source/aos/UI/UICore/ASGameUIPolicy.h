@@ -42,7 +42,6 @@ public:
 	bool bAddedViewPort;
 
 	bool operator==(const ULocalPlayer* _localplayer)const { return localPlayer == _localplayer; }
-	//bool operator==(const ULocalPlayer* OtherLocalPlayer) const { return localPlayer == OtherLocalPlayer; }
 };
 
 UCLASS(Abstract, Blueprintable ,Within = ASGameUIManagerSubSystem)

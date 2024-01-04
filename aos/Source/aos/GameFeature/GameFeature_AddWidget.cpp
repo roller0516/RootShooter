@@ -59,9 +59,6 @@ void UGameFeature_AddWidget::Reset(FPerContextData& ActiveData)
 {
 	ActiveData.ComponentRequests.Empty();
 	ActiveData.LayoutsAdded.Empty();
-
-	//for(FUIExtensionHandle)
-	//ActiveData.ExtensionHandles.Reset();
 }
 
 void UGameFeature_AddWidget::HandleActorExtension(AActor* Actor, FName EventName, FGameFeatureStateChangeContext ChangeContext)
@@ -90,12 +87,6 @@ void UGameFeature_AddWidget::AddWidgets(AActor* Actor, FPerContextData& ActiveDa
 				ActiveData.LayoutsAdded.Add(UASBluePrintUtil::PushContentToLayer_ForPlayer(LocalPlayer, Entry.LayerID, ConcreteWidgetClass));
 			}
 		}
-
-		//UUIExtensionSubsystem* ExtensionSubsystem = HUD->GetWorld()->GetSubsystem<UUIExtensionSubsystem>();
-		//for (const FLyraHUDElementEntry& Entry : Widgets)
-		//{
-		//	ActiveData.ExtensionHandles.Add(ExtensionSubsystem->RegisterExtensionAsWidgetForContext(Entry.SlotID, LocalPlayer, Entry.WidgetClass.Get(), -1));
-		//}
 	}
 }
 
